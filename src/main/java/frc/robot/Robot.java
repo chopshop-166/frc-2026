@@ -32,15 +32,22 @@ public final class Robot extends CommandRobot {
 
     // Helpers
     final DoubleUnaryOperator driveScaler = getScaler(0.45, 0.25);
-    private Drive drive = new Drive(map.getDriveMap(), () -> {
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+
+    // Subsystems
+    // Make them public so that the sequences can access them
+    public Drive drive = new Drive(map.getDriveMap(), () -> {
         return driveScaler.applyAsDouble(-driveController.getLeftX());
     }, () -> {
         return driveScaler.applyAsDouble(-driveController.getLeftY());
     }, () -> {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
+    // Things that use all the subsystems
+    private CommandSequences sequences = new CommandSequences(this);
+
+    // The default auto
     @Autonomous(name = "No Auto", defaultAuto = true)
     public Command noAuto = Commands.none();
 
