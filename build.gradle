@@ -65,7 +65,10 @@ def includeDesktopSupport = false
 // Repositories for dependencies
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://jitpack.io' 
+        content { includeGroup "com.chopshop166" }
+    }
     mavenLocal()
 }
 
@@ -94,6 +97,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'com.google.guava:guava:33.4.0-jre'
+    implementation 'com.chopshop166:chopshoplib:2026.1.1'
 
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
