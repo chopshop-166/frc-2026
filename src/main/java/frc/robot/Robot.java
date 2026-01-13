@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
+import frc.robot.subsystems.Drive;
 
 public final class Robot extends CommandRobot {
 
@@ -30,6 +32,13 @@ public final class Robot extends CommandRobot {
 
     // Helpers
     final DoubleUnaryOperator driveScaler = getScaler(0.45, 0.25);
+    private Drive drive = new Drive(map.getDriveMap(), () -> {
+        return driveScaler.applyAsDouble(-driveController.getLeftX());
+    }, () -> {
+        return driveScaler.applyAsDouble(-driveController.getLeftY());
+    }, () -> {
+        return driveScaler.applyAsDouble(-driveController.getRightX());
+    }, map.getVisionMap());
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
     @Autonomous(name = "No Auto", defaultAuto = true)
@@ -54,12 +63,9 @@ public final class Robot extends CommandRobot {
         Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
         Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
         Logger.recordMetadata("GitDirty", switch (BuildConstants.DIRTY) {
-            case 0 ->
-                "All changes committed";
-            case 1 ->
-                "Uncomitted changes";
-            default ->
-                "Unknown";
+            case 0 -> "All changes committed";
+            case 1 -> "Uncomitted changes";
+            default -> "Unknown";
         });
         Logger.recordMetadata("RobotMap", map.getClass().getName());
 
@@ -73,6 +79,11 @@ public final class Robot extends CommandRobot {
         Logger.start();
 
         DriverStation.silenceJoystickConnectionWarning(true);
+
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            // Do whatever you want with the pose here
+            Logger.recordOutput("Drive/PathPlannerTargetPose", pose);
+        });
 
         CommandScheduler.getInstance().onCommandInterrupt((oldCmd, newCmd) -> {
             if (!DriverStation.isFMSAttached()) {
