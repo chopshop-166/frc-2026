@@ -60,7 +60,7 @@ public class VisionMap {
                         continue;
                     }
                     // Put the results measurement into the pose estimator
-                    var estimate = source.estimator.update(result);
+                    var estimate = source.estimator.estimateCoprocMultiTagPose(result);
                     estimate.ifPresent(est -> {
                         Logger.recordOutput("Camera Pose Estimate/" + source.camera.getName(),
                                 est.estimatedPose.toPose2d());

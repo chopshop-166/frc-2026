@@ -2,7 +2,7 @@ package com.chopshop166.chopshoplib.maps;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -38,8 +38,6 @@ public class CameraSource {
     public CameraSource(final PhotonCamera camera, final Transform3d robotToCam) {
         this.camera = camera;
         this.robotToCam = robotToCam;
-        this.estimator = new PhotonPoseEstimator(DEFAULT_FIELD,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam);
-        this.estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        this.estimator = new PhotonPoseEstimator(DEFAULT_FIELD, robotToCam);
     }
 }
