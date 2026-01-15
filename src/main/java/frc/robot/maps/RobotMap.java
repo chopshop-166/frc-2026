@@ -10,6 +10,8 @@ import com.chopshop166.chopshoplib.maps.MockLedMap;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 
+import frc.robot.maps.subsystems.IntakeMap;
+
 public class RobotMap {
 
     public SwerveDriveMap getDriveMap() {
@@ -22,6 +24,10 @@ public class RobotMap {
 
     public LedMapBase getLedMap() {
         return new MockLedMap();
+    }
+
+    public IntakeMap getIntakeMap() {
+        return new IntakeMap();
     }
 
     public void setupLogging() {

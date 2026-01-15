@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
 
 public final class Robot extends CommandRobot {
 
@@ -43,6 +44,8 @@ public final class Robot extends CommandRobot {
     }, () -> {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
+
+    private Intake intake = new Intake(map.getIntakeMap());
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);

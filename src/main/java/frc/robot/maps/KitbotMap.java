@@ -1,5 +1,6 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.digital.CSDigitalInput;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
@@ -16,13 +17,19 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import frc.robot.maps.subsystems.IntakeMap;
 
 @RobotMapFor("Kitbot")
 public class KitbotMap extends RobotMap {
+
     @Override
     public SwerveDriveMap getDriveMap() {
 
@@ -118,5 +125,18 @@ public class KitbotMap extends RobotMap {
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro,
                 config, holonomicDrive);
+    }
+
+    @Override
+    public IntakeMap getIntakeMap() {
+        CSSparkMax roller = new CSSparkMax(9);
+        CSSparkMax kicker = new CSSparkMax(10);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(30);
+
+        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        return new IntakeMap(roller, kicker);
     }
 }
