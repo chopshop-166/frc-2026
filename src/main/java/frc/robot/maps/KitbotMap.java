@@ -20,6 +20,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -27,7 +28,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Velocity;
-import frc.robot.maps.subsystems.IntakeMap;
+import frc.robot.maps.subsystems.ShooterMap;
 
 @RobotMapFor("Kitbot")
 public class KitbotMap extends RobotMap {
@@ -130,19 +131,19 @@ public class KitbotMap extends RobotMap {
     }
 
     @Override
-    public IntakeMap getIntakeMap() {
+    public ShooterMap getShooterMap() {
         CSSparkMax roller = new CSSparkMax(9);
-        CSSparkMax kicker = new CSSparkMax(10);
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(30);
 
-        config.closedLoop.p(0).i(0).d(0).velocityFF(0);
+        config.closedLoop.p(0).i(0).d(0);
+        config.closedLoop.apply(new FeedForwardConfig().kV(0));
         roller.setControlType(ControlType.kVelocity);
         roller.setPidSlot(0);
 
         roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        return new IntakeMap(roller, kicker);
+        return new ShooterMap(roller);
     }
 }
