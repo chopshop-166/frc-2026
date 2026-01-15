@@ -112,6 +112,13 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        // Intake in
+        copilotController.a().whileTrue(intake.spinIn());
+        // feed shooter
+        copilotController.b().whileTrue(intake.feedShooter());
+        // Intake out
+        copilotController.x().whileTrue(intake.spinOut());
+
     }
 
     @Override

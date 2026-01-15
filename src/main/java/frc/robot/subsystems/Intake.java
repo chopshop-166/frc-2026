@@ -15,21 +15,30 @@ public class Intake extends LoggedSubsystem<Data, IntakeMap> {
         super(new Data(), intakemap);
     }
 
-    public Command KickIn() {
+    public Command kickIn() {
         return runSafe(() -> {
             getData().kicker.setpoint = KICK_SPEED;
         });
     }
-    
+
     public Command spinIn() {
         return runSafe(() -> {
             getData().roller.setpoint = GRAB_SPEED;
+            getData().roller.setpoint = KICK_SPEED;
+        });
+    }
+
+    public Command feedShooter() {
+        return runSafe(() -> {
+            getData().roller.setpoint = GRAB_SPEED;
+            getData().kicker.setpoint = RELEASE_SPEED;
         });
     }
 
     public Command spinOut() {
         return runSafe(() -> {
             getData().roller.setpoint = RELEASE_SPEED;
+            getData().kicker.setpoint = RELEASE_SPEED;
         });
     }
 
