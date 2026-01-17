@@ -10,9 +10,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 /** Simplified wrapper around a camera with a pose estimator. */
 public class CameraSource {
     /** The default field, loaded for convenience. */
-    // TODO replace with the 2026 field when WPIlib makes it available
     public static final AprilTagFieldLayout DEFAULT_FIELD = AprilTagFieldLayout
-            .loadField(AprilTagFields.k2025ReefscapeAndyMark);
+            .loadField(AprilTagFields.k2026RebuiltAndymark);
     /** The camera object. */
     public final PhotonCamera camera;
     /** The pose estimator. */
