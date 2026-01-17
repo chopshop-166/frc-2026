@@ -115,7 +115,9 @@ public final class Robot extends CommandRobot {
     @Override
     public void configureButtonBindings() {
         // Intake in
-        copilotController.a().whileTrue(shooter.spinIn().alongWith(kicker.kickIn()));
+        copilotController.a().onTrue(shooter.spinIn().alongWith(kicker.kickIn()));
+        // Intake stop
+        copilotController.y().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // feed shooter
         copilotController.b().whileTrue(shooter.spinIn().alongWith(kicker.kickOut()));
         // Intake out

@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Velocity;
+import frc.robot.maps.subsystems.KickerMap;
 import frc.robot.maps.subsystems.ShooterMap;
 
 @RobotMapFor("Kitbot")
@@ -146,4 +147,17 @@ public class KitbotMap extends RobotMap {
                 PersistMode.kPersistParameters);
         return new ShooterMap(roller);
     }
+
+    @Override
+    public KickerMap getKickerMap() {
+        CSSparkMax kicker = new CSSparkMax(10);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(30);
+
+        kicker.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        return new KickerMap(kicker);
+    }
+
 }
