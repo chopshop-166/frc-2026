@@ -9,6 +9,7 @@ import java.util.function.DoubleUnaryOperator;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
+import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -79,6 +80,8 @@ public final class Robot extends CommandRobot {
             case 1 -> "Uncomitted changes";
             default -> "Unknown";
         });
+        System.out.println("+++ MAC:" + RobotUtils.getMACAddress());
+        Logger.recordMetadata("MACAddress", RobotUtils.getMACAddress());
         Logger.recordMetadata("RobotMap", map.getClass().getName());
 
         map.setupLogging();
