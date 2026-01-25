@@ -120,9 +120,10 @@ public final class Robot extends CommandRobot {
         // Intake in
         copilotController.a().onTrue(shooter.spinIn().alongWith(kicker.kickIn()));
         // Intake stop
-        copilotController.y().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
+        copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // feed shooter
-        copilotController.b().whileTrue(shooter.spinIn().alongWith(kicker.kickOut()));
+        copilotController.b().whileTrue(shooter.shoot().andThen(kicker.kickOut()))
+                .onFalse(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // Intake out
         copilotController.x().whileTrue(shooter.spinOut().alongWith(kicker.kickOut()));
 

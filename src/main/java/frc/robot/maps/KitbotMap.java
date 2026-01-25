@@ -17,6 +17,8 @@ import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
+import com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -28,8 +30,10 @@ import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.AnalogEncoder;
@@ -115,29 +119,32 @@ public class KitbotMap extends RobotMap {
                 maxRotationRadianPerSecond, pigeonGyro2, config, holonomicDrive);
     }
 
-    // @Override
-    // public ShooterMap getShooterMap() {
-    // CSSparkMax roller = new CSSparkMax(9);
-    // SparkMaxConfig config = new SparkMaxConfig();
-    // config.idleMode(IdleMode.kCoast);
-    // config.smartCurrentLimit(30);
-
-    // config.closedLoop.p(0).i(0).d(0);
-    // config.closedLoop.apply(new FeedForwardConfig().kV(0));
-    // roller.setControlType(ControlType.kVelocity);
-    // roller.setPidSlot(0);
-
-    // roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // return new ShooterMap(roller);
-    // }
-
     @Override
-    public void setupLogging() {
-        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
-        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
-        new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+    public ShooterMap getShooterMap() {
+        CSSparkMax roller = new CSSparkMax(9);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(60);
+        config.closedLoop.p(0.005).i(0).d(0);
+        config.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        roller.setControlType(ControlType.kVelocity);
+        roller.setPidSlot(0);
+        config.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
+
+        ShooterMap.PresetValues presets = preset -> switch (preset) {
+            case INTAKE -> 2000;
+            case OUTTAKE -> -2000;
+            case CLOSE_SHOT -> 3000;
+            case MID_SHOT -> 4500;
+            case FAR_SHOT -> 6000;
+            default -> Double.NaN;
+        };
+
+        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        return new ShooterMap(roller, presets, roller.getEncoder());
     }
 
     @Override
@@ -150,6 +157,14 @@ public class KitbotMap extends RobotMap {
         kicker.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         return new KickerMap(kicker);
+    }
+
+    @Override
+    public void setupLogging() {
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
+        new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
     }
 
 }
