@@ -1,20 +1,15 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import java.util.function.DoubleSupplier;
 
-import org.littletonrobotics.junction.Logger;
-import org.opencv.core.Mat;
-
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
-import com.chopshop166.chopshoplib.motors.PIDControlType;
-import com.ctre.phoenix.motorcontrol.ControlFrame;
-import com.revrobotics.spark.SparkBase.ControlType;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.ShooterMap;
 import frc.robot.maps.subsystems.ShooterMap.Data;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
@@ -35,35 +30,37 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
     public Command spinIn() {
         return runSafe(() -> {
 
-            getData().preset = ShooterPresets.INTAKE;
-            getData().roller.setpoint = getMap().presetValues.applyAsDouble(getData().preset);
+            setPreset(ShooterPresets.INTAKE);
+
         });
     }
 
-    public Command shoot() {
+    public Command shoot(ShooterPresets presetSpeed) {
         Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
 
         return runOnce(() -> {
 
-            getData().preset = ShooterPresets.MID_SHOT;
-            getData().roller.setpoint = getMap().presetValues.applyAsDouble(getData().preset);
+            setPreset(presetSpeed);
 
-        }).andThen(run(() -> {
-        }).until(
-                () -> debouncer
-                        .calculate(Math.abs(getData().roller.velocity - getData().roller.setpoint) < TOLERANCE)));
+        }).andThen(Commands.waitUntil(() -> debouncer
+                .calculate(Math.abs(getData().roller.velocity - getData().roller.setpoint) < TOLERANCE)));
     }
 
     public Command spinOut() {
         return runSafe(() -> {
-            getData().preset = ShooterPresets.OUTTAKE;
-            getData().roller.setpoint = getMap().presetValues.applyAsDouble(getData().preset);
+            setPreset(ShooterPresets.OUTTAKE);
 
         });
     }
 
+    private void setPreset(ShooterPresets presets) {
+
+        getData().preset = presets;
+        getData().roller.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
+    }
+
     public double getShooterSpeed() {
-        return getData().speedRotationsPerMinute;
+        return getMap().roller.getEncoder().getRate();
     }
 
     @Override
@@ -73,13 +70,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
     @Override
     public void safeState() {
-        getData().roller.setpoint = 0;
-        getData().preset = ShooterPresets.OFF;
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
+        setPreset(ShooterPresets.OFF);
     }
 
 }

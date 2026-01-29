@@ -1,24 +1,19 @@
 package frc.robot.maps;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.chopshop166.chopshoplib.digital.CSDigitalInput;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
-import com.chopshop166.chopshoplib.sensors.CtreEncoder;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
-import com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -27,15 +22,12 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.FeedForwardConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -125,7 +117,7 @@ public class KitbotMap extends RobotMap {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(60);
-        config.closedLoop.p(0.005).i(0).d(0);
+        config.closedLoop.pid(0.005, 0, 0);
         config.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
         roller.setControlType(ControlType.kVelocity);
         roller.setPidSlot(0);
@@ -133,18 +125,19 @@ public class KitbotMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case INTAKE -> 2000;
-            case OUTTAKE -> -2000;
-            case CLOSE_SHOT -> 3000;
-            case MID_SHOT -> 4500;
-            case FAR_SHOT -> 6000;
-            default -> Double.NaN;
+            case INTAKE -> RPM.of(2000);
+            case OUTTAKE -> RPM.of(-2000);
+            case CLOSE_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(4500);
+            case FAR_SHOT -> RPM.of(6000);
+            case OFF -> RPM.of(0);
+            default -> RPM.of(Double.NaN);
         };
 
         roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        return new ShooterMap(roller, presets, roller.getEncoder());
+        return new ShooterMap(roller, presets);
     }
 
     @Override

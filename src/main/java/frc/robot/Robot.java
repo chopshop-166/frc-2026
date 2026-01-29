@@ -9,7 +9,6 @@ import java.util.function.DoubleUnaryOperator;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
-import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Shooter;
@@ -80,8 +80,6 @@ public final class Robot extends CommandRobot {
             case 1 -> "Uncomitted changes";
             default -> "Unknown";
         });
-        System.out.println("+++ MAC:" + RobotUtils.getMACAddress());
-        Logger.recordMetadata("MACAddress", RobotUtils.getMACAddress());
         Logger.recordMetadata("RobotMap", map.getClass().getName());
 
         map.setupLogging();
@@ -122,7 +120,7 @@ public final class Robot extends CommandRobot {
         // Intake stop
         copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // feed shooter
-        copilotController.b().whileTrue(shooter.shoot().andThen(kicker.kickOut()))
+        copilotController.b().whileTrue(shooter.shoot(ShooterPresets.MID_SHOT).andThen(kicker.kickOut()))
                 .onFalse(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // Intake out
         copilotController.x().whileTrue(shooter.spinOut().alongWith(kicker.kickOut()));

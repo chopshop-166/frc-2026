@@ -5,7 +5,6 @@ import com.chopshop166.chopshoplib.logging.LogName;
 import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
-import com.ctre.phoenix.motorcontrol.can.MotControllerJNI;
 
 public class KickerMap implements LoggableMap<KickerMap.Data> {
     public SmartMotorController kicker;

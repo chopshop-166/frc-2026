@@ -1,59 +1,54 @@
 package frc.robot.maps.subsystems;
 
-import java.util.function.ToDoubleFunction;
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Function;
 
 import com.chopshop166.chopshoplib.logging.DataWrapper;
 import com.chopshop166.chopshoplib.logging.LogName;
 import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
-import com.chopshop166.chopshoplib.sensors.IEncoder;
-import com.chopshop166.chopshoplib.sensors.MockEncoder;
-import com.ctre.phoenix.motorcontrol.can.MotControllerJNI;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public enum ShooterPresets {
-        INTAKE,
+        OFF,
 
         OUTTAKE,
+
+        INTAKE,
 
         CLOSE_SHOT,
 
         MID_SHOT,
 
-        FAR_SHOT,
+        FAR_SHOT
 
-        OFF
     }
 
-    public interface PresetValues extends ToDoubleFunction<ShooterPresets> {
+    public interface PresetValues extends Function<ShooterPresets, AngularVelocity> {
 
     }
 
     public SmartMotorController roller;
     public PresetValues presetValues;
-    public IEncoder encoder;
 
     public ShooterMap() {
-        this(new SmartMotorController(), p -> Double.NaN, new MockEncoder());
+        this(new SmartMotorController(), p -> RPM.of(0));
     }
 
-    public ShooterMap(SmartMotorController roller, PresetValues presetValues, IEncoder encoder) {
+    public ShooterMap(SmartMotorController roller, PresetValues presetValues) {
         this.roller = roller;
         this.presetValues = presetValues;
-        this.encoder = encoder;
 
     }
 
     @Override
     public void updateData(Data data) {
         data.roller.updateData(roller);
-        data.speedRotationsPerMinute = encoder.getRate();
 
     }
 
@@ -62,7 +57,6 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
         @LogName("Game Piece Detected")
         public boolean gamePieceDetected;
-        public double speedRotationsPerMinute;
         public ShooterPresets preset = ShooterPresets.OFF;
     }
 }
