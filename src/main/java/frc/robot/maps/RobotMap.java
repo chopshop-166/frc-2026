@@ -9,6 +9,8 @@ import com.chopshop166.chopshoplib.maps.LedMapBase;
 import com.chopshop166.chopshoplib.maps.MockLedMap;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
+
+import frc.robot.maps.subsystems.IntakeMap;
 import frc.robot.maps.subsystems.KickerMap;
 import frc.robot.maps.subsystems.ShooterMap;
 
@@ -32,6 +34,10 @@ public class RobotMap {
 
     public KickerMap getKickerMap() {
         return new KickerMap();
+    }
+
+    public IntakeMap getIntakeMap() {
+        return new IntakeMap();
     }
 
     public void setupLogging() {
