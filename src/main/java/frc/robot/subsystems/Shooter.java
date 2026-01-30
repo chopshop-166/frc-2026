@@ -16,23 +16,12 @@ import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 
 public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
-    private final double SHOOT_SPEED = 1.0;
-    private final double GRAB_SPEED = 0.5;
-    private final double RELEASE_SPEED = -0.5;
     private final double TOLERANCE = 100;
 
     DoubleSupplier shooterSpeed;
 
     public Shooter(ShooterMap shooterMap) {
         super(new Data(), shooterMap);
-    }
-
-    public Command spinIn() {
-        return runSafe(() -> {
-
-            setPreset(ShooterPresets.INTAKE);
-
-        });
     }
 
     public Command shoot(ShooterPresets presetSpeed) {
@@ -43,24 +32,19 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
             setPreset(presetSpeed);
 
         }).andThen(Commands.waitUntil(() -> debouncer
-                .calculate(Math.abs(getData().roller.velocity - getData().roller.setpoint) < TOLERANCE)));
-    }
+                .calculate(Math.abs(getData().roller1.velocity - getData().roller2.setpoint) < TOLERANCE)));
 
-    public Command spinOut() {
-        return runSafe(() -> {
-            setPreset(ShooterPresets.OUTTAKE);
-
-        });
     }
 
     private void setPreset(ShooterPresets presets) {
 
         getData().preset = presets;
-        getData().roller.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
+        getData().roller1.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
+        getData().roller2.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
     }
 
     public double getShooterSpeed() {
-        return getMap().roller.getEncoder().getRate();
+        return getMap().roller1.getEncoder().getRate();
     }
 
     @Override

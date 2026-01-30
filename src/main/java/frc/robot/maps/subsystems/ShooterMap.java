@@ -17,10 +17,6 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
     public enum ShooterPresets {
         OFF,
 
-        OUTTAKE,
-
-        INTAKE,
-
         CLOSE_SHOT,
 
         MID_SHOT,
@@ -33,7 +29,9 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     }
 
-    public SmartMotorController roller;
+    public SmartMotorController roller1;
+    public SmartMotorController roller2;
+
     public PresetValues presetValues;
 
     public ShooterMap() {
@@ -41,19 +39,22 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
     }
 
     public ShooterMap(SmartMotorController roller, PresetValues presetValues) {
-        this.roller = roller;
+        this.roller1 = roller1;
+        this.roller2 = roller2;
         this.presetValues = presetValues;
 
     }
 
     @Override
     public void updateData(Data data) {
-        data.roller.updateData(roller);
+        data.roller1.updateData(roller1);
+        data.roller2.updateData(roller2);
 
     }
 
     public static class Data extends DataWrapper {
-        public MotorControllerData roller = new MotorControllerData(true);
+        public MotorControllerData roller1 = new MotorControllerData(true);
+        public MotorControllerData roller2 = new MotorControllerData(true);
 
         @LogName("Game Piece Detected")
         public boolean gamePieceDetected;
