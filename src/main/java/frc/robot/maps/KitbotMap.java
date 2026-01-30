@@ -125,8 +125,6 @@ public class KitbotMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case INTAKE -> RPM.of(2000);
-            case OUTTAKE -> RPM.of(-2000);
             case CLOSE_SHOT -> RPM.of(3000);
             case MID_SHOT -> RPM.of(4500);
             case FAR_SHOT -> RPM.of(6000);
