@@ -10,7 +10,7 @@ import frc.robot.maps.subsystems.FeederMap.Data;
 public class Feeder extends LoggedSubsystem<Data, FeederMap> {
 
     private final double FEED_SPEED = .5;
-    private final double REVERSE_SPEED = .5;
+    private final double REVERSE_SPEED = -.5;
 
     public Feeder(FeederMap feederMap) {
         super(new Data(), feederMap);
