@@ -9,6 +9,7 @@ import java.util.function.DoubleUnaryOperator;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
+import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
+import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -53,6 +55,8 @@ public final class Robot extends CommandRobot {
     private Shooter shooter = new Shooter(map.getShooterMap());
     private Kicker kicker = new Kicker(map.getKickerMap());
     private Intake intake = new Intake(map.getIntakeMap());
+    private Deployer deploymer = new Deployer(map.getDeploymentMap(),
+            RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
     private Feeder feeder = new Feeder(map.getFeederMap());
     private Roller roller = new Roller(map.getRollerMap());
 
