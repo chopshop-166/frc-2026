@@ -16,13 +16,13 @@ public class Feeder extends LoggedSubsystem<Data, FeederMap> {
         super(new Data(), feederMap);
     }
 
-    public Command Feed() {
+    public Command feed() {
         return runOnce(() -> {
             getData().feeder.setpoint = FEED_SPEED;
         });
     }
 
-    public Command Reverse() {
+    public Command reverse() {
         return runOnce(() -> {
             getData().feeder.setpoint = REVERSE_SPEED;
         });
