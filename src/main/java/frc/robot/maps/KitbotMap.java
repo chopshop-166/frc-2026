@@ -119,11 +119,11 @@ public class KitbotMap extends RobotMap {
     public VisionMap getVisionMap() {
 
         return new VisionMap(
-                new CameraSource("RR_Stingray_Cam",
+                new CameraSource("RR_Kitbot_Cam",
                         new Transform3d(Units.inchesToMeters(-9.43), Units.inchesToMeters(-10.72),
                                 Units.inchesToMeters(8.24),
                                 new Rotation3d(0, Units.degreesToRadians(-68), Units.degreesToRadians(-196.76)))),
-                new CameraSource("RL_Stingray_Cam",
+                new CameraSource("RL_Kitbot_Cam",
                         new Transform3d(Units.inchesToMeters(
                                 -9.43),
                                 Units.inchesToMeters(

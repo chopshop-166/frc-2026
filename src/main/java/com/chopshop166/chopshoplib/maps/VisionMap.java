@@ -49,7 +49,6 @@ public class VisionMap {
      * @param estimator The WPIlib estimator object.
      */
     public <T> void updateData(Data data) {
-        data.targets.clear();
         for (var source : this.visionSources) {
             var results = source.camera.getAllUnreadResults();
             Logger.recordOutput("Sees Tags", !results.isEmpty());
@@ -68,31 +67,11 @@ public class VisionMap {
                                 est.timestampSeconds);
                     });
                 }
-                // Now copy the targets that are found
-                PhotonPipelineResult latestResult = results.get(results.size() - 1);
-                for (var target : latestResult.targets) {
-                    int targetID = target.getFiducialId();
-
-                    target.bestCameraToTarget = target.bestCameraToTarget.plus(source.robotToCam);
-                    Transform3d reefToRobot = new Transform3d(target.bestCameraToTarget.getTranslation(),
-                            target.bestCameraToTarget.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
-                    target.bestCameraToTarget = reefToRobot;
-
-                    if (data.targets.containsKey(target.getFiducialId())) {
-                        data.targets.get(targetID).add(target);
-                    } else {
-                        ArrayList<PhotonTrackedTarget> targetList = new ArrayList<>();
-                        targetList.add(target);
-                        data.targets.put(targetID, targetList);
-                    }
-
-                }
             }
         }
     }
 
     public static class Data {
         public SwerveDrivePoseEstimator estimator;
-        public Map<Integer, List<PhotonTrackedTarget>> targets = new HashMap<>();
     }
 }
