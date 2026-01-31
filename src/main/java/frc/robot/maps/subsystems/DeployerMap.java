@@ -1,6 +1,8 @@
 package frc.robot.maps.subsystems;
 
-import java.util.function.ToDoubleFunction;
+import static edu.wpi.first.units.Units.Degrees;
+
+import java.util.function.Function;
 
 import com.chopshop166.chopshoplib.ValueRange;
 import com.chopshop166.chopshoplib.logging.DataWrapper;
@@ -11,6 +13,7 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class DeployerMap implements LoggableMap<DeployerMap.Data> {
@@ -26,7 +29,7 @@ public class DeployerMap implements LoggableMap<DeployerMap.Data> {
         HOLD
     }
 
-    public interface PresetValue extends ToDoubleFunction<DeployerPresets> {
+    public interface PresetValue extends Function<DeployerPresets, Angle> {
 
     }
 
@@ -39,7 +42,7 @@ public class DeployerMap implements LoggableMap<DeployerMap.Data> {
     public final ArmFeedforward armFeedforward;
 
     public DeployerMap() {
-        this(new SmartMotorController(), new DutyCycleEncoder(0), p -> Double.NaN,
+        this(new SmartMotorController(), new DutyCycleEncoder(0), p -> Degrees.of(0),
                 new ProfiledPIDController(0, 0, 0, new Constraints(0, 0)), new ValueRange(0, 0), new ValueRange(0, 0),
                 new ArmFeedforward(0, 0, 0));
     }

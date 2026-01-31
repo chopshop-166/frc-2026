@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -85,7 +87,7 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
 
         } else if (getData().preset != DeployerPresets.OFF) {
             double targetHeight = getData().preset == DeployerPresets.HOLD ? holdAngle
-                    : getMap().deployerPreset.applyAsDouble(getData().preset);
+                    : getMap().deployerPreset.apply(getData().preset).in(Degrees);
             double setpoint = pid.calculate(getDeployerAngle(), new State(targetHeight, 0));
             Logger.recordOutput("ArmRotate/PID Setpoint", setpoint);
 
@@ -104,7 +106,8 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
 
     @Override
     public void safeState() {
-
+        getData().motor.setpoint = 0;
+        getData().preset = DeployerPresets.OFF;
     }
 
 }
