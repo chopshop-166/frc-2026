@@ -125,6 +125,8 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        driveController.leftBumper().whileTrue(drive.rotateToHub());
+
         // Intake stop
         copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // feed shooter

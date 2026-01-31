@@ -21,10 +21,12 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -42,7 +44,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double maxRotationRadiansPerSecond;
     private final double SPEED_COEFFICIENT = 1;
     private final double ROTATION_COEFFICIENT = 1;
-    private final double ROTATION_KS = 0.1;
+    private final double ROTATION_KS = 0.15;
     private final double DRIVE_KS = 0.1;
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
 
@@ -53,7 +55,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     // ProfiledPIDController translationPID_Y = new ProfiledPIDController(2.0, 0,
     // 0.0, new Constraints(2.5, 3.0));
 
-    ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0002, 0.000, new Constraints(240, 270));
+    ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0, 0.0, new Constraints(240, 270));
     ProfiledPIDController translationPID_X = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
     ProfiledPIDController translationPID_Y = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
     DoubleSupplier xSpeedSupplier;
@@ -62,6 +64,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     boolean isBlueAlliance = false;
     boolean isRobotCentric = false;
+    boolean rotatingToHub = false;
     Optional<Pose2d> targetPose = Optional.empty();
 
     SwerveDrivePoseEstimator estimator;
@@ -132,8 +135,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         });
     }
 
-    
-
     @Override
     public void reset() {
         Rotation2d heading = isBlueAlliance ? new Rotation2d() : new Rotation2d(Math.PI);
@@ -198,27 +199,33 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
-
-        if (targetPose.isPresent()) {
-            var targetPoseValue = targetPose.get();
+        if (rotatingToHub) {
+            var targetPoseValue = vision.getHubCenter(isBlueAlliance);
+            Logger.recordOutput("HubPose", targetPoseValue);
             visionCalcs();
             Pose2d robotPose = estimator.getEstimatedPosition();
-            // soooooooooo x and y are backwards somehow. Values underneath are correct
-            translateYSpeedMPS = translationPID_X.calculate(robotPose.getX(), targetPoseValue.getX());
-            translateYSpeedMPS += Math.copySign(DRIVE_KS, translateYSpeedMPS);
-            translateXSpeedMPS = translationPID_Y.calculate(robotPose.getY(), targetPoseValue.getY());
-            translateXSpeedMPS += Math.copySign(DRIVE_KS, translateXSpeedMPS);
-            // Direction is swapped on Red side so need to negate PID output
-            if (!isBlueAlliance) {
-                translateXSpeedMPS *= -1;
-                translateYSpeedMPS *= -1;
-            }
+            Transform2d differencePoses = targetPoseValue.minus(robotPose);
+            Logger.recordOutput("differencePoses", differencePoses);
+            Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
+            double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
+            tangented = (tangented * 180) / Math.PI;
+            Logger.recordOutput("Tangented", tangented);
+
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
-                    targetPoseValue.getRotation().getDegrees());
+                    tangented + robotPose.getRotation().getDegrees() + 180);
             rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
         }
 
         move(translateXSpeedMPS, translateYSpeedMPS, rotationSpeed, isRobotCentric);
+    }
+
+    public Command rotateToHub() {
+        return startEnd(() -> {
+            rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+            rotatingToHub = true;
+        }, () -> {
+            rotatingToHub = false;
+        });
     }
 
     public BooleanSupplier visionPIDTrue() {
