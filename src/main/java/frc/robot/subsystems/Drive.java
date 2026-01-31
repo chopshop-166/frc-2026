@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -28,6 +31,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,6 +52,9 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double ROTATION_KS = 0.15;
     private final double DRIVE_KS = 0.1;
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
+
+    NetworkTableInstance instance = NetworkTableInstance.getDefault();
+    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("DistanceToHub").publish();
 
     // ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0002,
     // 0.000, new Constraints(240, 270));
@@ -183,16 +191,17 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
-        var targetPoseValue = vision.getHubCenter(isBlueAlliance);
+        var targetPoseValue = Vision.getHubCenter(isBlueAlliance);
         Logger.recordOutput("HubPose", targetPoseValue);
         Pose2d robotPose = estimator.getEstimatedPosition();
         Transform2d differencePoses = targetPoseValue.minus(robotPose);
         Logger.recordOutput("differencePoses", differencePoses);
         Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
+        distanceToTargetPub.set(differencePoses.getTranslation().getNorm());
+
         if (rotatingToHub) {
-            // double hypo = differencePoses.getTranslation().getNorm();
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
-            tangented = (tangented * 180) / Math.PI;
+            tangented = Radians.of(tangented).in(Degrees);
             Logger.recordOutput("Tangented", tangented);
 
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
