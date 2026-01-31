@@ -32,19 +32,19 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
             setPreset(presetSpeed);
 
         }).andThen(Commands.waitUntil(() -> debouncer
-                .calculate(Math.abs(getData().roller1.velocity - getData().roller2.setpoint) < TOLERANCE)));
+                .calculate(Math.abs(getData().flywheel.velocity - getData().flywheel.setpoint) < TOLERANCE)));
 
     }
 
     private void setPreset(ShooterPresets presets) {
 
         getData().preset = presets;
-        getData().roller1.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
-        getData().roller2.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
+        getData().flywheel.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
+      
     }
 
     public double getShooterSpeed() {
-        return getMap().roller1.getEncoder().getRate();
+        return getMap().flywheel.getEncoder().getRate();
     }
 
     @Override

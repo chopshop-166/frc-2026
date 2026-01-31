@@ -29,8 +29,7 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     }
 
-    public SmartMotorController roller1;
-    public SmartMotorController roller2;
+    public SmartMotorController flywheel;
 
     public PresetValues presetValues;
 
@@ -38,23 +37,22 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
         this(new SmartMotorController(), p -> RPM.of(0));
     }
 
-    public ShooterMap(SmartMotorController roller, PresetValues presetValues) {
-        this.roller1 = roller1;
-        this.roller2 = roller2;
+    public ShooterMap(SmartMotorController flywheel, PresetValues presetValues) {
+        this.flywheel = flywheel;
+    
         this.presetValues = presetValues;
 
     }
 
     @Override
     public void updateData(Data data) {
-        data.roller1.updateData(roller1);
-        data.roller2.updateData(roller2);
+        data.flywheel.updateData(flywheel);
 
     }
 
     public static class Data extends DataWrapper {
-        public MotorControllerData roller1 = new MotorControllerData(true);
-        public MotorControllerData roller2 = new MotorControllerData(true);
+        public MotorControllerData flywheel = new MotorControllerData(true);
+      
 
         @LogName("Game Piece Detected")
         public boolean gamePieceDetected;
