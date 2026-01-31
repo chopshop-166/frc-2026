@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Shooter;
@@ -51,6 +52,7 @@ public final class Robot extends CommandRobot {
     private Shooter shooter = new Shooter(map.getShooterMap());
     private Kicker kicker = new Kicker(map.getKickerMap());
     private Intake intake = new Intake(map.getIntakeMap());
+    private Feeder feeder = new Feeder(map.getFeederMap());
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
