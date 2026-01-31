@@ -52,7 +52,6 @@ public final class Robot extends CommandRobot {
     private Shooter shooter = new Shooter(map.getShooterMap());
     private Kicker kicker = new Kicker(map.getKickerMap());
     private Intake intake = new Intake(map.getIntakeMap());
-    private Feeder feeder = new Feeder(map.getFeederMap());
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
@@ -119,16 +118,11 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        // Intake in
-        copilotController.a().onTrue(shooter.spinIn().alongWith(kicker.kickIn()));
         // Intake stop
         copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
         // feed shooter
         copilotController.b().whileTrue(shooter.shoot(ShooterPresets.MID_SHOT).andThen(kicker.kickOut()))
                 .onFalse(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
-        // Intake out
-        copilotController.x().whileTrue(shooter.spinOut().alongWith(kicker.kickOut()));
-
     }
 
     @Override
