@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 
 import java.util.Optional;
@@ -197,7 +199,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         Transform2d differencePoses = targetPoseValue.minus(robotPose);
         Logger.recordOutput("differencePoses", differencePoses);
         Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
-        distanceToTargetPub.set(differencePoses.getTranslation().getNorm());
+        distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
 
         if (rotatingToHub) {
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
