@@ -175,22 +175,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
                         estimator.getEstimatedPosition().getRotation()));
     }
 
-    private void visionCalcs() {
-        Optional<Integer> closestHubTag = Optional.empty();
-
-        // TODO: Figure out closest tag
-
-        if (closestHubTag.isPresent()) {
-            var chosenTagPoseOption = kTagLayout.getTagPose(closestHubTag.get());
-            if (chosenTagPoseOption.isPresent()) {
-                Pose2d chosenTagPose = chosenTagPoseOption.get().toPose2d();
-                Logger.recordOutput("Drive/Chosen Tag", chosenTagPose);
-                // TODO: adjust offset for scoring
-                targetPose = Optional.of(chosenTagPose);
-            }
-        }
-    }
-
     private void periodicMove(final double xSpeed, final double ySpeed, final double rotation) {
         double rotationInput = DEADBAND.applyAsDouble(rotation);
         double xInput = DEADBAND.applyAsDouble(xSpeed);
@@ -206,7 +190,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         Logger.recordOutput("differencePoses", differencePoses);
         Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
         if (rotatingToHub) {
-            visionCalcs();
             // double hypo = differencePoses.getTranslation().getNorm();
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = (tangented * 180) / Math.PI;
