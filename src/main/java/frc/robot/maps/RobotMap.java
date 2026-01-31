@@ -10,11 +10,13 @@ import com.chopshop166.chopshoplib.maps.MockLedMap;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 
+import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.FeederMap;
 import frc.robot.maps.subsystems.IntakeMap;
 import frc.robot.maps.subsystems.KickerMap;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
+import frc.robot.subsystems.Deployer;
 
 public class RobotMap {
 
@@ -40,6 +42,10 @@ public class RobotMap {
 
     public IntakeMap getIntakeMap() {
         return new IntakeMap();
+    }
+
+    public DeployerMap getDeploymentMap() {
+        return new DeployerMap();
     }
 
     public FeederMap getFeederMap() {
