@@ -10,7 +10,7 @@ import com.chopshop166.chopshoplib.maps.MockLedMap;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 
-
+import frc.robot.maps.subsystems.FeederMap;
 import frc.robot.maps.subsystems.IntakeMap;
 import frc.robot.maps.subsystems.KickerMap;
 import frc.robot.maps.subsystems.RollerMap;
@@ -42,6 +42,9 @@ public class RobotMap {
         return new IntakeMap();
     }
 
+    public FeederMap getFeederMap() {
+        return new FeederMap();
+    }
 
     public RollerMap getRollerMap() {
         return new RollerMap();
