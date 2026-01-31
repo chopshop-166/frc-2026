@@ -199,14 +199,15 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
+        var targetPoseValue = vision.getHubCenter(isBlueAlliance);
+        Logger.recordOutput("HubPose", targetPoseValue);
+        Pose2d robotPose = estimator.getEstimatedPosition();
+        Transform2d differencePoses = targetPoseValue.minus(robotPose);
+        Logger.recordOutput("differencePoses", differencePoses);
+        Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
         if (rotatingToHub) {
-            var targetPoseValue = vision.getHubCenter(isBlueAlliance);
-            Logger.recordOutput("HubPose", targetPoseValue);
             visionCalcs();
-            Pose2d robotPose = estimator.getEstimatedPosition();
-            Transform2d differencePoses = targetPoseValue.minus(robotPose);
-            Logger.recordOutput("differencePoses", differencePoses);
-            Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
+            // double hypo = differencePoses.getTranslation().getNorm();
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = (tangented * 180) / Math.PI;
             Logger.recordOutput("Tangented", tangented);
