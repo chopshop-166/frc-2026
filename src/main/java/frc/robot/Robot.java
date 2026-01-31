@@ -27,6 +27,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
+import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
 public final class Robot extends CommandRobot {
@@ -52,6 +53,8 @@ public final class Robot extends CommandRobot {
     private Shooter shooter = new Shooter(map.getShooterMap());
     private Kicker kicker = new Kicker(map.getKickerMap());
     private Intake intake = new Intake(map.getIntakeMap());
+    private Feeder feeder = new Feeder(map.getFeederMap());
+    private Roller roller = new Roller(map.getRollerMap());
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
