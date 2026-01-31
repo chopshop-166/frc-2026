@@ -27,6 +27,7 @@ import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Roller;
@@ -59,7 +60,8 @@ public final class Robot extends CommandRobot {
             RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
     private Feeder feeder = new Feeder(map.getFeederMap());
     private Roller roller = new Roller(map.getRollerMap());
-
+    private Hood hood = new Hood(map.getHoodMap());
+    
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
