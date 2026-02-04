@@ -11,6 +11,8 @@ import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.ShooterMap;
@@ -22,6 +24,9 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
     private final double TOLERANCE = 100;
 
     DoubleSupplier shooterSpeed;
+
+    NetworkTableInstance instance = NetworkTableInstance.getDefault();
+    DoublePublisher shooterVelocityFPSPub = instance.getDoubleTopic("Shooter/Linear Velocity").publish();
 
     public Shooter(ShooterMap shooterMap) {
         super(new Data(), shooterMap);
@@ -54,6 +59,8 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
     @Override
     public void periodic() {
         super.periodic();
+        // converting angular velocity to linear velocity
+        shooterVelocityFPSPub.set((getData().flywheel.velocity * Math.PI * 4) / 60);
         Logger.recordOutput("Shooter/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
 
     }
