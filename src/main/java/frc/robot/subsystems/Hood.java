@@ -47,13 +47,13 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     public Command moveToAngle(double velocity) {
         return run(() -> {
             double setpoint = pid.calculate(getHoodAngle(), new State(calcAngle(velocity), 0));
-            Logger.recordOutput("Hood /PID Setpoint", setpoint);
+            Logger.recordOutput("Hood/PID Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
 
             Logger.recordOutput("Hood/pid at goal", pid.atGoal());
             Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
-            Logger.recordOutput("Hood /Desired Hood Position", pid.getSetpoint().position);
-            Logger.recordOutput("Hood /Position Error", pid.getPositionError());
+            Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
+            Logger.recordOutput("Hood/Position Error", pid.getPositionError());
         });
 
     }
