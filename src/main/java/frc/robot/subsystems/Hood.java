@@ -34,7 +34,7 @@ import frc.robot.maps.subsystems.HoodMap.Data;
 public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final ProfiledPIDController pid;
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("DistanceToHub").subscribe(0.0);
+    DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("Drive/Distance To Hub Ft").subscribe(0.0);
     DoubleSubscriber ShooterLinearVelocity = instance.getDoubleTopic("Shooter/Linear Velocity").subscribe(0.0);
     double holdAngle = 0;
 
@@ -47,13 +47,13 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     public Command moveToAngle(double velocity) {
         return run(() -> {
             double setpoint = pid.calculate(getHoodAngle(), new State(calcAngle(velocity), 0));
-            Logger.recordOutput("ArmRotate/PID Setpoint", setpoint);
+            Logger.recordOutput("Hood /PID Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
 
-            Logger.recordOutput("ArmRotate/pid at goal", pid.atGoal());
-            Logger.recordOutput("ArmRotate/DesiredArmVelocity", pid.getSetpoint().velocity);
-            Logger.recordOutput("ArmRotate/DesiredArmPosition", pid.getSetpoint().position);
-            Logger.recordOutput("ArmRotate/PositionError", pid.getPositionError());
+            Logger.recordOutput("Hood/pid at goal", pid.atGoal());
+            Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
+            Logger.recordOutput("Hood /Desired Hood Position", pid.getSetpoint().position);
+            Logger.recordOutput("Hood /Position Error", pid.getPositionError());
         });
 
     }
