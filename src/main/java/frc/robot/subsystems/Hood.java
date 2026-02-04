@@ -59,8 +59,9 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     }
 
     public Command manualControl(DoubleSupplier joystick) {
-        getData().motor.setpoint = joystick.getAsDouble();
-        return null;
+        return run(() -> {
+            getData().motor.setpoint = joystick.getAsDouble();
+        });
     }
 
     public Double calcAngle(double velocity) {
