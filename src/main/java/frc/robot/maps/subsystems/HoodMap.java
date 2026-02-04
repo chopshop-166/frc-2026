@@ -6,13 +6,10 @@ import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
-import frc.robot.maps.subsystems.DeployerMap.PresetValue;
 
 public class HoodMap implements LoggableMap<HoodMap.Data> {
 

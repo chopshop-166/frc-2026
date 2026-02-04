@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.DoubleSupplier;
 
@@ -15,9 +19,14 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
+import edu.wpi.first.units.Units;
 
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.HoodMap.Data;
@@ -26,6 +35,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final ProfiledPIDController pid;
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("DistanceToHub").subscribe(0.0);
+    DoubleSubscriber ShooterLinearVelocity = instance.getDoubleTopic("Shooter/Linear Velocity").subscribe(0.0);
     double holdAngle = 0;
 
     public Hood(HoodMap hoodMap) {
@@ -43,6 +53,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             Logger.recordOutput("ArmRotate/pid at goal", pid.atGoal());
             Logger.recordOutput("ArmRotate/DesiredArmVelocity", pid.getSetpoint().velocity);
             Logger.recordOutput("ArmRotate/DesiredArmPosition", pid.getSetpoint().position);
+            Logger.recordOutput("ArmRotate/PositionError", pid.getPositionError());
         });
 
     }
@@ -52,13 +63,16 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         return null;
     }
 
-    public double calcAngle(double velocity) {
+    public Double calcAngle(double velocity) {
+        final Double targetDistanceInFeet = distanceToTargetSub.get();
+        final Double ShooterLinearVelocityInFPS = ShooterLinearVelocity.get();
+        final Double GRAVITY_CONSTANT_IN_FPS = 32.2;
+        final Double RADIANS_DEGREE_CONVERSION_FACTOR = 57.2958;
+        final Double targetVelocitySqrInFPS = (ShooterLinearVelocityInFPS * ShooterLinearVelocityInFPS);
 
-        double GRAVITY_CONSTANT = 32.2; // in feetPerSecond
-        double RADIAN_CONSTANT = 57.296; // conversion factor radians-degrees
-        double ang = ((Math.asin((distanceToTargetSub.getAsDouble() * GRAVITY_CONSTANT) / velocity) / 2)
-                * RADIAN_CONSTANT);
-        return ang; // returns on degrees
+        Double ang = ((Math.asin((targetDistanceInFeet * GRAVITY_CONSTANT_IN_FPS) / (targetVelocitySqrInFPS)) / 2)
+                * RADIANS_DEGREE_CONVERSION_FACTOR);
+        return ang; // in degrees
     }
 
     private double limits(double speed) {
