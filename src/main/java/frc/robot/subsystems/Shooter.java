@@ -4,8 +4,11 @@ import static edu.wpi.first.units.Units.RPM;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +25,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
     public Shooter(ShooterMap shooterMap) {
         super(new Data(), shooterMap);
+
     }
 
     public Command shoot(ShooterPresets presetSpeed) {
@@ -40,7 +44,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
         getData().preset = presets;
         getData().flywheel.setpoint = getMap().presetValues.apply(getData().preset).in(RPM);
-      
+
     }
 
     public double getShooterSpeed() {
@@ -48,8 +52,10 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
     }
 
     @Override
-    public void reset() {
-        // nothing to reset
+    public void periodic() {
+        super.periodic();
+        Logger.recordOutput("Shooter/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
+
     }
 
     @Override
