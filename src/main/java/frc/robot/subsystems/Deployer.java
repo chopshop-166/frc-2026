@@ -89,19 +89,20 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
             double targetHeight = getData().preset == DeployerPresets.HOLD ? holdAngle
                     : getMap().deployerPreset.apply(getData().preset).in(Degrees);
             double setpoint = pid.calculate(getDeployerAngle(), new State(targetHeight, 0));
-            Logger.recordOutput("ArmRotate/PID Setpoint", setpoint);
+            Logger.recordOutput("Deployer/PID Setpoint", setpoint);
 
             setpoint += getMap().armFeedforward.calculate(
                     pid.getSetpoint().position,
                     pid.getSetpoint().velocity);
-            Logger.recordOutput("ArmRotate/PID +FF Setpoint", setpoint);
+            Logger.recordOutput("Deployer/PID+FF Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
         } else {
             getData().motor.setpoint = 0;
         }
-        Logger.recordOutput("ArmRotate/pid at goal", pid.atGoal());
-        Logger.recordOutput("ArmRotate/DesiredArmVelocity", pid.getSetpoint().velocity);
-        Logger.recordOutput("ArmRotate/DesiredArmPosition", pid.getSetpoint().position);
+        Logger.recordOutput("Deployer/PID at goal", pid.atGoal());
+        Logger.recordOutput("Deployer/DesiredDeployerVelocity", pid.getSetpoint().velocity);
+        Logger.recordOutput("Deployer/DesiredDeployerPosition", pid.getSetpoint().position);
+        Logger.recordOutput("Deployer/PID Error", pid.getPositionError());
     }
 
     @Override
