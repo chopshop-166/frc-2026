@@ -28,14 +28,14 @@ public class CommandSequences {
     public Command Shoot(ShooterPresets shotSpeed) {
         return runOnce(() -> {
             // TODO: Add PID to hub when vision is merged
-            robot.shooter.shoot(shotSpeed).andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
+            robot.shooterL.shoot(shotSpeed).andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
         });
     }
 
     public Command OperatorSafeState() {
         return runOnce(() -> {
             robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
-                    robot.feeder.safeStateCmd(), robot.shooter.safeStateCmd());
+                    robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd());
         });
     }
 

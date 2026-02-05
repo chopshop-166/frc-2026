@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.maps.subsystems.KickerMap;
+
 import frc.robot.maps.subsystems.ShooterMap;
 
 @RobotMapFor("00:80:2F:40:A7:9D")
@@ -130,45 +130,6 @@ public class KitbotMap extends RobotMap {
                                         10.72),
                                 Units.inchesToMeters(8.24),
                                 new Rotation3d(0, Units.degreesToRadians(-68), Units.degreesToRadians(193)))));
-    }
-
-    @Override
-    public ShooterMap getShooterMap() {
-        CSSparkMax roller = new CSSparkMax(9);
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast);
-        config.smartCurrentLimit(60);
-        config.closedLoop.pid(0.005, 0, 0);
-        config.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
-        roller.setControlType(ControlType.kVelocity);
-        roller.setPidSlot(0);
-        config.encoder.quadratureAverageDepth(2)
-                .quadratureMeasurementPeriod(10);
-
-        ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(3000);
-            case MID_SHOT -> RPM.of(4500);
-            case FAR_SHOT -> RPM.of(6000);
-            case OFF -> RPM.of(0);
-            default -> RPM.of(Double.NaN);
-        };
-
-        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-
-        return new ShooterMap(roller, presets);
-    }
-
-    @Override
-    public KickerMap getKickerMap() {
-        CSSparkMax kicker = new CSSparkMax(10);
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast);
-        config.smartCurrentLimit(30);
-
-        kicker.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-        return new KickerMap(kicker);
     }
 
     @Override

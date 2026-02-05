@@ -14,10 +14,6 @@ import frc.robot.maps.subsystems.RollerMap.RollerPresets;
 
 public class Roller extends LoggedSubsystem<Data, RollerMap> {
 
-    private final double ROLL_IN_SPEED = .5;
-    private final double ROLL_OUT_SPEED = -.5;
-    private final double WIGGLE_SPEED = .3;
-
     public Roller(RollerMap rollerMap) {
         super(new Data(), rollerMap);
     }
