@@ -6,6 +6,8 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
+import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 
 public class CommandSequences {
 
@@ -16,6 +18,26 @@ public class CommandSequences {
     }
 
     // make sequences for intake and shooter.
+
+    public Command Intake() {
+        return runOnce(() -> {
+            robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
+        });
+    }
+
+    public Command Shoot(ShooterPresets shotSpeed) {
+        return runOnce(() -> {
+            // TODO: Add PID to hub when vision is merged
+            robot.shooter.shoot(shotSpeed).andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
+        });
+    }
+
+    public Command OperatorSafeState() {
+        return runOnce(() -> {
+            robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
+                    robot.feeder.safeStateCmd(), robot.shooter.safeStateCmd());
+        });
+    }
 
     public Command setRumble(ButtonXboxController controller, int rumbleAmount) {
         return runOnce(() -> {

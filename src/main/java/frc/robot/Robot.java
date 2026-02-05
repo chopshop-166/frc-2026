@@ -53,15 +53,15 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    private Shooter shooter = new Shooter(map.getShooterMap());
-    private Kicker kicker = new Kicker(map.getKickerMap());
-    private Intake intake = new Intake(map.getIntakeMap());
-    private Deployer deploymer = new Deployer(map.getDeploymentMap(),
+    public Shooter shooter = new Shooter(map.getShooterMap());
+    public Kicker kicker = new Kicker(map.getKickerMap());
+    public Roller intake = new Roller(map.getIntakeMap());
+    public Deployer deployer = new Deployer(map.getDeploymentMap(),
             RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
-    private Feeder feeder = new Feeder(map.getFeederMap());
-    private Roller roller = new Roller(map.getRollerMap());
-    private Hood hood = new Hood(map.getHoodMap());
-    
+    public Roller feeder = new Roller(map.getFeederMap());
+    public Roller activeFloor = new Roller(map.getActiveFloorMap());
+    public Hood hood = new Hood(map.getHoodMap());
+
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
@@ -127,11 +127,14 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        // Intake stop
-        copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
+        // copilot stop
+        copilotController.start().onTrue(sequences.OperatorSafeState());
         // feed shooter
-        copilotController.b().whileTrue(shooter.shoot(ShooterPresets.MID_SHOT).andThen(kicker.kickOut()))
-                .onFalse(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
+        copilotController.b().whileTrue(sequences.Shoot(ShooterPresets.MID_SHOT))
+                .onFalse(sequences.OperatorSafeState());
+        // Intake
+        copilotController.a().onTrue(sequences.Intake());
+
     }
 
     @Override
