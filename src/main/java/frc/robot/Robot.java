@@ -127,12 +127,12 @@ public final class Robot extends CommandRobot {
     public void configureButtonBindings() {
         driveController.leftBumper().whileTrue(drive.rotateToHub());
         // copilot stop
-        copilotController.start().onTrue(sequences.OperatorSafeState());
+        copilotController.start().onTrue(sequences.operatorSafeState());
         // feed shooter
-        copilotController.b().whileTrue(sequences.Shoot(ShooterPresets.MID_SHOT))
-                .onFalse(sequences.OperatorSafeState());
+        copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
+                .onFalse(sequences.operatorSafeState());
         // Intake
-        copilotController.a().onTrue(sequences.Intake());
+        copilotController.a().onTrue(sequences.intake());
 
     }
 
@@ -167,6 +167,7 @@ public final class Robot extends CommandRobot {
     private final void registerNamedCommands() {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT));
+        NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
 
     }
 }
