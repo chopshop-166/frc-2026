@@ -13,6 +13,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -164,6 +165,8 @@ public final class Robot extends CommandRobot {
     }
 
     private final void registerNamedCommands() {
-        //
+        NamedCommands.registerCommand("Intake", sequences.intake());
+        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT));
+
     }
 }
