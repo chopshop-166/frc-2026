@@ -206,8 +206,9 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             tangented = Radians.of(tangented).in(Degrees);
             Logger.recordOutput("Tangented", tangented);
 
+            // Offset for shooter based on front of robot
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
-                    tangented + robotPose.getRotation().getDegrees() + 180);
+                    tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
             rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
         }
 
