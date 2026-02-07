@@ -27,19 +27,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Stop shoot"
+                        "name": "Shoot sequence"
                       }
                     },
                     {
@@ -51,19 +39,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Stop shoot"
+                        "name": "Shoot sequence"
                       }
                     }
                   ]
