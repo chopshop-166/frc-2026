@@ -26,10 +26,7 @@ import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
@@ -53,10 +50,10 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    public Shooter shooter = new Shooter(map.getShooterMap());
-    public Kicker kicker = new Kicker(map.getKickerMap());
+    public Shooter shooterR = new Shooter(map.getShooterRMap());
+    public Shooter shooterL = new Shooter(map.getShooterLMap());
     public Roller intake = new Roller(map.getIntakeMap());
-    public Deployer deployer = new Deployer(map.getDeploymentMap(),
+    public Deployer deployer = new Deployer(map.getDeployerMap(),
             RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
     public Roller feeder = new Roller(map.getFeederMap());
     public Roller activeFloor = new Roller(map.getActiveFloorMap());
