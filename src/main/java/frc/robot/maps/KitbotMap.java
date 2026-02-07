@@ -8,8 +8,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
+import com.chopshop166.chopshoplib.maps.CameraSource;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
+import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
@@ -25,6 +27,8 @@ import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -109,6 +113,23 @@ public class KitbotMap extends RobotMap {
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro2, config, holonomicDrive);
+    }
+
+    @Override
+    public VisionMap getVisionMap() {
+
+        return new VisionMap(180,
+                new CameraSource("RR_Kitbot_Cam",
+                        new Transform3d(Units.inchesToMeters(-9.43), Units.inchesToMeters(-10.72),
+                                Units.inchesToMeters(8.24),
+                                new Rotation3d(0, Units.degreesToRadians(-68), Units.degreesToRadians(-196.76)))),
+                new CameraSource("RL_Kitbot_Cam",
+                        new Transform3d(Units.inchesToMeters(
+                                -9.43),
+                                Units.inchesToMeters(
+                                        10.72),
+                                Units.inchesToMeters(8.24),
+                                new Rotation3d(0, Units.degreesToRadians(-68), Units.degreesToRadians(193)))));
     }
 
     @Override
