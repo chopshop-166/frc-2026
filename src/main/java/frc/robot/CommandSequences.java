@@ -27,8 +27,7 @@ public class CommandSequences {
 
     public Command Shoot(ShooterPresets shotSpeed) {
         return runOnce(() -> {
-            // TODO: Add PID to hub when vision is merged
-            robot.shooterL.shoot(shotSpeed).alongWith(robot.shooterR.shoot(shotSpeed))
+            robot.shooterL.shoot(shotSpeed).alongWith(robot.shooterR.shoot(shotSpeed), robot.drive.rotateToHub())
                     .andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
         });
     }
