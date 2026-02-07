@@ -118,7 +118,7 @@ public class KitbotMap extends RobotMap {
     @Override
     public VisionMap getVisionMap() {
 
-        return new VisionMap(
+        return new VisionMap(180,
                 new CameraSource("RR_Kitbot_Cam",
                         new Transform3d(Units.inchesToMeters(-9.43), Units.inchesToMeters(-10.72),
                                 Units.inchesToMeters(8.24),
