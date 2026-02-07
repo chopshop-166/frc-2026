@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -168,6 +170,7 @@ public final class Robot extends CommandRobot {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT));
         NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
+        NamedCommands.registerCommand("Shoot sequence", sequences.shoot(ShooterPresets.MID_SHOT).andThen(waitSeconds(5)).andThen(shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd())));
 
     }
 }

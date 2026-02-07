@@ -19,20 +19,20 @@ public class CommandSequences {
 
     // make sequences for intake and shooter.
 
-    public Command Intake() {
+    public Command intake() {
         return runOnce(() -> {
             robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
         });
     }
 
-    public Command Shoot(ShooterPresets shotSpeed) {
+    public Command shoot(ShooterPresets shotSpeed) {
         return runOnce(() -> {
             robot.shooterL.shoot(shotSpeed).alongWith(robot.shooterR.shoot(shotSpeed), robot.drive.rotateToHub())
                     .andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
         });
     }
 
-    public Command OperatorSafeState() {
+    public Command operatorSafeState() {
         return runOnce(() -> {
             robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
                     robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd(), robot.shooterR.safeStateCmd());
