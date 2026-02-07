@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cycle 1"
+            "pathName": "Top Cycle 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Cycle 2"
+            "pathName": "Top Cycle 2"
           }
         }
       ]
