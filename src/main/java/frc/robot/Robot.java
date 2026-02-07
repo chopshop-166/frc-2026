@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,6 +15,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -126,12 +129,12 @@ public final class Robot extends CommandRobot {
     public void configureButtonBindings() {
         driveController.leftBumper().whileTrue(drive.rotateToHub());
         // copilot stop
-        copilotController.start().onTrue(sequences.OperatorSafeState());
+        copilotController.start().onTrue(sequences.operatorSafeState());
         // feed shooter
-        copilotController.b().whileTrue(sequences.Shoot(ShooterPresets.MID_SHOT))
-                .onFalse(sequences.OperatorSafeState());
+        copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
+                .onFalse(sequences.operatorSafeState());
         // Intake
-        copilotController.a().onTrue(sequences.Intake());
+        copilotController.a().onTrue(sequences.intake());
 
     }
 
@@ -164,6 +167,10 @@ public final class Robot extends CommandRobot {
     }
 
     private final void registerNamedCommands() {
-        //
+        NamedCommands.registerCommand("Intake", sequences.intake());
+        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT));
+        NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
+        NamedCommands.registerCommand("Shoot sequence", sequences.shoot(ShooterPresets.MID_SHOT).andThen(waitSeconds(5)).andThen(shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd())));
+
     }
 }

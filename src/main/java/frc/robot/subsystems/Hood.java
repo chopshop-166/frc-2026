@@ -26,8 +26,10 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     }
 
-    public Command moveToAngle(double velocity) {
+    public Command moveToAngle() {
+
         return run(() -> {
+            double velocity = ShooterLinearVelocity.get();
             double setpoint = pid.calculate(getHoodAngle(), new State(calcAngle(velocity), 0));
             Logger.recordOutput("Hood/PID Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
