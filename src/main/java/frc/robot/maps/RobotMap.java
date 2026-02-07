@@ -11,13 +11,9 @@ import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 
 import frc.robot.maps.subsystems.DeployerMap;
-import frc.robot.maps.subsystems.FeederMap;
 import frc.robot.maps.subsystems.HoodMap;
-import frc.robot.maps.subsystems.IntakeMap;
-import frc.robot.maps.subsystems.KickerMap;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
-import frc.robot.subsystems.Deployer;
 
 public class RobotMap {
 
@@ -33,27 +29,27 @@ public class RobotMap {
         return new MockLedMap();
     }
 
-    public ShooterMap getShooterMap() {
+    public ShooterMap getShooterRMap() {
         return new ShooterMap();
     }
 
-    public KickerMap getKickerMap() {
-        return new KickerMap();
+    public ShooterMap getShooterLMap() {
+        return new ShooterMap();
     }
 
-    public IntakeMap getIntakeMap() {
-        return new IntakeMap();
+    public RollerMap getIntakeMap() {
+        return new RollerMap();
     }
 
-    public DeployerMap getDeploymentMap() {
+    public DeployerMap getDeployerMap() {
         return new DeployerMap();
     }
 
-    public FeederMap getFeederMap() {
-        return new FeederMap();
+    public RollerMap getFeederMap() {
+        return new RollerMap();
     }
 
-    public RollerMap getRollerMap() {
+    public RollerMap getActiveFloorMap() {
         return new RollerMap();
     }
 

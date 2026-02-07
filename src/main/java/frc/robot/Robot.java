@@ -26,10 +26,7 @@ import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
@@ -53,15 +50,15 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    private Shooter shooter = new Shooter(map.getShooterMap());
-    private Kicker kicker = new Kicker(map.getKickerMap());
-    private Intake intake = new Intake(map.getIntakeMap());
-    private Deployer deploymer = new Deployer(map.getDeploymentMap(),
+    public Shooter shooterR = new Shooter(map.getShooterRMap());
+    public Shooter shooterL = new Shooter(map.getShooterLMap());
+    public Roller intake = new Roller(map.getIntakeMap());
+    public Deployer deployer = new Deployer(map.getDeployerMap(),
             RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
-    private Feeder feeder = new Feeder(map.getFeederMap());
-    private Roller roller = new Roller(map.getRollerMap());
-    private Hood hood = new Hood(map.getHoodMap());
-    
+    public Roller feeder = new Roller(map.getFeederMap());
+    public Roller activeFloor = new Roller(map.getActiveFloorMap());
+    public Hood hood = new Hood(map.getHoodMap());
+
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
@@ -127,11 +124,15 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        // Intake stop
-        copilotController.start().onTrue(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
+        driveController.leftBumper().whileTrue(drive.rotateToHub());
+        // copilot stop
+        copilotController.start().onTrue(sequences.OperatorSafeState());
         // feed shooter
-        copilotController.b().whileTrue(shooter.shoot(ShooterPresets.MID_SHOT).andThen(kicker.kickOut()))
-                .onFalse(shooter.safeStateCmd().alongWith(kicker.safeStateCmd()));
+        copilotController.b().whileTrue(sequences.Shoot(ShooterPresets.MID_SHOT))
+                .onFalse(sequences.OperatorSafeState());
+        // Intake
+        copilotController.a().onTrue(sequences.Intake());
+
     }
 
     @Override

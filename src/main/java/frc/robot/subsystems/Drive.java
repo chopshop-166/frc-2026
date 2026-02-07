@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -21,11 +26,15 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,9 +51,12 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double maxRotationRadiansPerSecond;
     private final double SPEED_COEFFICIENT = 1;
     private final double ROTATION_COEFFICIENT = 1;
-    private final double ROTATION_KS = 0.1;
+    private final double ROTATION_KS = 0.15;
     private final double DRIVE_KS = 0.1;
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
+
+    NetworkTableInstance instance = NetworkTableInstance.getDefault();
+    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub Ft").publish();
 
     // ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0002,
     // 0.000, new Constraints(240, 270));
@@ -53,7 +65,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     // ProfiledPIDController translationPID_Y = new ProfiledPIDController(2.0, 0,
     // 0.0, new Constraints(2.5, 3.0));
 
-    ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0002, 0.000, new Constraints(240, 270));
+    ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0, 0.0, new Constraints(240, 270));
     ProfiledPIDController translationPID_X = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
     ProfiledPIDController translationPID_Y = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
     DoubleSupplier xSpeedSupplier;
@@ -62,6 +74,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     boolean isBlueAlliance = false;
     boolean isRobotCentric = false;
+    boolean rotatingToHub = false;
     Optional<Pose2d> targetPose = Optional.empty();
 
     SwerveDrivePoseEstimator estimator;
@@ -172,22 +185,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
                         estimator.getEstimatedPosition().getRotation()));
     }
 
-    private void visionCalcs() {
-        Optional<Integer> closestHubTag = Optional.empty();
-
-        // TODO: Figure out closest tag
-
-        if (closestHubTag.isPresent()) {
-            var chosenTagPoseOption = kTagLayout.getTagPose(closestHubTag.get());
-            if (chosenTagPoseOption.isPresent()) {
-                Pose2d chosenTagPose = chosenTagPoseOption.get().toPose2d();
-                Logger.recordOutput("Drive/Chosen Tag", chosenTagPose);
-                // TODO: adjust offset for scoring
-                targetPose = Optional.of(chosenTagPose);
-            }
-        }
-    }
-
     private void periodicMove(final double xSpeed, final double ySpeed, final double rotation) {
         double rotationInput = DEADBAND.applyAsDouble(rotation);
         double xInput = DEADBAND.applyAsDouble(xSpeed);
@@ -196,27 +193,35 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
+        var targetPoseValue = Vision.getHubCenter(isBlueAlliance);
+        Logger.recordOutput("HubPose", targetPoseValue);
+        Pose2d robotPose = estimator.getEstimatedPosition();
+        Transform2d differencePoses = targetPoseValue.minus(robotPose);
+        Logger.recordOutput("differencePoses", differencePoses);
+        Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
+        distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
 
-        if (targetPose.isPresent()) {
-            var targetPoseValue = targetPose.get();
-            visionCalcs();
-            Pose2d robotPose = estimator.getEstimatedPosition();
-            // soooooooooo x and y are backwards somehow. Values underneath are correct
-            translateYSpeedMPS = translationPID_X.calculate(robotPose.getX(), targetPoseValue.getX());
-            translateYSpeedMPS += Math.copySign(DRIVE_KS, translateYSpeedMPS);
-            translateXSpeedMPS = translationPID_Y.calculate(robotPose.getY(), targetPoseValue.getY());
-            translateXSpeedMPS += Math.copySign(DRIVE_KS, translateXSpeedMPS);
-            // Direction is swapped on Red side so need to negate PID output
-            if (!isBlueAlliance) {
-                translateXSpeedMPS *= -1;
-                translateYSpeedMPS *= -1;
-            }
+        if (rotatingToHub) {
+            double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
+            tangented = Radians.of(tangented).in(Degrees);
+            Logger.recordOutput("Tangented", tangented);
+
+            // Offset for shooter based on front of robot
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
-                    targetPoseValue.getRotation().getDegrees());
+                    tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
             rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
         }
 
         move(translateXSpeedMPS, translateYSpeedMPS, rotationSpeed, isRobotCentric);
+    }
+
+    public Command rotateToHub() {
+        return startEnd(() -> {
+            rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+            rotatingToHub = true;
+        }, () -> {
+            rotatingToHub = false;
+        });
     }
 
     public BooleanSupplier visionPIDTrue() {
