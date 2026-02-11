@@ -59,7 +59,7 @@ public final class Robot extends CommandRobot {
     public Shooter shooterL = new Shooter(map.getShooterLMap());
     public Roller intake = new Roller(map.getIntakeMap());
     public Deployer deployer = new Deployer(map.getDeployerMap(),
-            RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY()));
+            RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY()));
     public Roller feeder = new Roller(map.getFeederMap());
     public Roller activeFloor = new Roller(map.getActiveFloorMap());
     public Hood hood = new Hood(map.getHoodMap());
@@ -158,6 +158,7 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void setDefaultCommands() {
+        hood.manualControl(() -> copilotController.getRightY());
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {
