@@ -204,50 +204,25 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
-
-        if (target == RotationTargets.HUB) {
-            Pose2d targetPoseValue = Vision.getHubCenter(isBlueAlliance);
-            Logger.recordOutput("TargetPose", targetPoseValue);
+        if (target != RotationTargets.OFF) {
+            // Safe to do because of the if statements below
+            Pose2d targetPoseValue = new Pose2d();
+            if (target == RotationTargets.HUB) {
+                targetPoseValue = Vision.getHubCenter(isBlueAlliance);
+            } else if (target == RotationTargets.LEFT_FEED) {
+                targetPoseValue = getLeftFeedPosition(isBlueAlliance);
+            } else if (target == RotationTargets.RIGHT_FEED) {
+                targetPoseValue = getRightFeedPosition(isBlueAlliance);
+            }
+            Logger.recordOutput("Drive/TargetPose", targetPoseValue);
             Pose2d robotPose = estimator.getEstimatedPosition();
             Transform2d differencePoses = targetPoseValue.minus(robotPose);
-            Logger.recordOutput("differencePoses", differencePoses);
-            Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
+            Logger.recordOutput("Drive/DifferencePoses", differencePoses);
+            Logger.recordOutput("Drive/DifferencePosesRotation", differencePoses.getRotation());
             distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = Radians.of(tangented).in(Degrees);
-            Logger.recordOutput("Tangented", tangented);
-
-            // Offset for shooter based on front of robot
-            rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
-                    tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
-            rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
-        } else if (target == RotationTargets.LEFT_FEED) {
-            Pose2d targetPoseValue = getLeftFeedPosition(isBlueAlliance);
-            Logger.recordOutput("TargetPose", targetPoseValue);
-            Pose2d robotPose = estimator.getEstimatedPosition();
-            Transform2d differencePoses = targetPoseValue.minus(robotPose);
-            Logger.recordOutput("differencePoses", differencePoses);
-            Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
-            distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
-            double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
-            tangented = Radians.of(tangented).in(Degrees);
-            Logger.recordOutput("Tangented", tangented);
-
-            // Offset for shooter based on front of robot
-            rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
-                    tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
-            rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
-        } else if (target == RotationTargets.RIGHT_FEED) {
-            Pose2d targetPoseValue = getRightFeedPosition(isBlueAlliance);
-            Logger.recordOutput("TargetPose", targetPoseValue);
-            Pose2d robotPose = estimator.getEstimatedPosition();
-            Transform2d differencePoses = targetPoseValue.minus(robotPose);
-            Logger.recordOutput("differencePoses", differencePoses);
-            Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
-            distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
-            double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
-            tangented = Radians.of(tangented).in(Degrees);
-            Logger.recordOutput("Tangented", tangented);
+            Logger.recordOutput("Drive/Tangented", tangented);
 
             // Offset for shooter based on front of robot
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
