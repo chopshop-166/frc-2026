@@ -27,7 +27,7 @@ public class CommandSequences {
 
     public Command shoot(ShooterPresets shotSpeed) {
         return runOnce(() -> {
-            robot.shooterL.shoot(shotSpeed).alongWith(robot.shooterR.shoot(shotSpeed), robot.drive.rotateToHub())
+            robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed), robot.drive.rotateToHub())
                     .andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
         });
     }
