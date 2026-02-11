@@ -19,24 +19,23 @@ public class CommandSequences {
 
     // make sequences for intake and shooter.
 
-    public Command Intake() {
-        return runOnce(() -> {
-            robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
-        });
+    public Command intake() {
+        return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
-    public Command Shoot(ShooterPresets shotSpeed) {
-        return runOnce(() -> {
-            robot.shooterL.shoot(shotSpeed).alongWith(robot.shooterR.shoot(shotSpeed), robot.drive.rotateToHub())
-                    .andThen(robot.activeFloor.rollIn(), robot.feeder.rollIn());
-        });
+    public Command shoot(ShooterPresets shotSpeed) {
+        return (robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed), robot.drive.rotateToHub())
+                .andThen(feedShooter()));
     }
 
-    public Command OperatorSafeState() {
-        return runOnce(() -> {
-            robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
-                    robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd(), robot.shooterR.safeStateCmd());
-        });
+    public Command feedShooter() {
+        return robot.activeFloor.rollIn().alongWith(robot.feeder.rollIn());
+    }
+
+    public Command operatorSafeState() {
+        return robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
+                robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd(), robot.shooterR.safeStateCmd());
+
     }
 
     public Command setRumble(ButtonXboxController controller, int rumbleAmount) {
