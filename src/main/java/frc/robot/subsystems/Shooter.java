@@ -33,7 +33,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
     }
 
-    public Command shoot(ShooterPresets presetSpeed) {
+    public Command spinUp(ShooterPresets presetSpeed) {
         Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
 
         return runOnce(() -> {
