@@ -34,6 +34,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Drive.RotationTargets;
 
 public final class Robot extends CommandRobot {
 
@@ -129,7 +130,7 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        driveController.leftBumper().whileTrue(drive.rotateToHub());
+        driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB));
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
         // feed shooter

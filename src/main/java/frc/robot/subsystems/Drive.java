@@ -74,13 +74,24 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     boolean isBlueAlliance = false;
     boolean isRobotCentric = false;
-    boolean rotatingToHub = false;
+    RotationTargets target;
+
     Optional<Pose2d> targetPose = Optional.empty();
 
     SwerveDrivePoseEstimator estimator;
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout kTagLayout = CameraSource.DEFAULT_FIELD;
+
+    public enum RotationTargets {
+        OFF,
+
+        LEFT_FEED,
+
+        RIGHT_FEED,
+
+        HUB
+    }
 
     public Drive(SwerveDriveMap map, DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation,
             VisionMap visionMap) {
@@ -193,18 +204,25 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
-        var targetPoseValue = Vision.getHubCenter(isBlueAlliance);
-        Logger.recordOutput("HubPose", targetPoseValue);
-        Pose2d robotPose = estimator.getEstimatedPosition();
-        Transform2d differencePoses = targetPoseValue.minus(robotPose);
-        Logger.recordOutput("differencePoses", differencePoses);
-        Logger.recordOutput("differencePosesRotation", differencePoses.getRotation());
-        distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
-
-        if (rotatingToHub) {
+        if (target != RotationTargets.OFF) {
+            // Safe to do because of the if statements below
+            Pose2d targetPoseValue = new Pose2d();
+            if (target == RotationTargets.HUB) {
+                targetPoseValue = Vision.getHubCenter(isBlueAlliance);
+            } else if (target == RotationTargets.LEFT_FEED) {
+                targetPoseValue = getLeftFeedPosition(isBlueAlliance);
+            } else if (target == RotationTargets.RIGHT_FEED) {
+                targetPoseValue = getRightFeedPosition(isBlueAlliance);
+            }
+            Logger.recordOutput("Drive/TargetPose", targetPoseValue);
+            Pose2d robotPose = estimator.getEstimatedPosition();
+            Transform2d differencePoses = targetPoseValue.minus(robotPose);
+            Logger.recordOutput("Drive/DifferencePoses", differencePoses);
+            Logger.recordOutput("Drive/DifferencePosesRotation", differencePoses.getRotation());
+            distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = Radians.of(tangented).in(Degrees);
-            Logger.recordOutput("Tangented", tangented);
+            Logger.recordOutput("Drive/Tangented", tangented);
 
             // Offset for shooter based on front of robot
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
@@ -215,13 +233,32 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         move(translateXSpeedMPS, translateYSpeedMPS, rotationSpeed, isRobotCentric);
     }
 
-    public Command rotateToHub() {
+    public Command rotateToTarget(RotationTargets target) {
+
         return startEnd(() -> {
             rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
-            rotatingToHub = true;
+            this.target = target;
         }, () -> {
-            rotatingToHub = false;
-        });
+            this.target = RotationTargets.OFF;
+        }).until(() -> rotationPID.atGoal());
+
+    }
+
+    public static Pose2d getLeftFeedPosition(boolean isBlueAlliance) {
+
+        if (isBlueAlliance) {
+            return new Pose2d(0.0, 6.5, new Rotation2d(0.0));
+        } else {
+            return new Pose2d(16.5, 1.5, new Rotation2d(0.0));
+        }
+    }
+
+    public static Pose2d getRightFeedPosition(boolean isBlueAlliance) {
+        if (isBlueAlliance) {
+            return new Pose2d(0.0, 1.5, new Rotation2d(0.0));
+        } else {
+            return new Pose2d(16.5, 6.5, new Rotation2d(0.0));
+        }
     }
 
     public BooleanSupplier visionPIDTrue() {
