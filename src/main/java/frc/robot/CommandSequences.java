@@ -25,6 +25,10 @@ public class CommandSequences {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
+    public Command intakeKitbot() {
+        return robot.shooterL.spinUp(ShooterPresets.CLOSE_SHOT).alongWith(robot.feeder.rollIn());
+    }
+
     public Command shoot(ShooterPresets shotSpeed) {
         return (robot.shooterL.spinUp(shotSpeed)
                 .alongWith(robot.shooterR.spinUp(shotSpeed), robot.drive.rotateToTarget(Drive.RotationTargets.HUB))

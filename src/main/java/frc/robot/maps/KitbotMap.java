@@ -14,6 +14,7 @@ import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.motors.SmartMotorControllerGroup;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -25,6 +26,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -35,7 +37,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-
+import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
 
 @RobotMapFor("00:80:2F:40:A7:9D")
@@ -133,11 +135,58 @@ public class KitbotMap extends RobotMap {
     }
 
     @Override
+    public ShooterMap getShooterLMap() {
+        CSSparkMax motorA = new CSSparkMax(9);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(60);
+        config.closedLoop.pid(0.005, 0, 0);
+        config.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        motorA.setControlType(ControlType.kVelocity);
+        motorA.setPidSlot(0);
+        config.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
+
+        ShooterMap.PresetValues presets = preset -> switch (preset) {
+            case CLOSE_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(4500);
+            case FAR_SHOT -> RPM.of(6000);
+            case OFF -> RPM.of(0);
+            default -> RPM.of(Double.NaN);
+        };
+
+        motorA.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        return new ShooterMap(motorA, presets);
+    }
+
+    @Override
+    public RollerMap getFeederMap() {
+        CSSparkFlex roller = new CSSparkFlex(10);
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(30);
+        RollerMap.PresetValues presets = preset -> switch (preset) {
+            case FORWARD -> .5;
+            case REVERSE -> -.5;
+            case FORWARD_WIGGLE -> .3;
+            case BACKWARDS_WIGGLE -> -.3;
+            case OFF -> 0;
+            default -> Double.NaN;
+        };
+
+        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        return new RollerMap(roller, presets);
+    }
+
+    @Override
     public void setupLogging() {
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
-        new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     }
 
 }
