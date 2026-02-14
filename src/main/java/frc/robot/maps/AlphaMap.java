@@ -53,10 +53,10 @@ public class AlphaMap extends RobotMap {
 
     @Override
     public SwerveDriveMap getDriveMap() {
-        final double FLOFFSET = 0;
-        final double FROFFSET = 0;
-        final double RLOFFSET = 0;
-        final double RROFFSET = 0;
+        final double FLOFFSET = 100;
+        final double FROFFSET = 179.5;
+        final double RLOFFSET = 17.3;
+        final double RROFFSET = 47;
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
@@ -231,9 +231,9 @@ public class AlphaMap extends RobotMap {
         CSSparkFlex roller = new CSSparkFlex(13);
         SparkFlexConfig config = new SparkFlexConfig();
         config.idleMode(IdleMode.kCoast);
-        config.smartCurrentLimit(30);
+        config.smartCurrentLimit(60);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .5;
+            case FORWARD -> .6;
             case REVERSE -> -.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
