@@ -137,7 +137,7 @@ public class KitbotMap extends RobotMap {
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
-        new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     }
 
 }
