@@ -46,9 +46,12 @@ public class VisionMap {
      * @param estimator The WPIlib estimator object.
      */
     public <T> void updateData(Data data) {
+        boolean[] seesTags = new boolean[this.visionSources.size()];
+        int seesTagsIdx = 0;
         for (var source : this.visionSources) {
             var results = source.camera.getAllUnreadResults();
-            Logger.recordOutput("Sees Tags", !results.isEmpty());
+            seesTags[seesTagsIdx] = !results.isEmpty();
+            seesTagsIdx++;
             if (!results.isEmpty()) {
                 for (PhotonPipelineResult result : results) {
                     if ((result.multitagResult.isPresent()
@@ -66,6 +69,7 @@ public class VisionMap {
                 }
             }
         }
+        Logger.recordOutput("Vision/Sees Tags", seesTags);
     }
 
     public static class Data {
