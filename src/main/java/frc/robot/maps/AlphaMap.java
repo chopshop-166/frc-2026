@@ -1,5 +1,6 @@
 package frc.robot.maps;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.wpilibj2.command.Commands.idle;
@@ -209,20 +210,22 @@ public class AlphaMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0, 0);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 360, 94);
-        // encoder.setDutyCycleRange(0, 360);
+        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(Math.PI, Math.PI));
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.04, 0.1);
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 32);
         encoder.setInverted(true);
-        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30).inverted(true);
+        config.encoder.positionConversionFactor(((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) * (2
+                * Math.PI))
+                .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
-            case OFF -> Angle.ofBaseUnits(0, Degrees);
-            case OUT -> Angle.ofBaseUnits(0, Degrees);
-            case IN -> Angle.ofBaseUnits(0, Degrees);
+            case OFF -> Angle.ofBaseUnits(Double.NaN, Degrees);
+            case OUT -> Degrees.of(10);
+            case IN -> Degrees.of(110);
             default -> Angle.ofBaseUnits(Double.NaN, Degrees);
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        return new DeployerMap(motor, encoder, presets, pid, new ValueRange(1, 351), new ValueRange(20, 330),
+        return new DeployerMap(motor, encoder, presets, pid, new ValueRange(1, 115), new ValueRange(10, 100),
                 feedForward);
     }
 
