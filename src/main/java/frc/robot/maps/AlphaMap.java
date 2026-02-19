@@ -210,11 +210,13 @@ public class AlphaMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(Math.PI, Math.PI));
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.04, 0.1);
+        ProfiledPIDController pid = new ProfiledPIDController(0.25, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
+        pid.setTolerance(.1);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.05);
         DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 32);
         encoder.setInverted(true);
-        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30).inverted(true);
+        config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
+        config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
         config.encoder.positionConversionFactor(((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) * (2
                 * Math.PI))
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));

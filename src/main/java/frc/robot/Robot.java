@@ -137,10 +137,7 @@ public final class Robot extends CommandRobot {
         // copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
         // .onFalse(sequences.operatorSafeState());
         // // Intake
-        // copilotController.a().onTrue(sequences.intake());
-        // copilotController.y().onTrue(deployer.moveTo(DeployerPresets.IN));
-        copilotController.a().onTrue(deployer.moveTo(DeployerPresets.OUT));
-        copilotController.x().onTrue(deployer.moveTo(DeployerPresets.IN));
+        copilotController.a().onTrue(sequences.intake());
         copilotController.b().onTrue(deployer.safeStateCmd());
 
     }

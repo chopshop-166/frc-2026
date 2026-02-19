@@ -106,6 +106,7 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
         Logger.recordOutput("Deployer/DesiredDeployerVelocity", pid.getSetpoint().velocity);
         Logger.recordOutput("Deployer/DesiredDeployerPosition", pid.getSetpoint().position);
         Logger.recordOutput("Deployer/PID Error", pid.getPositionError());
+        Logger.recordOutput("Deployer/AngleRadians", getDeployerAngle());
 
     }
 
