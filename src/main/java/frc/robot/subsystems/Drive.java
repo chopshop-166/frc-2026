@@ -74,7 +74,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     boolean isBlueAlliance = false;
     boolean isRobotCentric = false;
-    RotationTargets target;
+    RotationTargets target = RotationTargets.OFF;
 
     Optional<Pose2d> targetPose = Optional.empty();
 
@@ -176,7 +176,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue;
         estimator.update(getMap().gyro.getRotation2d(), getData().getModulePositions());
 
-        visionMap.updateData(visionData);
+        // visionMap.updateData(visionData);
 
         periodicMove(xSpeedSupplier.getAsDouble(), ySpeedSupplier.getAsDouble(), rotationSupplier.getAsDouble());
 

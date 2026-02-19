@@ -60,7 +60,7 @@ public final class Robot extends CommandRobot {
     public Shooter shooterL = new Shooter(map.getShooterLMap());
     public Roller intake = new Roller(map.getIntakeMap());
     public Deployer deployer = new Deployer(map.getDeployerMap(),
-            RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY()));
+            RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
     public Roller feeder = new Roller(map.getFeederMap());
     public Roller activeFloor = new Roller(map.getActiveFloorMap());
     public Hood hood = new Hood(map.getHoodMap());
@@ -134,11 +134,11 @@ public final class Robot extends CommandRobot {
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
         // feed shooter
-        copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
-                .onFalse(sequences.operatorSafeState());
-        // Intake
+        // copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
+        // .onFalse(sequences.operatorSafeState());
+        // // Intake
         copilotController.a().onTrue(sequences.intake());
-        copilotController.y().onTrue(deployer.moveTo(DeployerPresets.IN));
+        copilotController.b().onTrue(deployer.safeStateCmd());
 
     }
 

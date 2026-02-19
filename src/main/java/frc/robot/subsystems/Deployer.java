@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.DoubleSupplier;
 
@@ -12,6 +13,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.DeployerMap;
@@ -66,7 +68,7 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
     }
 
     private double getDeployerAngle() {
-        return getData().rotationAbsAngleDegrees;
+        return Units.degreesToRadians(getData().rotationAbsAngleDegrees);
     }
 
     @Override
@@ -86,9 +88,10 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
             getData().motor.setpoint = (limits(speed * speedCoef));
 
         } else if (getData().preset != DeployerPresets.OFF) {
-            double targetHeight = getData().preset == DeployerPresets.HOLD ? holdAngle
-                    : getMap().deployerPreset.apply(getData().preset).in(Degrees);
-            double setpoint = pid.calculate(getDeployerAngle(), new State(targetHeight, 0));
+            double targetAngle = getData().preset == DeployerPresets.HOLD ? holdAngle
+                    : getMap().deployerPreset.apply(getData().preset).in(Radians);
+            Logger.recordOutput("Deployer/TargetAngle", targetAngle);
+            double setpoint = pid.calculate(getDeployerAngle(), new State(targetAngle, 0));
             Logger.recordOutput("Deployer/PID Setpoint", setpoint);
 
             setpoint += getMap().armFeedforward.calculate(
@@ -103,6 +106,8 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
         Logger.recordOutput("Deployer/DesiredDeployerVelocity", pid.getSetpoint().velocity);
         Logger.recordOutput("Deployer/DesiredDeployerPosition", pid.getSetpoint().position);
         Logger.recordOutput("Deployer/PID Error", pid.getPositionError());
+        Logger.recordOutput("Deployer/AngleRadians", getDeployerAngle());
+
     }
 
     @Override
