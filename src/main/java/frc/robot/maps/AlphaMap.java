@@ -127,83 +127,43 @@ public class AlphaMap extends RobotMap {
     }
 
     // @Override
-    // public ShooterMap getShooterRMap() {
-    // CSSparkFlex motorA = new CSSparkFlex(9);
-    // CSSparkFlex motorB = new CSSparkFlex(10);
-    // SparkFlexConfig configA = new SparkFlexConfig();
-    // SparkFlexConfig configB = new SparkFlexConfig();
-    // configA.idleMode(IdleMode.kCoast);
-    // configA.smartCurrentLimit(60);
-    // configA.closedLoop.pid(0, 0, 0);
-    // configA.closedLoop.apply(new FeedForwardConfig().kV(0));
-    // motorA.setControlType(ControlType.kVelocity);
-    // motorB.setControlType(ControlType.kVelocity);
-    // motorA.setPidSlot(0);
-    // motorB.setPidSlot(0);
-    // configA.encoder.quadratureAverageDepth(2)
-    // .quadratureMeasurementPeriod(10);
-
-    // ShooterMap.PresetValues presets = preset -> switch (preset) {
-    // case CLOSE_SHOT -> RPM.of(3000);
-    // case MID_SHOT -> RPM.of(4500);
-    // case FAR_SHOT -> RPM.of(6000);
-    // case OFF -> RPM.of(0);
-    // default -> RPM.of(Double.NaN);
-    // };
-
-    // motorA.getMotorController().configure(configA,
-    // ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-
-    // configB.follow(motorA.getMotorController());
-
-    // motorB.getMotorController().configure(configB,
-    // ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-    // motorB);
-
-    // return new ShooterMap(smcg, presets);
-    // }
-
-    // @Override
     // public ShooterMap getShooterLMap() {
-    // CSSparkFlex motorA = new CSSparkFlex(11);
-    // CSSparkFlex motorB = new CSSparkFlex(12);
-    // SparkFlexConfig configA = new SparkFlexConfig();
-    // SparkFlexConfig configB = new SparkFlexConfig();
-    // configA.idleMode(IdleMode.kCoast);
-    // configA.smartCurrentLimit(60);
-    // configA.closedLoop.pid(0, 0, 0);
-    // configA.closedLoop.apply(new FeedForwardConfig().kV(0));
-    // motorA.setControlType(ControlType.kVelocity);
-    // motorB.setControlType(ControlType.kVelocity);
-    // motorA.setPidSlot(0);
-    // motorB.setPidSlot(0);
-    // configA.encoder.quadratureAverageDepth(2)
-    // .quadratureMeasurementPeriod(10);
+    //     CSSparkFlex motorA = new CSSparkFlex(11);
+    //     CSSparkFlex motorB = new CSSparkFlex(12);
+    //     SparkFlexConfig configA = new SparkFlexConfig();
+    //     SparkFlexConfig configB = new SparkFlexConfig();
+    //     configA.idleMode(IdleMode.kCoast);
+    //     configA.smartCurrentLimit(60);
+    //     configA.closedLoop.pid(0, 0, 0);
+    //     configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+    //     motorA.setControlType(ControlType.kVelocity);
+    //     motorB.setControlType(ControlType.kVelocity);
+    //     motorA.setPidSlot(0);
+    //     motorB.setPidSlot(0);
+    //     configA.encoder.quadratureAverageDepth(2)
+    //             .quadratureMeasurementPeriod(10);
 
-    // ShooterMap.PresetValues presets = preset -> switch (preset) {
-    // case CLOSE_SHOT -> RPM.of(3000);
-    // case MID_SHOT -> RPM.of(4500);
-    // case FAR_SHOT -> RPM.of(6000);
-    // case OFF -> RPM.of(0);
-    // default -> RPM.of(Double.NaN);
-    // };
+    //     ShooterMap.PresetValues presets = preset -> switch (preset) {
+    //         case CLOSE_SHOT -> RPM.of(3000);
+    //         case MID_SHOT -> RPM.of(4500);
+    //         case FAR_SHOT -> RPM.of(6000);
+    //         case OFF -> RPM.of(0);
+    //         default -> RPM.of(Double.NaN);
+    //     };
 
-    // motorA.getMotorController().configure(configA,
-    // ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
+    //     motorA.getMotorController().configure(configA,
+    //             ResetMode.kResetSafeParameters,
+    //             PersistMode.kPersistParameters);
 
-    // configB.follow(motorA.getMotorController());
+    //     configB.follow(motorA.getMotorController());
 
-    // motorB.getMotorController().configure(configB,
-    // ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-    // motorB);
+    //     motorB.getMotorController().configure(configB,
+    //             ResetMode.kResetSafeParameters,
+    //             PersistMode.kPersistParameters);
+    //     SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
+    //             motorB);
 
-    // return new ShooterMap(smcg, presets);
+    //     return new ShooterMap(smcg, presets);
     // }
 
     @Override
@@ -253,7 +213,7 @@ public class AlphaMap extends RobotMap {
 
     // @Override
     // public RollerMap getFeederMap() {
-    // CSSparkFlex roller = new CSSparkFlex(14);
+    // CSSparkFlex roller = new CSSparkFlex(16);
     // SparkFlexConfig config = new SparkFlexConfig();
     // config.idleMode(IdleMode.kCoast);
     // config.smartCurrentLimit(30);
@@ -273,7 +233,7 @@ public class AlphaMap extends RobotMap {
 
     // @Override
     // public RollerMap getActiveFloorMap() {
-    // CSSparkFlex roller = new CSSparkFlex(14);
+    // CSSparkFlex roller = new CSSparkFlex(15);
     // SparkFlexConfig config = new SparkFlexConfig();
     // config.idleMode(IdleMode.kCoast);
     // config.smartCurrentLimit(30);
