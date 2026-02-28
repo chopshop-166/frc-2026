@@ -23,14 +23,20 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
     private final double TOLERANCE = 100;
 
+    private final String implName;
     DoubleSupplier shooterSpeed;
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    DoublePublisher shooterVelocityFPSPub = instance.getDoubleTopic("Shooter/Linear Velocity").publish();
+    DoublePublisher shooterVelocityFPSPub = instance.getDoubleTopic(getName() + "/Linear Velocity").publish();
 
-    public Shooter(ShooterMap shooterMap) {
+    public Shooter(ShooterMap shooterMap, String name) {
         super(new Data(), shooterMap);
+        this.implName = name;
+    }
 
+    @Override
+    public String getName() {
+        return implName;
     }
 
     public Command spinUp(ShooterPresets presetSpeed) {
@@ -61,7 +67,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
         super.periodic();
         // converting angular velocity to linear velocity
         shooterVelocityFPSPub.set((getData().flywheel.velocity * Math.PI * 4) / 60);
-        Logger.recordOutput("Shooter/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
+        Logger.recordOutput(getName() + "/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
 
     }
 

@@ -8,26 +8,22 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class HoodMap implements LoggableMap<HoodMap.Data> {
 
     public SmartMotorController motor;
-    public final DutyCycleEncoder encoder;
     public final ProfiledPIDController pid;
     public final ValueRange hardLimits;
 
     public HoodMap() {
-        this(new SmartMotorController(), new DutyCycleEncoder(0),
+        this(new SmartMotorController(),
                 new ProfiledPIDController(0, 0, 0, new Constraints(0, 0)),
                 new ValueRange(0, 0));
     }
 
-    public HoodMap(SmartMotorController motor, DutyCycleEncoder encoder,
+    public HoodMap(SmartMotorController motor,
             ProfiledPIDController pid, ValueRange hardLimits) {
         this.motor = motor;
-        this.encoder = encoder;
         this.pid = pid;
         this.hardLimits = hardLimits;
     }
@@ -35,11 +31,9 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
     @Override
     public void updateData(Data data) {
         data.motor.updateData(motor);
-        data.rotationAbsAngleDegrees = encoder.get();
     }
 
     public static class Data extends DataWrapper {
         public MotorControllerData motor = new MotorControllerData();
-        public double rotationAbsAngleDegrees;
     }
 }
