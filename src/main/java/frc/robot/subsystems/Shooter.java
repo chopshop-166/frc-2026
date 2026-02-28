@@ -67,7 +67,7 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
         super.periodic();
         // converting angular velocity to linear velocity
         shooterVelocityFPSPub.set((getData().flywheel.velocity * Math.PI * 4) / 60);
-        Logger.recordOutput("Shooter/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
+        Logger.recordOutput(getName() + "/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
 
     }
 
