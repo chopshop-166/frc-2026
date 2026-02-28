@@ -297,10 +297,11 @@ public class ScorpionMap extends RobotMap {
         CSSparkMax motor = new CSSparkMax(17);
         ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
         SparkMaxConfig config = new SparkMaxConfig();
+        double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
-        config.encoder.positionConversionFactor((14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI))
+        config.encoder.positionConversionFactor(gearRatio)
                 .velocityConversionFactor(
-                        ((14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI)) / 60.0);
+                        gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 

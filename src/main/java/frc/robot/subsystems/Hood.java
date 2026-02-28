@@ -68,7 +68,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     }
 
     private double getHoodAngle() {
-        return getData().rotationAbsAngleDegrees;
+        return getMap().motor.getEncoder().getRate();
     }
 
     @Override

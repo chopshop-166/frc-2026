@@ -5,12 +5,9 @@ import com.chopshop166.chopshoplib.logging.DataWrapper;
 import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
-import com.chopshop166.chopshoplib.sensors.CSEncoder;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class HoodMap implements LoggableMap<HoodMap.Data> {
 
@@ -38,6 +35,5 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
     public static class Data extends DataWrapper {
         public MotorControllerData motor = new MotorControllerData();
-        public double rotationAbsAngleDegrees;
     }
 }
