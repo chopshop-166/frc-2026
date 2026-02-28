@@ -45,12 +45,13 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.DeployerMap;
+import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
 import frc.robot.subsystems.Roller;
 
 @RobotMapFor("00:80:2F:40:A6:13")
-public class AlphaMap extends RobotMap {
+public class ScorpionMap extends RobotMap {
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -126,45 +127,85 @@ public class AlphaMap extends RobotMap {
                 maxRotationRadianPerSecond, pigeonGyro2, config, holonomicDrive);
     }
 
-    // @Override
-    // public ShooterMap getShooterLMap() {
-    //     CSSparkFlex motorA = new CSSparkFlex(11);
-    //     CSSparkFlex motorB = new CSSparkFlex(12);
-    //     SparkFlexConfig configA = new SparkFlexConfig();
-    //     SparkFlexConfig configB = new SparkFlexConfig();
-    //     configA.idleMode(IdleMode.kCoast);
-    //     configA.smartCurrentLimit(60);
-    //     configA.closedLoop.pid(0, 0, 0);
-    //     configA.closedLoop.apply(new FeedForwardConfig().kV(0));
-    //     motorA.setControlType(ControlType.kVelocity);
-    //     motorB.setControlType(ControlType.kVelocity);
-    //     motorA.setPidSlot(0);
-    //     motorB.setPidSlot(0);
-    //     configA.encoder.quadratureAverageDepth(2)
-    //             .quadratureMeasurementPeriod(10);
+    @Override
+    public ShooterMap getShooterLMap() {
+        CSSparkFlex motorA = new CSSparkFlex(11);
+        CSSparkFlex motorB = new CSSparkFlex(12);
+        SparkFlexConfig configA = new SparkFlexConfig();
+        SparkFlexConfig configB = new SparkFlexConfig();
+        configA.idleMode(IdleMode.kCoast);
+        configA.smartCurrentLimit(60);
+        configA.closedLoop.pid(0, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+        motorA.setControlType(ControlType.kVelocity);
+        motorB.setControlType(ControlType.kVelocity);
+        motorA.setPidSlot(0);
+        motorB.setPidSlot(0);
+        configA.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
 
-    //     ShooterMap.PresetValues presets = preset -> switch (preset) {
-    //         case CLOSE_SHOT -> RPM.of(3000);
-    //         case MID_SHOT -> RPM.of(4500);
-    //         case FAR_SHOT -> RPM.of(6000);
-    //         case OFF -> RPM.of(0);
-    //         default -> RPM.of(Double.NaN);
-    //     };
+        ShooterMap.PresetValues presets = preset -> switch (preset) {
+            case CLOSE_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(4500);
+            case FAR_SHOT -> RPM.of(6000);
+            case OFF -> RPM.of(0);
+            default -> RPM.of(Double.NaN);
+        };
 
-    //     motorA.getMotorController().configure(configA,
-    //             ResetMode.kResetSafeParameters,
-    //             PersistMode.kPersistParameters);
+        motorA.getMotorController().configure(configA,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
 
-    //     configB.follow(motorA.getMotorController());
+        configB.follow(motorA.getMotorController());
 
-    //     motorB.getMotorController().configure(configB,
-    //             ResetMode.kResetSafeParameters,
-    //             PersistMode.kPersistParameters);
-    //     SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-    //             motorB);
+        motorB.getMotorController().configure(configB,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
+                motorB);
 
-    //     return new ShooterMap(smcg, presets);
-    // }
+        return new ShooterMap(smcg, presets);
+    }
+
+    @Override
+    public ShooterMap getShooterRMap() {
+        CSSparkFlex motorA = new CSSparkFlex(9);
+        CSSparkFlex motorB = new CSSparkFlex(10);
+        SparkFlexConfig configA = new SparkFlexConfig();
+        SparkFlexConfig configB = new SparkFlexConfig();
+        configA.idleMode(IdleMode.kCoast);
+        configA.smartCurrentLimit(60);
+        configA.closedLoop.pid(0, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+        motorA.setControlType(ControlType.kVelocity);
+        motorB.setControlType(ControlType.kVelocity);
+        motorA.setPidSlot(0);
+        motorB.setPidSlot(0);
+        configA.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
+
+        ShooterMap.PresetValues presets = preset -> switch (preset) {
+            case CLOSE_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(4500);
+            case FAR_SHOT -> RPM.of(6000);
+            case OFF -> RPM.of(0);
+            default -> RPM.of(Double.NaN);
+        };
+
+        motorA.getMotorController().configure(configA,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        configB.follow(motorA.getMotorController());
+
+        motorB.getMotorController().configure(configB,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
+                motorB);
+
+        return new ShooterMap(smcg, presets);
+    }
 
     @Override
     public DeployerMap getDeployerMap() {
@@ -249,6 +290,18 @@ public class AlphaMap extends RobotMap {
     // roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
     // PersistMode.kPersistParameters);
     // return new RollerMap(roller, presets);
+    // }
+
+    // @Override
+    // public HoodMap getHoodMap() {
+    // CSSparkMax motor = new CSSparkMax(17);
+    // ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, null);
+    // SparkMaxConfig config = new SparkMaxConfig();
+    // config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+    // motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+    // PersistMode.kPersistParameters);
+    // return new HoodMap(motor, pid, new ValueRange(0, 5));
+
     // }
 
     @Override
