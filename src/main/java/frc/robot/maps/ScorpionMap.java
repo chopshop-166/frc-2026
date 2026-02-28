@@ -135,8 +135,8 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
         configA.smartCurrentLimit(60);
-        configA.closedLoop.pid(0, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+        configA.closedLoop.pid(0.001, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -174,9 +174,9 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configA = new SparkFlexConfig();
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
-        configA.smartCurrentLimit(60);
-        configA.closedLoop.pid(0, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+        configA.smartCurrentLimit(60).inverted(true);
+        configA.closedLoop.pid(0.001, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -252,57 +252,60 @@ public class ScorpionMap extends RobotMap {
         return new RollerMap(roller, presets);
     }
 
-    // @Override
-    // public RollerMap getFeederMap() {
-    // CSSparkFlex roller = new CSSparkFlex(16);
-    // SparkFlexConfig config = new SparkFlexConfig();
-    // config.idleMode(IdleMode.kCoast);
-    // config.smartCurrentLimit(30);
-    // RollerMap.PresetValues presets = preset -> switch (preset) {
-    // case FORWARD -> .5;
-    // case REVERSE -> -.5;
-    // case FORWARD_WIGGLE -> .3;
-    // case BACKWARDS_WIGGLE -> -.3;
-    // case OFF -> 0;
-    // default -> Double.NaN;
-    // };
+    @Override
+    public RollerMap getFeederMap() {
+        CSSparkMax roller = new CSSparkMax(16);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast).inverted(true);
+        config.smartCurrentLimit(30);
+        RollerMap.PresetValues presets = preset -> switch (preset) {
+            case FORWARD -> .2;
+            case REVERSE -> -.2;
+            case FORWARD_WIGGLE -> .3;
+            case BACKWARDS_WIGGLE -> -.3;
+            case OFF -> 0;
+            default -> Double.NaN;
+        };
 
-    // roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // return new RollerMap(roller, presets);
-    // }
+        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        return new RollerMap(roller, presets);
+    }
 
-    // @Override
-    // public RollerMap getActiveFloorMap() {
-    // CSSparkFlex roller = new CSSparkFlex(15);
-    // SparkFlexConfig config = new SparkFlexConfig();
-    // config.idleMode(IdleMode.kCoast);
-    // config.smartCurrentLimit(30);
-    // RollerMap.PresetValues presets = preset -> switch (preset) {
-    // case FORWARD -> .5;
-    // case REVERSE -> -.5;
-    // case FORWARD_WIGGLE -> .3;
-    // case BACKWARDS_WIGGLE -> -.3;
-    // case OFF -> 0;
-    // default -> Double.NaN;
-    // };
+    @Override
+    public RollerMap getActiveFloorMap() {
+        CSSparkMax roller = new CSSparkMax(15);
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kCoast).inverted(true);
+        config.smartCurrentLimit(30);
+        RollerMap.PresetValues presets = preset -> switch (preset) {
+            case FORWARD -> .4;
+            case REVERSE -> -.2;
+            case FORWARD_WIGGLE -> .3;
+            case BACKWARDS_WIGGLE -> -.3;
+            case OFF -> 0;
+            default -> Double.NaN;
+        };
 
-    // roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // return new RollerMap(roller, presets);
-    // }
+        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        return new RollerMap(roller, presets);
+    }
 
-    // @Override
-    // public HoodMap getHoodMap() {
-    // CSSparkMax motor = new CSSparkMax(17);
-    // ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, null);
-    // SparkMaxConfig config = new SparkMaxConfig();
-    // config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
-    // motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
-    // PersistMode.kPersistParameters);
-    // return new HoodMap(motor, pid, new ValueRange(0, 5));
+    @Override
+    public HoodMap getHoodMap() {
+        CSSparkMax motor = new CSSparkMax(17);
+        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+        config.encoder.positionConversionFactor((14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI))
+                .velocityConversionFactor(
+                        ((14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI)) / 60.0);
+        motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
 
-    // }
+        return new HoodMap(motor, pid, new ValueRange(0, 5));
+    }
 
     @Override
     public void setupLogging() {
