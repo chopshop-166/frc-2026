@@ -43,11 +43,8 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
         Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
 
         return runOnce(() -> {
-
             setPreset(presetSpeed);
-
-        }).andThen(Commands.waitUntil(() -> debouncer
-                .calculate(Math.abs(getData().flywheel.velocity - getData().flywheel.setpoint) < TOLERANCE)));
+        }).andThen(Commands.waitUntil(() -> debouncer.calculate(Math.abs(getError()) < TOLERANCE)));
 
     }
 
@@ -67,13 +64,17 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
         super.periodic();
         // converting angular velocity to linear velocity
         shooterVelocityFPSPub.set((getData().flywheel.velocity * Math.PI * 4) / 60);
-        Logger.recordOutput(getName() + "/PID Error", getData().flywheel.setpoint - getData().flywheel.velocity);
+        Logger.recordOutput(getName() + "/PID Error", getError());
 
     }
 
     @Override
     public void safeState() {
         setPreset(ShooterPresets.OFF);
+    }
+
+    private double getError() {
+        return getData().flywheel.setpoint - getData().flywheel.velocity;
     }
 
 }
