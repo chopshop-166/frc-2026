@@ -1,10 +1,7 @@
 package frc.robot.maps;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.wpilibj2.command.Commands.idle;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -24,12 +21,11 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -48,7 +44,6 @@ import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
-import frc.robot.subsystems.Roller;
 
 @RobotMapFor("00:80:2F:40:A6:13")
 public class ScorpionMap extends RobotMap {

@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.networktables.DoublePublisher;

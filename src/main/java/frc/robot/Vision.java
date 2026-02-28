@@ -37,23 +37,20 @@ public class Vision {
     }
 
     public static Pose2d getHubCenter(boolean isBlueAlliance) {
-        Pose2d translation;
+        Pose3d poseLeft;
+        Pose3d poseRight;
         if (!isBlueAlliance) {
-            Pose3d poseLeft = kTagLayout.getTagPose(10).get();
-            Pose3d poseRight = kTagLayout.getTagPose(4).get();
+            poseLeft = kTagLayout.getTagPose(10).get();
+            poseRight = kTagLayout.getTagPose(4).get();
             Logger.recordOutput("Reef center", "Blue");
-            Translation2d translationLeft = poseLeft.getTranslation().toTranslation2d();
-            Translation2d translationRight = poseRight.getTranslation().toTranslation2d();
-            translation = new Pose2d(translationLeft.plus(translationRight).div(2), Rotation2d.kZero);
         } else {
-            Pose3d poseLeft = kTagLayout.getTagPose(20).get();
-            Pose3d poseRight = kTagLayout.getTagPose(26).get();
+            poseLeft = kTagLayout.getTagPose(20).get();
+            poseRight = kTagLayout.getTagPose(26).get();
             Logger.recordOutput("Reef center", "Red");
-            Translation2d translationLeft = poseLeft.getTranslation().toTranslation2d();
-            Translation2d translationRight = poseRight.getTranslation().toTranslation2d();
-            translation = new Pose2d(translationLeft.plus(translationRight).div(2), Rotation2d.kZero);
         }
 
-        return translation;
+        Translation2d translationLeft = poseLeft.getTranslation().toTranslation2d();
+        Translation2d translationRight = poseRight.getTranslation().toTranslation2d();
+        return new Pose2d(translationLeft.plus(translationRight).div(2), Rotation2d.kZero);
     }
 }
