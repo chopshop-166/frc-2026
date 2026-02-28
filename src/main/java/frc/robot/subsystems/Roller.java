@@ -14,8 +14,16 @@ import frc.robot.maps.subsystems.RollerMap.RollerPresets;
 
 public class Roller extends LoggedSubsystem<Data, RollerMap> {
 
-    public Roller(RollerMap rollerMap) {
+    private final String implName;
+
+    public Roller(RollerMap rollerMap, String name) {
         super(new Data(), rollerMap);
+        this.implName = name;
+    }
+
+    @Override
+    public String getName() {
+        return implName;
     }
 
     public Command rollIn() {

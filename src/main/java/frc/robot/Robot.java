@@ -56,13 +56,13 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    public Shooter shooterR = new Shooter(map.getShooterRMap());
-    public Shooter shooterL = new Shooter(map.getShooterLMap());
-    public Roller intake = new Roller(map.getIntakeMap());
+    public Shooter shooterR = new Shooter(map.getShooterRMap(), "Shooter/Right");
+    public Shooter shooterL = new Shooter(map.getShooterLMap(), "Shooter/Left");
+    public Roller intake = new Roller(map.getIntakeMap(), "Intake");
     public Deployer deployer = new Deployer(map.getDeployerMap(),
             RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
-    public Roller feeder = new Roller(map.getFeederMap());
-    public Roller activeFloor = new Roller(map.getActiveFloorMap());
+    public Roller feeder = new Roller(map.getFeederMap(), "Feeder");
+    public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
     public Hood hood = new Hood(map.getHoodMap());
 
     // Things that use all the subsystems

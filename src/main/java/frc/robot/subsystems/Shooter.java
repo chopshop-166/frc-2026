@@ -23,14 +23,20 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
 
     private final double TOLERANCE = 100;
 
+    private final String implName;
     DoubleSupplier shooterSpeed;
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoublePublisher shooterVelocityFPSPub = instance.getDoubleTopic("Shooter/Linear Velocity").publish();
 
-    public Shooter(ShooterMap shooterMap) {
+    public Shooter(ShooterMap shooterMap, String name) {
         super(new Data(), shooterMap);
+        this.implName = name;
+    }
 
+    @Override
+    public String getName() {
+        return implName;
     }
 
     public Command spinUp(ShooterPresets presetSpeed) {
