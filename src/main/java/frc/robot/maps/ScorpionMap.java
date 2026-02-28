@@ -156,8 +156,7 @@ public class ScorpionMap extends RobotMap {
         motorB.getMotorController().configure(configB,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-                motorB);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
 
         return new ShooterMap(smcg, presets);
     }
@@ -196,8 +195,7 @@ public class ScorpionMap extends RobotMap {
         motorB.getMotorController().configure(configB,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-                motorB);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
 
         return new ShooterMap(smcg, presets);
     }
@@ -295,8 +293,7 @@ public class ScorpionMap extends RobotMap {
         double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
-                .velocityConversionFactor(
-                        gearRatio / 60.0);
+                .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
