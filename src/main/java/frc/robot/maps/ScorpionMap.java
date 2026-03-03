@@ -1,10 +1,7 @@
 package frc.robot.maps;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.wpilibj2.command.Commands.idle;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -24,12 +21,11 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -48,7 +44,6 @@ import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
-import frc.robot.subsystems.Roller;
 
 @RobotMapFor("00:80:2F:40:A6:13")
 public class ScorpionMap extends RobotMap {
@@ -161,8 +156,7 @@ public class ScorpionMap extends RobotMap {
         motorB.getMotorController().configure(configB,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-                motorB);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
 
         return new ShooterMap(smcg, presets);
     }
@@ -201,8 +195,7 @@ public class ScorpionMap extends RobotMap {
         motorB.getMotorController().configure(configB,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
-                motorB);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
 
         return new ShooterMap(smcg, presets);
     }
@@ -300,8 +293,7 @@ public class ScorpionMap extends RobotMap {
         double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
-                .velocityConversionFactor(
-                        gearRatio / 60.0);
+                .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 

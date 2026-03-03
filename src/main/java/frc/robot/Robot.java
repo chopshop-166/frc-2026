@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.function.DoubleUnaryOperator;
@@ -27,14 +26,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.RotationTargets;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Drive.RotationTargets;
 
 public final class Robot extends CommandRobot {
 
