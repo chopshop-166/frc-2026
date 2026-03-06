@@ -140,7 +140,7 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(3000);
+            case CLOSE_SHOT -> RPM.of(1000);
             case MID_SHOT -> RPM.of(4500);
             case FAR_SHOT -> RPM.of(6000);
             case OFF -> RPM.of(0);
@@ -179,7 +179,7 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(3000);
+            case CLOSE_SHOT -> RPM.of(1000);
             case MID_SHOT -> RPM.of(4500);
             case FAR_SHOT -> RPM.of(6000);
             case OFF -> RPM.of(0);
@@ -250,9 +250,9 @@ public class ScorpionMap extends RobotMap {
         CSSparkMax roller = new CSSparkMax(16);
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast).inverted(true);
-        config.smartCurrentLimit(30);
+        config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .2;
+            case FORWARD -> .8;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -270,9 +270,9 @@ public class ScorpionMap extends RobotMap {
         CSSparkMax roller = new CSSparkMax(15);
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast).inverted(true);
-        config.smartCurrentLimit(30);
+        config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .4;
+            case FORWARD -> .8;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -288,16 +288,17 @@ public class ScorpionMap extends RobotMap {
     @Override
     public HoodMap getHoodMap() {
         CSSparkMax motor = new CSSparkMax(17);
-        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
+        ProfiledPIDController pid = new ProfiledPIDController(.1, 0, 0, new Constraints(Math.PI, 2 * Math.PI));
         SparkMaxConfig config = new SparkMaxConfig();
-        double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.015, 0.18);
+        double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (10.0 / 162.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        return new HoodMap(motor, pid, new ValueRange(0, 5));
+        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward);
     }
 
     @Override

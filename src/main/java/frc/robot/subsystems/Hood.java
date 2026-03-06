@@ -28,9 +28,14 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     }
 
-    public Command moveToAngle(double velocity) {
-        return run(() -> {
-            double setpoint = pid.calculate(getHoodAngle(), new State(calcAngle(velocity), 0));
+    public Command moveToAngle(double angle) {
+        return runOnce(() -> {
+            pid.reset(getHoodAngle());
+        }).andThen(run(() -> {
+            double setpoint = pid.calculate(getHoodAngle(), new State(angle, 0));
+            setpoint += getMap().armFeedforward.calculate(
+                    pid.getSetpoint().position,
+                    pid.getSetpoint().velocity);
             Logger.recordOutput("Hood/PID Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
 
@@ -38,13 +43,19 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
             Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
             Logger.recordOutput("Hood/Position Error", pid.getPositionError());
-        });
+        }));
 
     }
 
     public Command manualControl(DoubleSupplier joystick) {
         return run(() -> {
             getData().motor.setpoint = limits(joystick.getAsDouble());
+        });
+    }
+
+    public Command zero() {
+        return runOnce(() -> {
+            getMap().motor.getEncoder().reset();
         });
     }
 
@@ -68,7 +79,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     }
 
     private double getHoodAngle() {
-        return getMap().motor.getEncoder().getRate();
+        return getData().motor.distance;
     }
 
     @Override

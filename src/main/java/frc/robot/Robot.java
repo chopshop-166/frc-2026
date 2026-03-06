@@ -131,14 +131,14 @@ public final class Robot extends CommandRobot {
         driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB));
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
+        copilotController.back().onTrue(hood.zero());
         // feed shooter
         // copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
         // .onFalse(sequences.operatorSafeState());
         // // Intake
-        // copilotController.a().onTrue(sequences.intake());
-        // copilotController.b().onTrue(deployer.safeStateCmd());
-        copilotController.a().whileTrue(shooterR.spinUp(ShooterPresets.CLOSE_SHOT));
+        copilotController.y().onTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT));
 
+        copilotController.a().whileTrue(hood.moveToAngle(.2));
     }
 
     @Override
@@ -157,8 +157,9 @@ public final class Robot extends CommandRobot {
     }
 
     @Override
+
     public void setDefaultCommands() {
-        hood.manualControl(() -> copilotController.getRightY());
+        hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () -> copilotController.getRightY())));
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {

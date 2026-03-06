@@ -26,12 +26,12 @@ public class CommandSequences {
 
     public Command shoot(ShooterPresets shotSpeed) {
         return (robot.shooterL.spinUp(shotSpeed)
-                .alongWith(robot.shooterR.spinUp(shotSpeed), robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
-                .andThen(feedShooter()));
+                .alongWith(robot.shooterR.spinUp(shotSpeed) // robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
+                        .andThen(feedShooter())));
     }
 
     public Command feedShooter() {
-        return robot.activeFloor.rollIn().alongWith(robot.feeder.rollIn());
+        return robot.activeFloor.rollIn().alongWith(robot.feeder.rollIn(), robot.intake.rollIn());
     }
 
     public Command operatorSafeState() {
