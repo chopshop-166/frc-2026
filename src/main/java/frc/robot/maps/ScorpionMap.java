@@ -267,10 +267,12 @@ public class ScorpionMap extends RobotMap {
 
     @Override
     public RollerMap getActiveFloorMap() {
-        CSSparkMax roller = new CSSparkMax(15);
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast).inverted(true);
-        config.smartCurrentLimit(50);
+        CSSparkMax rollerR = new CSSparkMax(15);
+        CSSparkMax rollerL = new CSSparkMax(18);
+        SparkMaxConfig configA = new SparkMaxConfig();
+        SparkMaxConfig configB = new SparkMaxConfig();
+        configA.idleMode(IdleMode.kCoast).inverted(true);
+        configA.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> .8;
             case REVERSE -> -.2;
@@ -280,9 +282,17 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
-        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+        rollerR.getMotorController().configure(configA, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        return new RollerMap(roller, presets);
+
+        rollerL.getMotorController().configure(configA, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        configB.follow(rollerR.getMotorController());
+
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(rollerR, rollerL);
+
+        return new RollerMap(smcg, presets);
     }
 
     @Override
