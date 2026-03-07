@@ -287,7 +287,7 @@ public class ScorpionMap extends RobotMap {
 
         rollerL.getMotorController().configure(configA, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
+        configB.inverted(true);
         configB.follow(rollerR.getMotorController());
 
         SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(rollerR, rollerL);
