@@ -130,8 +130,9 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
         configA.smartCurrentLimit(60);
-        configA.closedLoop.pid(0.001, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        configA.closedLoop.pid(0.0013, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
+        configB.smartCurrentLimit(60);
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -141,8 +142,8 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(4500);
-            case FAR_SHOT -> RPM.of(6000);
+            case MID_SHOT -> RPM.of(3000);
+            case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
         };
@@ -169,8 +170,9 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
         configA.smartCurrentLimit(60).inverted(true);
-        configA.closedLoop.pid(0.001, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        configA.closedLoop.pid(0.0008, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
+        configB.smartCurrentLimit(60);
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -180,8 +182,8 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(4500);
-            case FAR_SHOT -> RPM.of(6000);
+            case MID_SHOT -> RPM.of(3000);
+            case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
         };
@@ -269,10 +271,10 @@ public class ScorpionMap extends RobotMap {
     public RollerMap getActiveFloorMap() {
         CSSparkMax rollerR = new CSSparkMax(15);
         CSSparkMax rollerL = new CSSparkMax(18);
-        SparkMaxConfig configA = new SparkMaxConfig();
-        SparkMaxConfig configB = new SparkMaxConfig();
-        configA.idleMode(IdleMode.kCoast).inverted(true);
-        configA.smartCurrentLimit(50);
+        SparkMaxConfig configR = new SparkMaxConfig();
+        SparkMaxConfig configL = new SparkMaxConfig();
+        configR.idleMode(IdleMode.kCoast).inverted(true);
+        configR.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> .8;
             case REVERSE -> -.2;
@@ -282,13 +284,12 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
-        rollerR.getMotorController().configure(configA, ResetMode.kResetSafeParameters,
+        rollerR.getMotorController().configure(configR, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        rollerL.getMotorController().configure(configA, ResetMode.kResetSafeParameters,
+        configL.follow(rollerR.getMotorController(), true);
+        rollerL.getMotorController().configure(configL, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        configB.inverted(true);
-        configB.follow(rollerR.getMotorController());
 
         SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(rollerR, rollerL);
 
@@ -298,12 +299,15 @@ public class ScorpionMap extends RobotMap {
     @Override
     public HoodMap getHoodMap() {
         CSSparkMax motor = new CSSparkMax(17);
-        ProfiledPIDController pid = new ProfiledPIDController(.1, 0, 0, new Constraints(Math.PI, 2 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0, new Constraints(Math.PI, 2 * Math.PI));
+        pid.setTolerance(.008);
         SparkMaxConfig config = new SparkMaxConfig();
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.015, 0.18);
-        double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (10.0 / 162.0) * (2.0 * Math.PI);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
+        double gearRatio = (14.0 / 44.0) * (10.0 / 162.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
+                .quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10)
                 .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);

@@ -24,14 +24,15 @@ public class CommandSequences {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
-    public Command shoot(ShooterPresets shotSpeed) {
-        return (robot.shooterL.spinUp(shotSpeed)
-                .alongWith(robot.shooterR.spinUp(shotSpeed) // robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
+    public Command shoot(ShooterPresets shotSpeed, double hoodangle) {
+        return robot.hood.moveToAngle(hoodangle).alongWith(robot.shooterL.spinUp(shotSpeed)
+                .alongWith(robot.shooterR.spinUp(shotSpeed) //
+                        // robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
                         .andThen(feedShooter())));
     }
 
     public Command feedShooter() {
-        return robot.activeFloor.rollIn().alongWith(robot.feeder.rollIn(), robot.intake.rollIn());
+        return robot.feeder.rollIn();// .alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
     }
 
     public Command operatorSafeState() {

@@ -33,10 +33,11 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             pid.reset(getHoodAngle());
         }).andThen(run(() -> {
             double setpoint = pid.calculate(getHoodAngle(), new State(angle, 0));
+            Logger.recordOutput("Hood/PID Setpoint", setpoint);
             setpoint += getMap().armFeedforward.calculate(
                     pid.getSetpoint().position,
                     pid.getSetpoint().velocity);
-            Logger.recordOutput("Hood/PID Setpoint", setpoint);
+            Logger.recordOutput("Hood/FF Setpoint", setpoint);
             getData().motor.setpoint = setpoint;
 
             Logger.recordOutput("Hood/pid at goal", pid.atGoal());
