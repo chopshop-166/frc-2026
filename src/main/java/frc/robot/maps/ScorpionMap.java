@@ -10,8 +10,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.ValueRange;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
+import com.chopshop166.chopshoplib.maps.CameraSource;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
+import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.SmartMotorControllerGroup;
@@ -31,6 +33,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -51,9 +55,9 @@ public class ScorpionMap extends RobotMap {
     @Override
     public SwerveDriveMap getDriveMap() {
         final double FLOFFSET = 100;
-        final double FROFFSET = 179.5;
-        final double RLOFFSET = 17.3;
-        final double RROFFSET = 47;
+        final double FROFFSET = 110;
+        final double RLOFFSET = 16;
+        final double RROFFSET = 45;
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
@@ -142,7 +146,7 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(2500);
             case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
@@ -182,7 +186,7 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(3000);
+            case MID_SHOT -> RPM.of(2500);
             case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
@@ -234,7 +238,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(60);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .6;
+            case FORWARD -> .8;
             case REVERSE -> -.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -313,6 +317,23 @@ public class ScorpionMap extends RobotMap {
                 PersistMode.kPersistParameters);
 
         return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward);
+    }
+
+    @Override
+    public VisionMap getVisionMap() {
+
+        return new VisionMap(180,
+                new CameraSource("L_Scorpion_Cam",
+                        new Transform3d(Units.inchesToMeters(-10.971), Units.inchesToMeters(-4.227),
+                                Units.inchesToMeters(21.149),
+                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))),
+                new CameraSource("R_Scorpion_Cam",
+                        new Transform3d(Units.inchesToMeters(
+                                10.954),
+                                Units.inchesToMeters(
+                                        -4.227),
+                                Units.inchesToMeters(21.223),
+                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))));
     }
 
     @Override
