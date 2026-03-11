@@ -228,13 +228,21 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     public Command rotateToTarget(RotationTargets target) {
 
-        return startEnd(() -> {
+        return rotateToTargetContinuous(target).until(() -> rotationPID.atGoal()).andThen(rotationTargetOff());
+
+    }
+
+    public Command rotateToTargetContinuous(RotationTargets target) {
+        return runOnce(() -> {
             rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
             this.target = target;
-        }, () -> {
-            this.target = RotationTargets.OFF;
-        }).until(() -> rotationPID.atGoal());
+        });
+    }
 
+    public Command rotationTargetOff() {
+        return runOnce(() -> {
+            target = RotationTargets.OFF;
+        });
     }
 
     public static Pose2d getLeftFeedPosition(boolean isBlueAlliance) {

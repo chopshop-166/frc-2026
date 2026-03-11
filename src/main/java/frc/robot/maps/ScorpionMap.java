@@ -323,16 +323,13 @@ public class ScorpionMap extends RobotMap {
     @Override
     public VisionMap getVisionMap() {
 
-        return new VisionMap(180,
+        return new VisionMap(0,
                 new CameraSource("L_Scorpion_Cam",
                         new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(10.971),
                                 Units.inchesToMeters(21.149),
                                 new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))),
                 new CameraSource("R_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(
-                                4.227),
-                                Units.inchesToMeters(
-                                        -10.954),
+                        new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(-10.954),
                                 Units.inchesToMeters(21.223),
                                 new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))));
     }
