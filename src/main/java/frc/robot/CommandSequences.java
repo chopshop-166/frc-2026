@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -24,14 +25,20 @@ public class CommandSequences {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
-    public Command shoot(ShooterPresets shotSpeed) {
-        return (robot.shooterL.spinUp(shotSpeed)
-                .alongWith(robot.shooterR.spinUp(shotSpeed), robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
-                .andThen(feedShooter()));
+    public Command shoot(ShooterPresets shotSpeed, double hoodangle) {
+        return robot.hood.moveToAngle(hoodangle).alongWith(robot.shooterL.spinUp(shotSpeed)
+                .alongWith(robot.shooterR.spinUp(shotSpeed) //
+                        // robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
+                        .andThen(feedShooter())));
+    }
+
+    public Command shootAuto(ShooterPresets shotSpeed, double hoodAngle) {
+        return shoot(shotSpeed, hoodAngle).andThen(waitSeconds(5))
+                .andThen(robot.shooterR.safeStateCmd().alongWith(robot.shooterL.safeStateCmd()));
     }
 
     public Command feedShooter() {
-        return robot.activeFloor.rollIn().alongWith(robot.feeder.rollIn());
+        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
     }
 
     public Command operatorSafeState() {

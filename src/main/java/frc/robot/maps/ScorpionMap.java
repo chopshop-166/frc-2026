@@ -10,8 +10,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.ValueRange;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
+import com.chopshop166.chopshoplib.maps.CameraSource;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
+import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.SmartMotorControllerGroup;
@@ -31,6 +33,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -51,9 +55,9 @@ public class ScorpionMap extends RobotMap {
     @Override
     public SwerveDriveMap getDriveMap() {
         final double FLOFFSET = 100;
-        final double FROFFSET = 179.5;
-        final double RLOFFSET = 17.3;
-        final double RROFFSET = 47;
+        final double FROFFSET = 110;
+        final double RLOFFSET = 16;
+        final double RROFFSET = 45;
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
@@ -130,8 +134,9 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
         configA.smartCurrentLimit(60);
-        configA.closedLoop.pid(0.001, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        configA.closedLoop.pid(0.0013, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
+        configB.smartCurrentLimit(60);
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -140,9 +145,9 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(3000);
-            case MID_SHOT -> RPM.of(4500);
-            case FAR_SHOT -> RPM.of(6000);
+            case CLOSE_SHOT -> RPM.of(1000);
+            case MID_SHOT -> RPM.of(2500);
+            case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
         };
@@ -169,8 +174,9 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configB = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
         configA.smartCurrentLimit(60).inverted(true);
-        configA.closedLoop.pid(0.001, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00016));
+        configA.closedLoop.pid(0.0008, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
+        configB.smartCurrentLimit(60);
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
         motorA.setPidSlot(0);
@@ -179,9 +185,9 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(3000);
-            case MID_SHOT -> RPM.of(4500);
-            case FAR_SHOT -> RPM.of(6000);
+            case CLOSE_SHOT -> RPM.of(1000);
+            case MID_SHOT -> RPM.of(2500);
+            case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
         };
@@ -232,7 +238,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(60);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .6;
+            case FORWARD -> .8;
             case REVERSE -> -.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -250,9 +256,9 @@ public class ScorpionMap extends RobotMap {
         CSSparkMax roller = new CSSparkMax(16);
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kCoast).inverted(true);
-        config.smartCurrentLimit(30);
+        config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .2;
+            case FORWARD -> .8;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -267,12 +273,14 @@ public class ScorpionMap extends RobotMap {
 
     @Override
     public RollerMap getActiveFloorMap() {
-        CSSparkMax roller = new CSSparkMax(15);
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.idleMode(IdleMode.kCoast).inverted(true);
-        config.smartCurrentLimit(30);
+        CSSparkMax rollerR = new CSSparkMax(15);
+        CSSparkMax rollerL = new CSSparkMax(18);
+        SparkMaxConfig configR = new SparkMaxConfig();
+        SparkMaxConfig configL = new SparkMaxConfig();
+        configR.idleMode(IdleMode.kCoast).inverted(true);
+        configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .4;
+            case FORWARD -> .8;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -280,24 +288,53 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
-        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+        rollerR.getMotorController().configure(configR, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        return new RollerMap(roller, presets);
+
+        configL.follow(rollerR.getMotorController(), true);
+        rollerL.getMotorController().configure(configL, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(rollerR, rollerL);
+
+        return new RollerMap(smcg, presets);
     }
 
     @Override
     public HoodMap getHoodMap() {
         CSSparkMax motor = new CSSparkMax(17);
-        ProfiledPIDController pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
+        ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0,
+                new Constraints(Math.PI, 2 * Math.PI));
+        pid.setTolerance(Units.degreesToRadians(.5));
         SparkMaxConfig config = new SparkMaxConfig();
-        double gearRatio = (14.0 / 44.0) * (12.0 / 18.0) * (2.0 * Math.PI);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
+        double gearRatio = (14.0 / 44.0) * (10.0 / 162.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
+                .quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10)
                 .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        return new HoodMap(motor, pid, new ValueRange(0, 5));
+        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward);
+    }
+
+    @Override
+    public VisionMap getVisionMap() {
+
+        return new VisionMap(180,
+                new CameraSource("L_Scorpion_Cam",
+                        new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(10.971),
+                                Units.inchesToMeters(21.149),
+                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))),
+                new CameraSource("R_Scorpion_Cam",
+                        new Transform3d(Units.inchesToMeters(
+                                4.227),
+                                Units.inchesToMeters(
+                                        -10.954),
+                                Units.inchesToMeters(21.223),
+                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))));
     }
 
     @Override

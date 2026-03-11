@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.function.DoubleUnaryOperator;
@@ -128,17 +129,19 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB));
+        // driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB));
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
+        copilotController.back().onTrue(hood.zero());
         // feed shooter
-        // copilotController.b().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT))
+        // copilotController.b().onTrue(shooterR.spinUp(ShooterPresets.MID_SHOT));
         // .onFalse(sequences.operatorSafeState());
         // // Intake
-        // copilotController.a().onTrue(sequences.intake());
-        // copilotController.b().onTrue(deployer.safeStateCmd());
-        copilotController.a().whileTrue(shooterR.spinUp(ShooterPresets.CLOSE_SHOT));
-
+        copilotController.a().onTrue(sequences.intake());
+        copilotController.b().onTrue(sequences.shoot(ShooterPresets.MID_SHOT, 0.1));
+        // copilotController.b().whileTrue(hood.moveToAngle(.3));
+        // copilotController.a().onTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, 0));
+        // copilotController.a().whileTrue(activeFloor.rollIn());
     }
 
     @Override
@@ -157,8 +160,9 @@ public final class Robot extends CommandRobot {
     }
 
     @Override
+
     public void setDefaultCommands() {
-        hood.manualControl(() -> copilotController.getRightY());
+        hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY())));
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {
@@ -172,10 +176,9 @@ public final class Robot extends CommandRobot {
 
     private final void registerNamedCommands() {
         NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT));
+        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, 0));
         NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
-        NamedCommands.registerCommand("Shoot sequence", sequences.shoot(ShooterPresets.MID_SHOT).andThen(waitSeconds(5))
-                .andThen(shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd())));
+        NamedCommands.registerCommand("Shoot sequence", sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
 
     }
 }
