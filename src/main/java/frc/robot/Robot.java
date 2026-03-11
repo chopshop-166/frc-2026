@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -30,7 +27,6 @@ import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Drive.RotationTargets;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
@@ -177,7 +173,7 @@ public final class Robot extends CommandRobot {
     private final void registerNamedCommands() {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, 0));
-        NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
+        NamedCommands.registerCommand("Stop shoot", sequences.operatorSafeState());
         NamedCommands.registerCommand("Shoot sequence", sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
 
     }
