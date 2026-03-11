@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -29,6 +30,11 @@ public class CommandSequences {
                 .alongWith(robot.shooterR.spinUp(shotSpeed) //
                         // robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
                         .andThen(feedShooter())));
+    }
+
+    public Command shootAuto(ShooterPresets shotSpeed, double hoodAngle) {
+        return shoot(shotSpeed, hoodAngle).andThen(waitSeconds(5))
+                .andThen(robot.shooterR.safeStateCmd().alongWith(robot.shooterL.safeStateCmd()));
     }
 
     public Command feedShooter() {

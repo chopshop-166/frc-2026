@@ -178,9 +178,7 @@ public final class Robot extends CommandRobot {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, 0));
         NamedCommands.registerCommand("Stop shoot", shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd()));
-        NamedCommands.registerCommand("Shoot sequence",
-                sequences.shoot(ShooterPresets.MID_SHOT, 0).andThen(waitSeconds(5))
-                        .andThen(shooterR.safeStateCmd().alongWith(shooterL.safeStateCmd())));
+        NamedCommands.registerCommand("Shoot sequence", sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
 
     }
 }

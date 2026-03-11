@@ -278,7 +278,7 @@ public class ScorpionMap extends RobotMap {
         SparkMaxConfig configR = new SparkMaxConfig();
         SparkMaxConfig configL = new SparkMaxConfig();
         configR.idleMode(IdleMode.kCoast).inverted(true);
-        configR.smartCurrentLimit(50);
+        configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> .8;
             case REVERSE -> -.2;
@@ -303,8 +303,9 @@ public class ScorpionMap extends RobotMap {
     @Override
     public HoodMap getHoodMap() {
         CSSparkMax motor = new CSSparkMax(17);
-        ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0, new Constraints(Math.PI, 2 * Math.PI));
-        pid.setTolerance(.008);
+        ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0,
+                new Constraints(Math.PI, 2 * Math.PI));
+        pid.setTolerance(Units.degreesToRadians(.5));
         SparkMaxConfig config = new SparkMaxConfig();
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
         double gearRatio = (14.0 / 44.0) * (10.0 / 162.0) * (2.0 * Math.PI);
