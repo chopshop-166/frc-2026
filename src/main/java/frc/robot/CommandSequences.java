@@ -28,7 +28,7 @@ public class CommandSequences {
 
     public Command shoot(ShooterPresets shotSpeed, double hoodangle) {
         return robot.hood.moveToAngle(hoodangle)
-                .alongWith(robot.shooterL.spinUp(shotSpeed), robot.shooterR.spinUp(shotSpeed),
+                .alongWith(robot.shooterL.spinUp(shotSpeed)).alongWith(robot.shooterR.spinUp(shotSpeed),
                         robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
                 .andThen(feedShooter().alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB)));
     }
