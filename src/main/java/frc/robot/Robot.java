@@ -125,7 +125,8 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB));
+        driveController.leftBumper().whileTrue(drive.rotateToTarget(RotationTargets.HUB))
+                .onFalse(drive.rotationTargetOff());
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
         copilotController.back().onTrue(hood.zero());

@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -197,6 +198,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
+        Logger.recordOutput("Drive/Target", target);
         if (target != RotationTargets.OFF) {
             // Safe to do because of the if statements below
             Pose2d targetPoseValue = new Pose2d();
@@ -218,7 +220,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             Logger.recordOutput("Drive/Tangented", tangented);
 
             // Offset for shooter based on front of robot
-            rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
+            rotationSpeed = -rotationPID.calculate(robotPose.getRotation().getDegrees(),
                     tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
             rotationSpeed += Math.copySign(ROTATION_KS, rotationSpeed);
         }
@@ -227,8 +229,8 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     }
 
     public Command rotateToTarget(RotationTargets target) {
-
-        return rotateToTargetContinuous(target).until(() -> rotationPID.atGoal()).andThen(rotationTargetOff());
+        return rotateToTargetContinuous(target)
+                .andThen(waitUntil(() -> rotationPID.atGoal()).andThen(rotationTargetOff()));
 
     }
 
