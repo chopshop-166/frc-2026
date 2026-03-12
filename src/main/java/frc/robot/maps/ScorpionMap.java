@@ -213,7 +213,7 @@ public class ScorpionMap extends RobotMap {
         ProfiledPIDController pid = new ProfiledPIDController(0.25, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
         pid.setTolerance(.1);
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.05);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 32);
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35);
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
@@ -227,7 +227,9 @@ public class ScorpionMap extends RobotMap {
             default -> Angle.ofBaseUnits(Double.NaN, Degrees);
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        return new DeployerMap(motor, encoder, presets, pid, new ValueRange(1, 115), new ValueRange(10, 100),
+        return new DeployerMap(motor, encoder, presets, pid,
+                new ValueRange(Units.degreesToRadians(1), Units.degreesToRadians(115)),
+                new ValueRange(Units.degreesToRadians(10), Units.degreesToRadians(100)),
                 feedForward);
     }
 
