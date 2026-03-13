@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
@@ -138,9 +139,9 @@ public final class Robot extends CommandRobot {
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.MID_SHOT, 0.15))
+        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.MID_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState());
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, 0.15))
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState());
 
     }
@@ -177,7 +178,7 @@ public final class Robot extends CommandRobot {
 
     private final void registerNamedCommands() {
         NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, 0));
+        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.OFF));
         NamedCommands.registerCommand("Stop shoot", sequences.operatorSafeState());
         // NamedCommands.registerCommand("Shoot sequence",
         // sequences.shootAuto(ShooterPresets.MID_SHOT, 0));

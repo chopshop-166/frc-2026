@@ -2,6 +2,7 @@ package frc.robot.maps;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -48,6 +49,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.HoodMap;
+import frc.robot.maps.subsystems.HoodMap.PresetValue;
 import frc.robot.maps.subsystems.RollerMap;
 import frc.robot.maps.subsystems.ShooterMap;
 
@@ -326,7 +328,15 @@ public class ScorpionMap extends RobotMap {
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward);
+        PresetValue presets = preset -> switch (preset) {
+            case CLOSE -> Radians.of(1.0);
+            case MID -> Radians.of(1.5);
+            case FAR -> Radians.of(3.0);
+            case OFF -> Angle.ofBaseUnits(0.0, Radians);
+            default -> Angle.ofBaseUnits(Double.NaN, Radians);
+        };
+
+        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);
     }
 
     @Override

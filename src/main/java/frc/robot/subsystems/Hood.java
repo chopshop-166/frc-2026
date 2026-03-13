@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.HoodMap.Data;
+import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 
 public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final ProfiledPIDController pid;
@@ -28,11 +31,12 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     }
 
-    public Command moveToAngle(double angle) {
+    public Command moveToAngle(HoodPresets angle) {
         return runOnce(() -> {
             pid.reset(getHoodAngle());
         }).andThen(run(() -> {
-            double setpoint = pid.calculate(getHoodAngle(), new State(angle, 0));
+            double targetAngle = getMap().hoodPreset.apply(getData().preset).in(Radians);
+            double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
             Logger.recordOutput("Hood/PID Setpoint", setpoint);
             setpoint += getMap().armFeedforward.calculate(
                     pid.getSetpoint().position,
