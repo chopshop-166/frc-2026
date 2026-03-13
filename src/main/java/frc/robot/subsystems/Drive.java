@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -58,9 +59,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub Ft").publish();
 
-    ProfiledPIDController rotationPID = new ProfiledPIDController(0.06, 0.0, 0.0, new Constraints(240, 270));
-    ProfiledPIDController translationPID_X = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
-    ProfiledPIDController translationPID_Y = new ProfiledPIDController(1.6, 0, 0.0, new Constraints(2.0, 3.0));
+    ProfiledPIDController rotationPID = new ProfiledPIDController(0.1, 0.0, 0.0, new Constraints(240, 270));
     DoubleSupplier xSpeedSupplier;
     DoubleSupplier ySpeedSupplier;
     DoubleSupplier rotationSupplier;
@@ -121,8 +120,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         this.ySpeedSupplier = ySpeed;
         this.rotationSupplier = rotation;
 
-        translationPID_X.setTolerance(0.035);
-        translationPID_Y.setTolerance(0.035);
         rotationPID.setTolerance(2);
     }
 
@@ -175,12 +172,6 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
         Logger.recordOutput("Drive/Estimator Pose", estimator.getEstimatedPosition());
         Logger.recordOutput("Drive/Robot Rotation Gyro", getMap().gyro.getRotation2d());
-        Logger.recordOutput("Drive/Translation_X_PID/Error", translationPID_X.getPositionError());
-        Logger.recordOutput("Drive/Translation_X_PID/Velocity", translationPID_X.getSetpoint().velocity);
-        Logger.recordOutput("Drive/Translation_X_PID/At Goal", translationPID_X.atGoal());
-        Logger.recordOutput("Drive/Translation_Y_PID/Error", translationPID_Y.getPositionError());
-        Logger.recordOutput("Drive/Translation_Y_PID/Velocity", translationPID_Y.getSetpoint().velocity);
-        Logger.recordOutput("Drive/Translation_Y_PID/At Goal", translationPID_Y.atGoal());
         Logger.recordOutput("Drive/Rotation_PID/Error", rotationPID.getPositionError());
         Logger.recordOutput("Drive/Rotation_PID/Velocity", rotationPID.getSetpoint().velocity);
         Logger.recordOutput("Drive/Rotation_PID/At Goal", rotationPID.atGoal());
@@ -197,6 +188,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         double translateXSpeedMPS = xInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double translateYSpeedMPS = yInput * maxDriveSpeedMetersPerSecond * SPEED_COEFFICIENT;
         double rotationSpeed = rotationInput * maxRotationRadiansPerSecond * ROTATION_COEFFICIENT;
+        Logger.recordOutput("Drive/Target", target);
         if (target != RotationTargets.OFF) {
             // Safe to do because of the if statements below
             Pose2d targetPoseValue = new Pose2d();
@@ -217,6 +209,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             tangented = Radians.of(tangented).in(Degrees);
             Logger.recordOutput("Drive/Tangented", tangented);
 
+            Logger.recordOutput("Drive/RotationPidAtGoal", rotationPID.atGoal());
             // Offset for shooter based on front of robot
             rotationSpeed = rotationPID.calculate(robotPose.getRotation().getDegrees(),
                     tangented + robotPose.getRotation().getDegrees() + visionMap.offset);
@@ -227,14 +220,22 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     }
 
     public Command rotateToTarget(RotationTargets target) {
+        return rotateToTargetContinuous(target)
+                .andThen(waitUntil(() -> rotationPID.atGoal()));
 
-        return startEnd(() -> {
+    }
+
+    public Command rotateToTargetContinuous(RotationTargets target) {
+        return runOnce(() -> {
             rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
             this.target = target;
-        }, () -> {
-            this.target = RotationTargets.OFF;
-        }).until(() -> rotationPID.atGoal());
+        });
+    }
 
+    public Command rotationTargetOff() {
+        return runOnce(() -> {
+            target = RotationTargets.OFF;
+        });
     }
 
     public static Pose2d getLeftFeedPosition(boolean isBlueAlliance) {
@@ -256,7 +257,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     public BooleanSupplier visionPIDTrue() {
         return () -> {
-            return translationPID_X.atGoal() && translationPID_Y.atGoal() && rotationPID.atGoal();
+            return rotationPID.atGoal();
         };
     }
 
