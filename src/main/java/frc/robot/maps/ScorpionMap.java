@@ -42,6 +42,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -55,6 +57,9 @@ import frc.robot.maps.subsystems.ShooterMap;
 
 @RobotMapFor("00:80:2F:40:A6:13")
 public class ScorpionMap extends RobotMap {
+
+    NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
+    DoubleSubscriber shooterPresetSubscriber = ntInstance.getDoubleTopic("Shooter/Preset").subscribe(0.0);
 
     private final double MID_SHOT_RPM = 1800;
 
@@ -198,6 +203,7 @@ public class ScorpionMap extends RobotMap {
             case MID_SHOT -> RPM.of(MID_SHOT_RPM);
             case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
+            case NETWORK_TABLES -> RPM.of(shooterPresetSubscriber.get());
             default -> RPM.of(Double.NaN);
         };
 
