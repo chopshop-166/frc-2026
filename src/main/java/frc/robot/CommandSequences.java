@@ -41,11 +41,6 @@ public class CommandSequences {
                         .andThen(feedShooter())));
     }
 
-    public Command shootAuto(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
-        return shoot(shotSpeed, hoodAngle).andThen(waitSeconds(5))
-                .andThen(operatorSafeState());
-    }
-
     public Command feedShooter() {
         return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
     }
