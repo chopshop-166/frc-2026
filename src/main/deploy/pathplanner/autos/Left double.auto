@@ -21,7 +21,19 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Top Cycle 1"
+                        "pathName": "Left Cycle 1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
                       }
                     },
                     {
@@ -33,7 +45,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Top Cycle 2"
+                        "pathName": "Left Cycle 2"
                       }
                     },
                     {

@@ -24,7 +24,9 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         MID,
 
-        FAR;
+        FAR,
+
+        NETWORK_TABLES;
     }
 
     public interface PresetValue extends Function<HoodPresets, Angle> {

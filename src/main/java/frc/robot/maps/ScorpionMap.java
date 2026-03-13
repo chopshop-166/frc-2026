@@ -60,6 +60,7 @@ public class ScorpionMap extends RobotMap {
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     DoubleSubscriber shooterPresetSubscriber = ntInstance.getDoubleTopic("Shooter/Preset").subscribe(0.0);
+    DoubleSubscriber hoodPresetSubscriber = ntInstance.getDoubleTopic("Hood/Preset").subscribe(0);
 
     private final double MID_SHOT_RPM = 1800;
 
@@ -339,6 +340,7 @@ public class ScorpionMap extends RobotMap {
             case MID -> Radians.of(1.5);
             case FAR -> Radians.of(3.0);
             case OFF -> Angle.ofBaseUnits(0.0, Radians);
+            case NETWORK_TABLES -> Radians.of(hoodPresetSubscriber.get());
             default -> Angle.ofBaseUnits(Double.NaN, Radians);
         };
 

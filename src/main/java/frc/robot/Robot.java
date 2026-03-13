@@ -143,6 +143,7 @@ public final class Robot extends CommandRobot {
                 .onFalse(sequences.operatorSafeState());
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState());
+        copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES, HoodPresets.NETWORK_TABLES));
 
     }
 
