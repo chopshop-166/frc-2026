@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +29,7 @@ import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.RotationTargets;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
@@ -125,7 +128,7 @@ public final class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.LEFT_FEED))
+        driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.HUB))
                 .onFalse(drive.rotationTargetOff());
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
@@ -133,8 +136,11 @@ public final class Robot extends CommandRobot {
         // feed shooter
 
         // // Intake
-        copilotController.a().onTrue(sequences.intake());
-        copilotController.b().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, 0.1))
+        copilotController.a().whileTrue(sequences.intake())
+                .onFalse(intake.safeStateCmd());
+        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.MID_SHOT, 0.15))
+                .onFalse(sequences.operatorSafeState());
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, 0.15))
                 .onFalse(sequences.operatorSafeState());
 
     }
@@ -173,7 +179,7 @@ public final class Robot extends CommandRobot {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, 0));
         NamedCommands.registerCommand("Stop shoot", sequences.operatorSafeState());
-        NamedCommands.registerCommand("Shoot sequence", sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
-
+        // NamedCommands.registerCommand("Shoot sequence",
+        // sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
     }
 }

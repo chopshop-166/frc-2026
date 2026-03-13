@@ -26,12 +26,18 @@ public class CommandSequences {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
-    public Command shoot(ShooterPresets shotSpeed, double hoodangle) {
+    public Command shootAutoAlign(ShooterPresets shotSpeed, double hoodangle) {
         return robot.hood.moveToAngle(hoodangle)
                 .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed),
                         robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
                         .andThen(feedShooter()
                                 .alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB))));
+    }
+
+    public Command shoot(ShooterPresets shotSpeed, double hoodangle) {
+        return robot.hood.moveToAngle(hoodangle)
+                .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed)
+                        .andThen(feedShooter())));
     }
 
     public Command shootAuto(ShooterPresets shotSpeed, double hoodAngle) {

@@ -19,6 +19,8 @@ import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.SmartMotorControllerGroup;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -52,17 +54,22 @@ import frc.robot.maps.subsystems.ShooterMap;
 @RobotMapFor("00:80:2F:40:A6:13")
 public class ScorpionMap extends RobotMap {
 
+    private final double MID_SHOT_RPM = 1800;
+
     @Override
     public SwerveDriveMap getDriveMap() {
-        final double FLOFFSET = 100;
-        final double FROFFSET = 110;
-        final double RLOFFSET = 16;
-        final double RROFFSET = 45;
+        final double FLOFFSET = 100 + 180;
+        final double FROFFSET = 110 + 180;
+        final double RLOFFSET = 16 + 180;
+        final double RROFFSET = 45 + 180;
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
         final double MODULE_OFFSET_XY = Units.inchesToMeters(11.379);
-        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
+        final Pigeon2 pigeon = new Pigeon2(1);
+        var pigeonConfig = pigeon.getConfigurator();
+        pigeonConfig.apply(new MountPoseConfigs().withMountPoseRoll(180));
+        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(pigeon);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(2);
         final CSSparkMax frontRightSteer = new CSSparkMax(4);
@@ -146,7 +153,7 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(2500);
+            case MID_SHOT -> RPM.of(MID_SHOT_RPM);
             case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
@@ -186,7 +193,7 @@ public class ScorpionMap extends RobotMap {
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(1000);
-            case MID_SHOT -> RPM.of(2500);
+            case MID_SHOT -> RPM.of(MID_SHOT_RPM);
             case FAR_SHOT -> RPM.of(4000);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
@@ -222,7 +229,7 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
             case OFF -> Angle.ofBaseUnits(Double.NaN, Degrees);
-            case OUT -> Degrees.of(10);
+            case OUT -> Degrees.of(3);
             case IN -> Degrees.of(110);
             default -> Angle.ofBaseUnits(Double.NaN, Degrees);
         };
@@ -240,7 +247,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast);
         config.smartCurrentLimit(60);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 0.8;
             case REVERSE -> -.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -260,7 +267,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast).inverted(true);
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1.0;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -282,7 +289,7 @@ public class ScorpionMap extends RobotMap {
         configR.idleMode(IdleMode.kCoast).inverted(true);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1;
             case REVERSE -> -.2;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
