@@ -15,13 +15,16 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public enum ShooterPresets {
+        // No preset
         OFF,
-
+        // Shoot up close
         CLOSE_SHOT,
-
+        // Mid range shot
         MID_SHOT,
-
-        FAR_SHOT
+        // Shoot for distance
+        FAR_SHOT,
+        // Get the value from NT
+        NETWORK_TABLES
 
     }
 
@@ -39,7 +42,6 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public ShooterMap(SmartMotorController flywheel, PresetValues presetValues) {
         this.flywheel = flywheel;
-    
         this.presetValues = presetValues;
 
     }
@@ -52,7 +54,6 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public static class Data extends DataWrapper {
         public MotorControllerData flywheel = new MotorControllerData(true);
-      
 
         @LogName("Game Piece Detected")
         public boolean gamePieceDetected;
