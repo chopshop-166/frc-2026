@@ -27,6 +27,10 @@ public class CommandSequences {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
     }
 
+    public Command retractIntake() {
+        return robot.deployer.moveTo(DeployerPresets.IN).alongWith(robot.intake.safeStateCmd());
+    }
+
     public Command shootAutoAlign(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
         return robot.hood.moveToAngle(hoodAngle)
                 .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed),

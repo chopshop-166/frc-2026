@@ -9,37 +9,57 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "parallel",
                       "data": {
-                        "pathName": "Bottom Cycle 1"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          },
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Bottom Cycle 1"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot sequence"
+                        "name": "Shoot"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "parallel",
                       "data": {
-                        "pathName": "Bottom Cycle 2"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          },
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Bottom Cycle 2"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot sequence"
+                        "name": "Shoot"
                       }
                     }
                   ]

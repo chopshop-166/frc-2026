@@ -35,6 +35,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         return runOnce(() -> {
             pid.reset(getHoodAngle());
         }).andThen(run(() -> {
+            getData().preset = angle;
             double targetAngle = getMap().hoodPreset.apply(getData().preset).in(Radians);
             double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
             Logger.recordOutput("Hood/PID Setpoint", setpoint);

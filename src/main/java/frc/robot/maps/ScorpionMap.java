@@ -42,6 +42,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
@@ -59,10 +60,12 @@ import frc.robot.maps.subsystems.ShooterMap;
 public class ScorpionMap extends RobotMap {
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-    DoubleSubscriber shooterPresetSubscriber = ntInstance.getDoubleTopic("Shooter/Preset").subscribe(0.0);
-    DoubleSubscriber hoodPresetSubscriber = ntInstance.getDoubleTopic("Hood/Preset").subscribe(0);
+    DoubleEntry shooterPresetSubscriber = ntInstance.getDoubleTopic("Shooter/Preset").getEntry(0);
+    DoubleEntry hoodPresetSubscriber = ntInstance.getDoubleTopic("Hood/Preset").getEntry(0);
 
-    private final double MID_SHOT_RPM = 1800;
+    private final double CLOSE_SHOT_RPM = 1800;
+    private final double MID_SHOT_RPM = 2000;
+    private final double FAR_SHOT_RPM = 2500;
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -160,9 +163,9 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(1000);
+            case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
             case MID_SHOT -> RPM.of(MID_SHOT_RPM);
-            case FAR_SHOT -> RPM.of(4000);
+            case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
             case OFF -> RPM.of(0);
             default -> RPM.of(Double.NaN);
         };
@@ -200,9 +203,9 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(1000);
+            case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
             case MID_SHOT -> RPM.of(MID_SHOT_RPM);
-            case FAR_SHOT -> RPM.of(4000);
+            case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
             case OFF -> RPM.of(0);
             case NETWORK_TABLES -> RPM.of(shooterPresetSubscriber.get());
             default -> RPM.of(Double.NaN);
@@ -226,9 +229,9 @@ public class ScorpionMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0.25, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(0.3, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
         pid.setTolerance(.1);
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.05);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.08);
         DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35);
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
@@ -239,12 +242,12 @@ public class ScorpionMap extends RobotMap {
         DeployerMap.PresetValue presets = preset -> switch (preset) {
             case OFF -> Angle.ofBaseUnits(Double.NaN, Degrees);
             case OUT -> Degrees.of(3);
-            case IN -> Degrees.of(110);
+            case IN -> Degrees.of(118);
             default -> Angle.ofBaseUnits(Double.NaN, Degrees);
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         return new DeployerMap(motor, encoder, presets, pid,
-                new ValueRange(Units.degreesToRadians(1), Units.degreesToRadians(115)),
+                new ValueRange(Units.degreesToRadians(1), Units.degreesToRadians(119)),
                 new ValueRange(Units.degreesToRadians(10), Units.degreesToRadians(100)),
                 feedForward);
     }
@@ -336,9 +339,9 @@ public class ScorpionMap extends RobotMap {
                 PersistMode.kPersistParameters);
 
         PresetValue presets = preset -> switch (preset) {
-            case CLOSE -> Radians.of(1.0);
-            case MID -> Radians.of(1.5);
-            case FAR -> Radians.of(3.0);
+            case CLOSE -> Radians.of(0.15);
+            case MID -> Radians.of(0.2);
+            case FAR -> Radians.of(0.44);
             case OFF -> Angle.ofBaseUnits(0.0, Radians);
             case NETWORK_TABLES -> Radians.of(hoodPresetSubscriber.get());
             default -> Angle.ofBaseUnits(Double.NaN, Radians);
