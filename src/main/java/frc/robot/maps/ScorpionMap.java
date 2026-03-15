@@ -43,7 +43,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
@@ -229,7 +228,7 @@ public class ScorpionMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0.3, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(0.27, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
         pid.setTolerance(.1);
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.08);
         DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35);
@@ -260,7 +259,7 @@ public class ScorpionMap extends RobotMap {
         config.smartCurrentLimit(60);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 0.8;
-            case REVERSE -> -.5;
+            case REVERSE -> -0.8;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
@@ -280,7 +279,7 @@ public class ScorpionMap extends RobotMap {
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 1.0;
-            case REVERSE -> -.2;
+            case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
@@ -302,7 +301,7 @@ public class ScorpionMap extends RobotMap {
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 1;
-            case REVERSE -> -.2;
+            case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
@@ -325,7 +324,7 @@ public class ScorpionMap extends RobotMap {
     public HoodMap getHoodMap() {
         CSSparkMax motor = new CSSparkMax(17);
         ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0,
-                new Constraints(Math.PI, 2 * Math.PI));
+                new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkMaxConfig config = new SparkMaxConfig();
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);

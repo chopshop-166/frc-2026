@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -23,7 +21,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
@@ -112,18 +109,19 @@ public final class Robot extends CommandRobot {
             Logger.recordOutput("Drive/PathPlannerTargetPose", pose);
         });
 
-        CommandScheduler.getInstance().onCommandInterrupt((oldCmd, newCmd) -> {
-            if (!DriverStation.isFMSAttached()) {
-                String newSub = "<NONE>";
-                String newName = "<NONE>";
-                if (newCmd.isPresent()) {
-                    newSub = newCmd.get().getSubsystem();
-                    newName = newCmd.get().getName();
-                }
-                System.out.println("Command interrupt: `" + oldCmd.getSubsystem() + "/" + oldCmd.getName() +
-                        "` -> `" + newSub + "/" + newName + "`");
-            }
-        });
+        // CommandScheduler.getInstance().onCommandInterrupt((oldCmd, newCmd) -> {
+        // if (!DriverStation.isFMSAttached()) {
+        // String newSub = "<NONE>";
+        // String newName = "<NONE>";
+        // if (newCmd.isPresent()) {
+        // newSub = newCmd.get().getSubsystem();
+        // newName = newCmd.get().getName();
+        // }
+        // System.out.println("Command interrupt: `" + oldCmd.getSubsystem() + "/" +
+        // oldCmd.getName() +
+        // "` -> `" + newSub + "/" + newName + "`");
+        // }
+        // });
 
     }
 
@@ -146,6 +144,7 @@ public final class Robot extends CommandRobot {
         copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
                 .onFalse(sequences.operatorSafeState());
         copilotController.rightBumper().onTrue(sequences.retractIntake());
+        copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
         // HoodPresets.NETWORK_TABLES));
 

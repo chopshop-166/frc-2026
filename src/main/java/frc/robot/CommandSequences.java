@@ -1,7 +1,6 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -11,7 +10,6 @@ import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Drive.RotationTargets;
 
 public class CommandSequences {
 
@@ -25,6 +23,10 @@ public class CommandSequences {
 
     public Command intake() {
         return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
+    }
+
+    public Command rollOut() {
+        return robot.intake.rollOut().alongWith(robot.activeFloor.rollOut(), robot.feeder.rollOut());
     }
 
     public Command retractIntake() {
