@@ -50,8 +50,7 @@ public class VisionMap {
         int seesTagsIdx = 0;
         for (var source : this.visionSources) {
             var results = source.camera.getAllUnreadResults();
-            seesTags[seesTagsIdx] = !results.isEmpty();
-            seesTagsIdx++;
+            seesTags[seesTagsIdx] = false;
             if (!results.isEmpty()) {
                 for (PhotonPipelineResult result : results) {
                     if ((result.multitagResult.isPresent()
@@ -66,8 +65,12 @@ public class VisionMap {
                         data.estimator.addVisionMeasurement(est.estimatedPose.toPose2d(),
                                 est.timestampSeconds);
                     });
+                    if (estimate.isPresent()) {
+                        seesTags[seesTagsIdx] = true;
+                    }
                 }
             }
+            seesTagsIdx++;
         }
         Logger.recordOutput("Vision/Sees Tags", seesTags);
     }
