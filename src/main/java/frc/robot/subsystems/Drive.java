@@ -222,7 +222,15 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     public Command rotateToTarget(RotationTargets target) {
         return rotateToTargetContinuous(target)
                 .andThen(waitUntil(() -> rotationPID.atGoal()));
+    }
 
+    public Command rotateToCalcTarget(RotationTargets target) {
+        double poseX = estimator.getEstimatedPosition().getX();
+        // if () {
+        // }
+
+        return rotateToTargetContinuous(target)
+                .andThen(waitUntil(() -> rotationPID.atGoal()));
     }
 
     public Command rotateToTargetContinuous(RotationTargets target) {
