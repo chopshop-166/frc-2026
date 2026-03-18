@@ -22,11 +22,12 @@ public class CommandSequences {
     // make sequences for intake and shooter.
 
     public Command intake() {
-        return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn());
+        return robot.deployer.moveTo(DeployerPresets.OUT).alongWith(robot.intake.rollIn(), robot.led.intaking());
     }
 
     public Command rollOut() {
-        return robot.intake.rollOut().alongWith(robot.activeFloor.rollOut(), robot.feeder.rollOut());
+        return robot.intake.rollOut().alongWith(robot.activeFloor.rollOut(), robot.feeder.rollOut(),
+                robot.led.outtaking());
     }
 
     public Command retractIntake() {
@@ -35,26 +36,30 @@ public class CommandSequences {
 
     public Command shootAutoAlign(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
         return robot.hood.moveToAngle(hoodAngle)
-                .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed),
-                        robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
-                        .andThen(feedShooter()
-                                .alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB))));
+                .alongWith(robot.led.ShooterPrep(),
+                        robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed),
+                                robot.drive.rotateToTarget(Drive.RotationTargets.HUB)))
+                .andThen(feedShooter()
+                        .alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB)),
+                        robot.led.ShooterReady());
     }
 
     public Command shoot(ShooterPresets shotSpeed, HoodPresets hoodangle) {
         return robot.hood.moveToAngle(hoodangle)
-                .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed)
-                        .andThen(feedShooter())));
+                .alongWith(robot.led.ShooterPrep(),
+                        robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed)
+                                .andThen(feedShooter(), robot.led.ShooterReady())));
     }
 
     public Command feedShooter() {
+
         return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
     }
 
     public Command operatorSafeState() {
         return robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
                 robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd(), robot.shooterR.safeStateCmd(),
-                robot.drive.rotationTargetOff());
+                robot.drive.rotationTargetOff(), robot.led.colorAlliance());
 
     }
 

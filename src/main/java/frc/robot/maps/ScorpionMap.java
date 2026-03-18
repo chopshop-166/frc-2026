@@ -11,10 +11,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.ValueRange;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
+import com.chopshop166.chopshoplib.leds.ColorFormat;
+import com.chopshop166.chopshoplib.leds.SegmentConfig;
 import com.chopshop166.chopshoplib.maps.CameraSource;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
+import com.chopshop166.chopshoplib.maps.WPILedMap;
 import com.chopshop166.chopshoplib.motors.CSSparkFlex;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.SmartMotorControllerGroup;
@@ -361,6 +364,17 @@ public class ScorpionMap extends RobotMap {
                         new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(-10.954),
                                 Units.inchesToMeters(21.223),
                                 new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))));
+    }
+
+    @Override
+    public WPILedMap getLedMap() {
+        var result = new WPILedMap(26, 9);
+        var leds = result.ledBuffer;
+
+        SegmentConfig Right = leds.segment(6, ColorFormat.GRB).tags("Vision");
+        SegmentConfig Mid = leds.segment(14, ColorFormat.GRB).tags("Intake", "Shooter");
+        SegmentConfig Left = leds.segment(6, ColorFormat.GRB).tags("Vision");
+        return result;
     }
 
     @Override

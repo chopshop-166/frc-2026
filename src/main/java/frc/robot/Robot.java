@@ -29,6 +29,7 @@ import frc.robot.subsystems.Deployer;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Drive.RotationTargets;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
@@ -60,7 +61,7 @@ public final class Robot extends CommandRobot {
     public Roller feeder = new Roller(map.getFeederMap(), "Feeder");
     public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
     public Hood hood = new Hood(map.getHoodMap());
-
+    public Led led = new Led(map.getLedMap());
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
@@ -101,7 +102,7 @@ public final class Robot extends CommandRobot {
         // Start logging! No more data receivers, replay sources, or metadata values
         // may be added.
         Logger.start();
-
+        led.colorAlliance().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
 
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -136,7 +137,7 @@ public final class Robot extends CommandRobot {
 
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
-                .onFalse(intake.safeStateCmd());
+                .onFalse(intake.safeStateCmd().alongWith(led.colorAlliance()));
         copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
@@ -175,6 +176,7 @@ public final class Robot extends CommandRobot {
 
     public void setDefaultCommands() {
         hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY())));
+        // led.setDefaultCommand(led.colorAlliance());
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {
