@@ -239,10 +239,10 @@ public class ScorpionMap extends RobotMap {
                 * Math.PI))
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
-            case OFF -> Angle.ofBaseUnits(Double.NaN, Degrees);
-            case OUT -> Degrees.of(3);
-            case IN -> Degrees.of(118);
-            default -> Angle.ofBaseUnits(Double.NaN, Degrees);
+            case OFF -> Double.NaN;
+            case OUT -> Units.degreesToRadians(3);
+            case IN -> Units.degreesToRadians(118);
+            default -> Double.NaN;
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         return new DeployerMap(motor, encoder, presets, pid,
@@ -338,12 +338,12 @@ public class ScorpionMap extends RobotMap {
                 PersistMode.kPersistParameters);
 
         PresetValue presets = preset -> switch (preset) {
-            case CLOSE -> Radians.of(0.15);
-            case MID -> Radians.of(0.2);
-            case FAR -> Radians.of(0.44);
-            case OFF -> Angle.ofBaseUnits(0.0, Radians);
-            case NETWORK_TABLES -> Radians.of(hoodPresetSubscriber.get());
-            default -> Angle.ofBaseUnits(Double.NaN, Radians);
+            case CLOSE -> 0.15;
+            case MID -> 0.2;
+            case FAR -> 0.44;
+            case OFF -> Double.NaN;
+            case NETWORK_TABLES -> hoodPresetSubscriber.get();
+            default -> Double.NaN;
         };
 
         return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);

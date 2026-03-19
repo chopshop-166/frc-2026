@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
@@ -137,7 +138,8 @@ public final class Robot extends CommandRobot {
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
+        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
+                HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
