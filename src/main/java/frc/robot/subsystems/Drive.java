@@ -224,13 +224,40 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
                 .andThen(waitUntil(() -> rotationPID.atGoal()));
     }
 
-    public Command rotateToCalcTarget(RotationTargets target) {
-        double poseX = estimator.getEstimatedPosition().getX();
-        // if () {
-        // }
+    public Command rotateToCalcTarget() {
+        return runOnce(() -> {
+            double poseX = estimator.getEstimatedPosition().getX();
+            double poseY = estimator.getEstimatedPosition().getY();
+            if (isBlueAlliance) {
+                if (poseX > 0 && poseX < 4) { // blue side
+                    rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                    this.target = RotationTargets.HUB;
 
-        return rotateToTargetContinuous(target)
-                .andThen(waitUntil(() -> rotationPID.atGoal()));
+                } else if (poseX > 4 && poseX < 8) { // in nutral zone
+                    if (poseY > 4) { // left half (top)
+                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                        this.target = RotationTargets.LEFT_FEED;
+                    } else { // right half (bottom)
+                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                        this.target = RotationTargets.RIGHT_FEED;
+                    }
+                }
+            }
+            if (!isBlueAlliance) {
+                if (poseX > 11) { // red side
+                    rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+
+                } else if (poseX > 4 && poseX < 8) { // in nutral zone
+                    if (poseY > 4) { // left half (top)
+                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                        this.target = RotationTargets.LEFT_FEED;
+                    } else { // right half (bottom)
+                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                        this.target = RotationTargets.RIGHT_FEED;
+                    }
+                }
+            }
+        });
     }
 
     public Command rotateToTargetContinuous(RotationTargets target) {
