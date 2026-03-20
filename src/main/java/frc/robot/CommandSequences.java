@@ -48,7 +48,7 @@ public class CommandSequences {
     }
 
     public Command feedShooter() {
-        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
+        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn()); // robot.intake.rollIn()
     }
 
     public Command operatorSafeState() {

@@ -46,6 +46,24 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
                 .andThen(runOnce(() -> getData().preset = DeployerPresets.OFF)).withName("Move To Set Angle");
     }
 
+    public Command wiggleIn(DeployerPresets level) {
+        Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
+        return runOnce(() -> {
+            getData().preset = level;
+            pid.reset(getDeployerAngle(), 0.0);
+        }).andThen(Commands.waitSeconds(.5)).andThen(runOnce(() -> wiggleOut()));
+    }
+
+    public Command wiggleOut() {
+    }
+
+    {
+        Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
+        return runOnce(() -> {
+            pid.reset(getDeployerAngle(), 0.0);
+        });
+    }
+
     public Command moveToNonOwning(DeployerPresets level) {
         return Commands.runOnce(() -> {
             getData().preset = level;
