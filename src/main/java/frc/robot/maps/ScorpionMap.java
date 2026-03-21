@@ -169,13 +169,13 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
         SmartDashboard.putNumber("Shooter", 2000);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
-            case MID_SHOT -> RPM.of(MID_SHOT_RPM);
-            case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
-            case OFF -> RPM.of(0);
-            case NETWORK_TABLES -> RPM.of(SmartDashboard.getNumber("Shooter", 2000));
-            case AUTO_SPEED -> RPM.of((distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
-            default -> RPM.of(Double.NaN);
+            case CLOSE_SHOT -> CLOSE_SHOT_RPM;
+            case MID_SHOT -> MID_SHOT_RPM;
+            case FAR_SHOT -> FAR_SHOT_RPM;
+            case OFF -> 0;
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
+            case AUTO_SPEED -> (distanceToHubSub.getAsDouble() + 8.3804) / 0.0059;
+            default -> Double.NaN;
         };
 
         motorA.getMotorController().configure(configA,
@@ -211,13 +211,13 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
         SmartDashboard.putNumber("Shooter", 0);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
-            case MID_SHOT -> RPM.of(MID_SHOT_RPM);
-            case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
-            case OFF -> RPM.of(0);
-            case NETWORK_TABLES -> RPM.of(SmartDashboard.getNumber("Shooter", 2000));
-            case AUTO_SPEED -> RPM.of((distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
-            default -> RPM.of(Double.NaN);
+            case CLOSE_SHOT -> CLOSE_SHOT_RPM;
+            case MID_SHOT -> MID_SHOT_RPM;
+            case FAR_SHOT -> FAR_SHOT_RPM;
+            case OFF -> 0;
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
+            case AUTO_SPEED -> (distanceToHubSub.getAsDouble() + 8.3804) / 0.0059;
+            default -> Double.NaN;
         };
 
         motorA.getMotorController().configure(configA,

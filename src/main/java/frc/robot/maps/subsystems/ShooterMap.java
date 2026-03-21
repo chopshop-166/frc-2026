@@ -3,6 +3,7 @@ package frc.robot.maps.subsystems;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.logging.DataWrapper;
 import com.chopshop166.chopshoplib.logging.LogName;
@@ -30,7 +31,7 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     }
 
-    public interface PresetValues extends Function<ShooterPresets, AngularVelocity> {
+    public interface PresetValues extends ToDoubleFunction<ShooterPresets> {
 
     }
 
@@ -39,7 +40,7 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
     public PresetValues presetValues;
 
     public ShooterMap() {
-        this(new SmartMotorController(), p -> RPM.of(0));
+        this(new SmartMotorController(), p -> 0);
     }
 
     public ShooterMap(SmartMotorController flywheel, PresetValues presetValues) {

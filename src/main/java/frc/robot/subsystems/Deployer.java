@@ -53,13 +53,6 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
         }).withName("Move To Set Angle (Non-Owning)");
     }
 
-    public Command hold() {
-        return runOnce(() -> {
-            holdAngle = getDeployerAngle();
-            getData().preset = DeployerPresets.HOLD;
-        }).withName("Hold");
-    }
-
     private double limits(double speed) {
         double height = getDeployerAngle();
         speed = getMap().hardLimits.filterSpeed(height, speed);
