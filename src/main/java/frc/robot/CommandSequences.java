@@ -1,6 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.startEnd;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -49,6 +52,13 @@ public class CommandSequences {
 
     public Command feedShooter() {
         return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn()); // robot.intake.rollIn()
+    }
+
+    public Command feedShooterWiggle() {
+        return feedShooter().withDeadline(
+                repeatingSequence(waitSeconds(.25), robot.deployer.moveTo(DeployerPresets.WIGGLE_IN), waitSeconds(.25),
+                        robot.deployer.moveTo(DeployerPresets.OUT)))
+                .finallyDo(() -> robot.deployer.moveTo(DeployerPresets.OUT));
     }
 
     public Command operatorSafeState() {

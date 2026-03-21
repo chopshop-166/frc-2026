@@ -252,6 +252,7 @@ public class ScorpionMap extends RobotMap {
             case OFF -> Double.NaN;
             case OUT -> Units.degreesToRadians(3);
             case IN -> Units.degreesToRadians(118);
+            case WIGGLE_IN -> Units.degreesToRadians(84);
             default -> Double.NaN;
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
