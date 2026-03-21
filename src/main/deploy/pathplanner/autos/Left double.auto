@@ -17,15 +17,15 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
+                            "type": "path",
                             "data": {
-                              "name": "Intake"
+                              "pathName": "Left Cycle 1"
                             }
                           },
                           {
-                            "type": "path",
+                            "type": "named",
                             "data": {
-                              "pathName": "Bottom Cycle 1"
+                              "name": "Intake"
                             }
                           }
                         ]
@@ -35,6 +35,18 @@
                       "type": "named",
                       "data": {
                         "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Stop Shooting"
                       }
                     },
                     {
@@ -50,7 +62,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Bottom Cycle 2"
+                              "pathName": "Left Cycle 2"
                             }
                           }
                         ]

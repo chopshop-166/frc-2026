@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -120,11 +118,10 @@ public final class Robot extends CommandRobot {
                     newSub = newCmd.get().getSubsystem();
                     newName = newCmd.get().getName();
                 }
-                System.out.println("Command interrupt: `" + oldCmd.getSubsystem() + "/" + oldCmd.getName() +
-                        "` -> `" + newSub + "/" + newName + "`");
+                System.out.println("Command interrupt: `" + oldCmd.getSubsystem() + "/" +
+                        oldCmd.getName() + "` -> `" + newSub + "/" + newName + "`");
             }
         });
-
     }
 
     @Override
@@ -139,11 +136,26 @@ public final class Robot extends CommandRobot {
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.MID_SHOT, HoodPresets.MID))
+        // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
+        // HoodPresets.CLOSE))
+        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
+                HoodPresets.NETWORK_TABLES))
                 .onFalse(sequences.operatorSafeState());
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.MID))
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
+        copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
+                .onFalse(sequences.operatorSafeState());
+        copilotController.rightBumper().onTrue(sequences.retractIntake());
+        copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
+        // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
+        // HoodPresets.NETWORK_TABLES));
 
+    }
+
+    private final void registerNamedCommands() {
+        NamedCommands.registerCommand("Intake", sequences.intake());
+        NamedCommands.registerCommand("Shoot", sequences.shootAutoAlign(ShooterPresets.MID_SHOT, HoodPresets.CLOSE));
+        NamedCommands.registerCommand("Stop Shooting", sequences.operatorSafeState());
     }
 
     @Override
@@ -176,11 +188,4 @@ public final class Robot extends CommandRobot {
         };
     }
 
-    private final void registerNamedCommands() {
-        NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("Shoot", sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.OFF));
-        NamedCommands.registerCommand("Stop shoot", sequences.operatorSafeState());
-        // NamedCommands.registerCommand("Shoot sequence",
-        // sequences.shootAuto(ShooterPresets.MID_SHOT, 0));
-    }
 }

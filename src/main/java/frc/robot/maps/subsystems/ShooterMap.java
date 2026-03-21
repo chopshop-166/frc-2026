@@ -1,8 +1,6 @@
 package frc.robot.maps.subsystems;
 
-import static edu.wpi.first.units.Units.RPM;
-
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.logging.DataWrapper;
 import com.chopshop166.chopshoplib.logging.LogName;
@@ -10,22 +8,25 @@ import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-
 public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public enum ShooterPresets {
+        // No preset
         OFF,
-
+        // Shoot up close
         CLOSE_SHOT,
-
+        // Mid range shot
         MID_SHOT,
+        // Shoot for distance
+        FAR_SHOT,
+        // Get the value from NT
+        NETWORK_TABLES,
 
-        FAR_SHOT
+        AUTO_SPEED
 
     }
 
-    public interface PresetValues extends Function<ShooterPresets, AngularVelocity> {
+    public interface PresetValues extends ToDoubleFunction<ShooterPresets> {
 
     }
 
@@ -34,12 +35,11 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
     public PresetValues presetValues;
 
     public ShooterMap() {
-        this(new SmartMotorController(), p -> RPM.of(0));
+        this(new SmartMotorController(), p -> 0);
     }
 
     public ShooterMap(SmartMotorController flywheel, PresetValues presetValues) {
         this.flywheel = flywheel;
-    
         this.presetValues = presetValues;
 
     }
@@ -52,7 +52,6 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 
     public static class Data extends DataWrapper {
         public MotorControllerData flywheel = new MotorControllerData(true);
-      
 
         @LogName("Game Piece Detected")
         public boolean gamePieceDetected;

@@ -1,8 +1,6 @@
 package frc.robot.maps.subsystems;
 
-import static edu.wpi.first.units.Units.Radians;
-
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.ValueRange;
 import com.chopshop166.chopshoplib.logging.DataWrapper;
@@ -13,7 +11,6 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.measure.Angle;
 
 public class HoodMap implements LoggableMap<HoodMap.Data> {
 
@@ -24,10 +21,12 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         MID,
 
-        FAR;
+        FAR,
+
+        NETWORK_TABLES;
     }
 
-    public interface PresetValue extends Function<HoodPresets, Angle> {
+    public interface PresetValue extends ToDoubleFunction<HoodPresets> {
 
     }
 
@@ -41,7 +40,7 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
         this(new SmartMotorController(),
                 new ProfiledPIDController(0, 0, 0, new Constraints(0, 0)),
                 new ValueRange(0, 0),
-                new ArmFeedforward(0, 0, 0), p -> Radians.of(0));
+                new ArmFeedforward(0, 0, 0), p -> 0);
     }
 
     public HoodMap(SmartMotorController motor,

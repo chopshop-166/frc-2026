@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -42,7 +40,8 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
         return runOnce(() -> {
             getData().preset = level;
             pid.reset(getDeployerAngle(), 0.0);
-        }).andThen(Commands.waitUntil(() -> debouncer.calculate(pid.atGoal()))).withName("Move To Set Angle");
+        }).andThen(Commands.waitUntil(() -> debouncer.calculate(pid.atGoal())))
+                .andThen(runOnce(() -> getData().preset = DeployerPresets.OFF)).withName("Move To Set Angle");
     }
 
     public Command moveToNonOwning(DeployerPresets level) {
@@ -50,13 +49,6 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
             getData().preset = level;
             pid.reset(getDeployerAngle(), 0.0);
         }).withName("Move To Set Angle (Non-Owning)");
-    }
-
-    public Command hold() {
-        return runOnce(() -> {
-            holdAngle = getDeployerAngle();
-            getData().preset = DeployerPresets.HOLD;
-        }).withName("Hold");
     }
 
     private double limits(double speed) {
@@ -87,10 +79,12 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
             getData().motor.setpoint = (limits(speed * speedCoef));
 
         } else if (getData().preset != DeployerPresets.OFF) {
-            double targetAngle = getData().preset == DeployerPresets.HOLD ? holdAngle
-                    : getMap().deployerPreset.apply(getData().preset).in(Radians);
+            double targetAngle = getMap().deployerPreset.applyAsDouble(getData().preset);
+            // double targetAngle = 0.0;
             Logger.recordOutput("Deployer/TargetAngle", targetAngle);
-            double setpoint = pid.calculate(getDeployerAngle(), new State(targetAngle, 0));
+            double setpoint = pid.calculate(getDeployerAngle(), new State(targetAngle,
+                    0));
+            // double setpoint = 0.0;
             Logger.recordOutput("Deployer/PID Setpoint", setpoint);
 
             setpoint += getMap().armFeedforward.calculate(

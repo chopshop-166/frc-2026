@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -34,8 +32,9 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     public Command moveToAngle(HoodPresets angle) {
         return runOnce(() -> {
             pid.reset(getHoodAngle());
+            getData().preset = angle;
         }).andThen(run(() -> {
-            double targetAngle = getMap().hoodPreset.apply(getData().preset).in(Radians);
+            double targetAngle = getMap().hoodPreset.applyAsDouble(getData().preset);
             double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
             Logger.recordOutput("Hood/PID Setpoint", setpoint);
             setpoint += getMap().armFeedforward.calculate(
@@ -49,7 +48,6 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
             Logger.recordOutput("Hood/Position Error", pid.getPositionError());
         }));
-
     }
 
     public Command manualControl(DoubleSupplier joystick) {
@@ -89,6 +87,6 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     @Override
     public void safeState() {
-        getData().motor.setpoint = 0;
+        getData().preset = HoodPresets.OFF;
     }
 }

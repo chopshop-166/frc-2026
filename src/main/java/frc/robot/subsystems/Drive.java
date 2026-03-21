@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
@@ -54,10 +52,18 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double ROTATION_COEFFICIENT = 1;
     private final double ROTATION_KS = 0.15;
     private final double DRIVE_KS = 0.1;
+
+    public final double BLUE_ALLIANCE_STARTING = 0.0;
+    public final double BLUE_ALLIANCE_ENDING = 4.0;
+    public final double CENTER_LINE_SIDEWAYS = 4.0;
+    public final double CENTER_LINE = 8.0;
+    public final double RED_ALLIANCE_STARTING = 11.0;
+    public final double RED_ALLIANCE_ENDING = 15.0;
+
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub Ft").publish();
+    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub").publish();
 
     ProfiledPIDController rotationPID = new ProfiledPIDController(0.1, 0.0, 0.0, new Constraints(240, 270));
     DoubleSupplier xSpeedSupplier;
@@ -204,7 +210,8 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             Transform2d differencePoses = targetPoseValue.minus(robotPose);
             Logger.recordOutput("Drive/DifferencePoses", differencePoses);
             Logger.recordOutput("Drive/DifferencePosesRotation", differencePoses.getRotation());
-            distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
+            distanceToTargetPub.set(differencePoses.getTranslation().getNorm());
+            Logger.recordOutput("Drive/DistanceToTarget", differencePoses.getTranslation().getNorm());
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = Radians.of(tangented).in(Degrees);
             Logger.recordOutput("Drive/Tangented", tangented);
@@ -222,7 +229,36 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     public Command rotateToTarget(RotationTargets target) {
         return rotateToTargetContinuous(target)
                 .andThen(waitUntil(() -> rotationPID.atGoal()));
+    }
 
+    public Command rotateToCalcTarget() {
+        return runOnce(() -> {
+            double poseX = estimator.getEstimatedPosition().getX();
+            double poseY = estimator.getEstimatedPosition().getY();
+            rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+            if (isBlueAlliance) {
+                if (poseX > BLUE_ALLIANCE_STARTING && poseX < BLUE_ALLIANCE_ENDING) { // blue side
+                    this.target = RotationTargets.HUB;
+
+                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                    if (poseY > CENTER_LINE_SIDEWAYS) { // left half (top)
+                        this.target = RotationTargets.LEFT_FEED;
+                    } else { // right half (bottom)
+                        this.target = RotationTargets.RIGHT_FEED;
+                    }
+                }
+            } else {
+                if (poseX > RED_ALLIANCE_STARTING) { // red side
+                    this.target = RotationTargets.HUB;
+                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                    if (poseY < CENTER_LINE_SIDEWAYS) { // left half (top)
+                        this.target = RotationTargets.LEFT_FEED;
+                    } else { // right half (bottom)
+                        this.target = RotationTargets.RIGHT_FEED;
+                    }
+                }
+            }
+        });
     }
 
     public Command rotateToTargetContinuous(RotationTargets target) {
