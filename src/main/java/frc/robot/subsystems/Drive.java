@@ -54,6 +54,14 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double ROTATION_COEFFICIENT = 1;
     private final double ROTATION_KS = 0.15;
     private final double DRIVE_KS = 0.1;
+
+    public final double BLUE_ALLIANCE_STARTING = 0.0;
+    public final double BLUE_ALLIANCE_ENDING = 4.0;
+    public final double CENTER_LINE_SIDEWAYS = 4.0;
+    public final double CENTER_LINE = 8.0;
+    public final double RED_ALLIANCE_STARTING = 11.0;
+    public final double RED_ALLIANCE_ENDING = 15.0;
+
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
@@ -229,31 +237,25 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         return runOnce(() -> {
             double poseX = estimator.getEstimatedPosition().getX();
             double poseY = estimator.getEstimatedPosition().getY();
+            rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
             if (isBlueAlliance) {
-                if (poseX > 0 && poseX < 4) { // blue side
-                    rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                if (poseX > BLUE_ALLIANCE_STARTING && poseX < BLUE_ALLIANCE_ENDING) { // blue side
                     this.target = RotationTargets.HUB;
 
-                } else if (poseX > 4 && poseX < 8) { // in nutral zone
-                    if (poseY > 4) { // left half (top)
-                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                    if (poseY > CENTER_LINE_SIDEWAYS) { // left half (top)
                         this.target = RotationTargets.LEFT_FEED;
                     } else { // right half (bottom)
-                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
                         this.target = RotationTargets.RIGHT_FEED;
                     }
                 }
-            }
-            if (!isBlueAlliance) {
-                if (poseX > 11) { // red side
-                    rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
-
-                } else if (poseX > 4 && poseX < 8) { // in nutral zone
-                    if (poseY > 4) { // left half (top)
-                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
+            } else {
+                if (poseX > RED_ALLIANCE_STARTING) { // red side
+                    this.target = RotationTargets.HUB;
+                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                    if (poseY < CENTER_LINE_SIDEWAYS) { // left half (top)
                         this.target = RotationTargets.LEFT_FEED;
                     } else { // right half (bottom)
-                        rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
                         this.target = RotationTargets.RIGHT_FEED;
                     }
                 }

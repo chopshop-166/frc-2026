@@ -120,8 +120,7 @@ public final class Robot extends CommandRobot {
                     newName = newCmd.get().getName();
                 }
                 System.out.println("Command interrupt: `" + oldCmd.getSubsystem() + "/" +
-                        oldCmd.getName() +
-                        "` -> `" + newSub + "/" + newName + "`");
+                        oldCmd.getName() + "` -> `" + newSub + "/" + newName + "`");
             }
         });
     }
