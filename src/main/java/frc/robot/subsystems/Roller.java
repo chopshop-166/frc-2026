@@ -42,11 +42,11 @@ public class Roller extends LoggedSubsystem<Data, RollerMap> {
         if (direction == LinearDirection.FORWARD) {
             return runOnce(() -> {
                 setPreset(RollerPresets.FORWARD_WIGGLE);
-            }).andThen(Commands.waitTime(Time.ofRelativeUnits(.5, Seconds))).andThen(safeStateCmd());
+            }).andThen(Commands.waitSeconds(.5)).andThen(safeStateCmd());
         } else {
             return runOnce(() -> {
                 setPreset(RollerPresets.BACKWARDS_WIGGLE);
-            }).andThen(Commands.waitTime(Time.ofRelativeUnits(.5, Seconds))).andThen(safeStateCmd());
+            }).andThen(Commands.waitSeconds(.5)).andThen(safeStateCmd());
         }
 
     }

@@ -128,7 +128,7 @@ public final class Robot extends CommandRobot {
     @Override
     public void disabledInit() {
         super.disabledInit();
-        sequences.operatorSafeState().schedule();
+        sequences.operatorSafeState().ignoringDisable(true).schedule();
     }
 
     @Override

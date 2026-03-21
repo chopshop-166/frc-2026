@@ -213,7 +213,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             distanceToTargetPub.set(differencePoses.getTranslation().getNorm());
             Logger.recordOutput("Drive/DistanceToTarget", differencePoses.getTranslation().getNorm());
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
-            tangented = Radians.of(tangented).in(Degrees);
+            tangented = Units.radiansToDegrees(tangented);
             Logger.recordOutput("Drive/Tangented", tangented);
 
             Logger.recordOutput("Drive/RotationPidAtGoal", rotationPID.atGoal());
