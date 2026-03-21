@@ -226,9 +226,9 @@ public class ScorpionMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0.27, 0, 0, new Constraints(2 * Math.PI, 6 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(0.26, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.08);
+        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.05);
         DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35);
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
