@@ -23,6 +23,8 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         FAR,
 
+        AUTO_ANGLE,
+
         NETWORK_TABLES;
     }
 
