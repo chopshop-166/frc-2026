@@ -145,11 +145,14 @@ public final class Robot extends CommandRobot {
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
-        copilotController.b().whileTrue(sequences.feedShooterWiggle()).onFalse(sequences.operatorSafeState());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
-        // HoodPresets.CLOSE))
+        // HoodPresets.CLOSE));
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-        // HoodPresets.NETWORK_TABLES))
+        // HoodPresets.AUTO_ANGLE));
+        copilotController.b()
+                .whileTrue(
+                        hood.moveToAngle(HoodPresets.AUTO_ANGLE).alongWith(drive.rotateToTarget(RotationTargets.HUB)))
+                .onFalse(hood.safeStateCmd());
         // .onFalse(sequences.operatorSafeState());
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
@@ -186,7 +189,8 @@ public final class Robot extends CommandRobot {
     @Override
 
     public void setDefaultCommands() {
-        hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY())));
+        // hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () ->
+        // -copilotController.getRightY())));
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {

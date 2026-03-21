@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.HoodMap.Data;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
@@ -29,10 +30,10 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     }
 
-    public Command moveToAngle(HoodPresets angle) {
+    public Command moveToAngle(HoodPresets preset) {
         return runOnce(() -> {
             pid.reset(getHoodAngle());
-            getData().preset = angle;
+            getData().preset = preset;
         });
     }
 
@@ -74,9 +75,9 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     @Override
     public void periodic() {
         super.periodic();
-
         if (getData().preset != HoodPresets.OFF) {
             double targetAngle = getMap().hoodPreset.applyAsDouble(getData().preset);
+            Logger.recordOutput("Hood/TargetAngle", targetAngle);
             double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
             Logger.recordOutput("Hood/PID Setpoint", setpoint);
             setpoint += getMap().armFeedforward.calculate(
@@ -88,6 +89,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
             Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
             Logger.recordOutput("Hood/Position Error", pid.getPositionError());
+            Logger.recordOutput("Hood/CurrentAngleRadians", getHoodAngle());
         }
     }
 
