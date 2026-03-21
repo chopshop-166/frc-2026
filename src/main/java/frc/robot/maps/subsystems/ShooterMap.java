@@ -1,8 +1,5 @@
 package frc.robot.maps.subsystems;
 
-import static edu.wpi.first.units.Units.RPM;
-
-import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.logging.DataWrapper;
@@ -10,8 +7,6 @@ import com.chopshop166.chopshoplib.logging.LogName;
 import com.chopshop166.chopshoplib.logging.LoggableMap;
 import com.chopshop166.chopshoplib.logging.data.MotorControllerData;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
-
-import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterMap implements LoggableMap<ShooterMap.Data> {
 

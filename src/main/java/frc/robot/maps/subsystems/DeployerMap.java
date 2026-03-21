@@ -1,8 +1,5 @@
 package frc.robot.maps.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.ValueRange;
@@ -14,7 +11,6 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class DeployerMap implements LoggableMap<DeployerMap.Data> {

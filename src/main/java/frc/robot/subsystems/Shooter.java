@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.RPM;
-
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;

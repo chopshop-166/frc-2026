@@ -1,9 +1,5 @@
 package frc.robot.maps;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -42,16 +38,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.HoodMap;
@@ -63,10 +55,6 @@ import frc.robot.maps.subsystems.ShooterMap;
 public class ScorpionMap extends RobotMap {
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-    // DoubleEntry shooterPresetSubscriber =
-    // ntInstance.getDoubleTopic("Shooter/Preset").getEntry(0);
-    // DoubleEntry hoodPresetSubscriber =
-    // ntInstance.getDoubleTopic("Hood/Preset").getEntry(0);
     DoubleSubscriber distanceToHubSub = ntInstance.getDoubleTopic("Drive/Distance To Hub").subscribe(0);
 
     private final double CLOSE_SHOT_RPM = 1800;
@@ -209,7 +197,7 @@ public class ScorpionMap extends RobotMap {
         motorB.setPidSlot(0);
         configA.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
-        SmartDashboard.putNumber("Shooter", 0);
+        SmartDashboard.putNumber("Shooter", 2000);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;

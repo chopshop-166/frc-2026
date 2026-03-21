@@ -1,7 +1,5 @@
 package frc.robot.maps.subsystems;
 
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.function.ToDoubleFunction;
 
 import com.chopshop166.chopshoplib.ValueRange;
