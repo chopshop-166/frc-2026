@@ -57,7 +57,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub Ft").publish();
+    DoublePublisher distanceToTargetPub = instance.getDoubleTopic("Drive/Distance To Hub").publish();
 
     ProfiledPIDController rotationPID = new ProfiledPIDController(0.1, 0.0, 0.0, new Constraints(240, 270));
     DoubleSupplier xSpeedSupplier;
@@ -204,7 +204,8 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             Transform2d differencePoses = targetPoseValue.minus(robotPose);
             Logger.recordOutput("Drive/DifferencePoses", differencePoses);
             Logger.recordOutput("Drive/DifferencePosesRotation", differencePoses.getRotation());
-            distanceToTargetPub.set(Meters.of(differencePoses.getTranslation().getNorm()).in(Feet));
+            distanceToTargetPub.set(differencePoses.getTranslation().getNorm());
+            Logger.recordOutput("Drive/DistanceToTarget", differencePoses.getTranslation().getNorm());
             double tangented = Math.atan2(differencePoses.getY(), differencePoses.getX());
             tangented = Radians.of(tangented).in(Degrees);
             Logger.recordOutput("Drive/Tangented", tangented);

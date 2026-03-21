@@ -43,12 +43,16 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.subsystems.DeployerMap;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.HoodMap.PresetValue;
@@ -59,8 +63,11 @@ import frc.robot.maps.subsystems.ShooterMap;
 public class ScorpionMap extends RobotMap {
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-    DoubleEntry shooterPresetSubscriber = ntInstance.getDoubleTopic("Shooter/Preset").getEntry(0);
-    DoubleEntry hoodPresetSubscriber = ntInstance.getDoubleTopic("Hood/Preset").getEntry(0);
+    // DoubleEntry shooterPresetSubscriber =
+    // ntInstance.getDoubleTopic("Shooter/Preset").getEntry(0);
+    // DoubleEntry hoodPresetSubscriber =
+    // ntInstance.getDoubleTopic("Hood/Preset").getEntry(0);
+    DoubleSubscriber distanceToHubSub = ntInstance.getDoubleTopic("Drive/Distance To Hub").subscribe(0);
 
     private final double CLOSE_SHOT_RPM = 1800;
     private final double MID_SHOT_RPM = 2000;
@@ -160,12 +167,14 @@ public class ScorpionMap extends RobotMap {
         motorB.setPidSlot(0);
         configA.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
-
+        SmartDashboard.putNumber("Shooter", 2000);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
             case MID_SHOT -> RPM.of(MID_SHOT_RPM);
             case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
             case OFF -> RPM.of(0);
+            case NETWORK_TABLES -> RPM.of(SmartDashboard.getNumber("Shooter", 2000));
+            case AUTO_SPEED -> RPM.of((distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
             default -> RPM.of(Double.NaN);
         };
 
@@ -200,13 +209,14 @@ public class ScorpionMap extends RobotMap {
         motorB.setPidSlot(0);
         configA.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
-
+        SmartDashboard.putNumber("Shooter", 0);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> RPM.of(CLOSE_SHOT_RPM);
             case MID_SHOT -> RPM.of(MID_SHOT_RPM);
             case FAR_SHOT -> RPM.of(FAR_SHOT_RPM);
             case OFF -> RPM.of(0);
-            case NETWORK_TABLES -> RPM.of(shooterPresetSubscriber.get());
+            case NETWORK_TABLES -> RPM.of(SmartDashboard.getNumber("Shooter", 2000));
+            case AUTO_SPEED -> RPM.of((distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
             default -> RPM.of(Double.NaN);
         };
 
@@ -336,13 +346,13 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
+        SmartDashboard.putNumber("Hood/angle", 0);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
-            case NETWORK_TABLES -> hoodPresetSubscriber.get();
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
             default -> Double.NaN;
         };
 
