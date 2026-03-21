@@ -33,21 +33,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         return runOnce(() -> {
             pid.reset(getHoodAngle());
             getData().preset = angle;
-        }).andThen(run(() -> {
-            double targetAngle = getMap().hoodPreset.applyAsDouble(getData().preset);
-            double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
-            Logger.recordOutput("Hood/PID Setpoint", setpoint);
-            setpoint += getMap().armFeedforward.calculate(
-                    pid.getSetpoint().position,
-                    pid.getSetpoint().velocity);
-            Logger.recordOutput("Hood/FF Setpoint", setpoint);
-            getData().motor.setpoint = setpoint;
-
-            Logger.recordOutput("Hood/pid at goal", pid.atGoal());
-            Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
-            Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
-            Logger.recordOutput("Hood/Position Error", pid.getPositionError());
-        }));
+        });
     }
 
     public Command manualControl(DoubleSupplier joystick) {
@@ -83,6 +69,26 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     private double getHoodAngle() {
         return getData().motor.distance;
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        if (getData().preset != HoodPresets.OFF) {
+            double targetAngle = getMap().hoodPreset.applyAsDouble(getData().preset);
+            double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));
+            Logger.recordOutput("Hood/PID Setpoint", setpoint);
+            setpoint += getMap().armFeedforward.calculate(
+                    pid.getSetpoint().position,
+                    pid.getSetpoint().velocity);
+            Logger.recordOutput("Hood/FF Setpoint", setpoint);
+            getData().motor.setpoint = setpoint;
+            Logger.recordOutput("Hood/pid at goal", pid.atGoal());
+            Logger.recordOutput("Hood/Desired Hood Velocity", pid.getSetpoint().velocity);
+            Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
+            Logger.recordOutput("Hood/Position Error", pid.getPositionError());
+        }
     }
 
     @Override
