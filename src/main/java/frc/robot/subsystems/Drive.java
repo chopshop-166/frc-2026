@@ -54,11 +54,11 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
     private final double DRIVE_KS = 0.1;
 
     public final double BLUE_ALLIANCE_STARTING = 0.0;
-    public final double BLUE_ALLIANCE_ENDING = 4.0;
+    public final double BLUE_ALLIANCE_ENDING = 4;
     public final double CENTER_LINE_SIDEWAYS = 4.0;
     public final double CENTER_LINE = 8.0;
     public final double RED_ALLIANCE_STARTING = 11.0;
-    public final double RED_ALLIANCE_ENDING = 15.0;
+    public final double RED_ALLIANCE_ENDING = 16.0;
 
     final Modifier DEADBAND = Modifier.scalingDeadband(0.1);
 
@@ -236,7 +236,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
                 if (poseX > BLUE_ALLIANCE_STARTING && poseX < BLUE_ALLIANCE_ENDING) { // blue side
                     this.target = RotationTargets.HUB;
 
-                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                } else if (poseX > BLUE_ALLIANCE_ENDING) { // in nutral zone
                     if (poseY > CENTER_LINE_SIDEWAYS) { // left half (top)
                         this.target = RotationTargets.LEFT_FEED;
                     } else { // right half (bottom)
@@ -246,7 +246,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             } else {
                 if (poseX > RED_ALLIANCE_STARTING) { // red side
                     this.target = RotationTargets.HUB;
-                } else if (poseX > BLUE_ALLIANCE_ENDING && poseX < CENTER_LINE) { // in nutral zone
+                } else if (poseX < RED_ALLIANCE_STARTING) { // in nutral zone
                     if (poseY < CENTER_LINE_SIDEWAYS) { // left half (top)
                         this.target = RotationTargets.LEFT_FEED;
                     } else { // right half (bottom)
@@ -254,7 +254,8 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
                     }
                 }
             }
-        });
+        })
+                .andThen(waitUntil(() -> rotationPID.atGoal()));
     }
 
     public Command rotateToTargetContinuous(RotationTargets target) {

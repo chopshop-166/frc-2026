@@ -38,9 +38,8 @@ public class CommandSequences {
     public Command shootAutoAlign(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
         return robot.hood.moveToAngle(hoodAngle)
                 .alongWith(robot.shooter.spinUp(shotSpeed).alongWith(
-                        robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
-                        .andThen(feedShooter()
-                                .alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB))));
+                        robot.drive.rotateToCalcTarget())
+                        .andThen(feedShooterWiggle()));
     }
 
     public Command shoot(ShooterPresets shotSpeed, HoodPresets hoodangle) {

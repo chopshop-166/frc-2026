@@ -90,6 +90,8 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             Logger.recordOutput("Hood/Desired Hood Position", pid.getSetpoint().position);
             Logger.recordOutput("Hood/Position Error", pid.getPositionError());
             Logger.recordOutput("Hood/CurrentAngleRadians", getHoodAngle());
+        } else {
+            getData().motor.setpoint = 0;
         }
     }
 
