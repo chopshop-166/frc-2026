@@ -142,19 +142,19 @@ public final class Robot extends CommandRobot {
         // feed shooter
 
         // // Intake
-        // copilotController.a().whileTrue(sequences.intake())
-        // .onFalse(intake.safeStateCmd());
+        copilotController.a().whileTrue(sequences.intake())
+                .onFalse(intake.safeStateCmd());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE));
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-                HoodPresets.NETWORK_TABLES))
-                .onFalse(sequences.operatorSafeState());
-
-        copilotController.a().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-                HoodPresets.AUTO_ANGLE))
-                .onFalse(sequences.operatorSafeState());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-        // HoodPresets.AUTO_ANGLE));
+        // HoodPresets.NETWORK_TABLES))
+        // .onFalse(sequences.operatorSafeState());
+
+        // copilotController.a().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
+        // HoodPresets.AUTO_ANGLE))
+        // .onFalse(sequences.operatorSafeState());
+        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
+                HoodPresets.AUTO_ANGLE)).onFalse(sequences.operatorSafeState());
         // copilotController.b()
         // .whileTrue(
         // hood.moveToAngle(HoodPresets.AUTO_ANGLE).alongWith(drive.rotateToTarget(RotationTargets.HUB)))
