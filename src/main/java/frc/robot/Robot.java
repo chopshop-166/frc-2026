@@ -53,8 +53,7 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    public Shooter shooterR = new Shooter(map.getShooterRMap(), "Shooter/Right");
-    public Shooter shooterL = new Shooter(map.getShooterLMap(), "Shooter/Left");
+    public Shooter shooter = new Shooter(map.getShooterMap(), "Shooter");
     public Roller intake = new Roller(map.getIntakeMap(), "Intake");
     public Deployer deployer = new Deployer(map.getDeployerMap(),
             RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
