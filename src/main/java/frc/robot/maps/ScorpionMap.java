@@ -322,7 +322,7 @@ public class ScorpionMap extends RobotMap {
 
     @Override
     public HoodMap getHoodMap() {
-        CSSparkMax motor = new CSSparkMax(17);
+        CSSparkFlex motor = new CSSparkFlex(17);
         ProfiledPIDController pid = new ProfiledPIDController(.7, 0, 0,
                 new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
@@ -350,9 +350,10 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
-        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);
-    }
 
+    
+
+    
     @Override
     public VisionMap getVisionMap() {
 
