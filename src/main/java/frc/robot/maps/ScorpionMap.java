@@ -241,10 +241,19 @@ public class ScorpionMap extends RobotMap {
 
     @Override
     public RollerMap getIntakeMap() {
-        CSSparkFlex roller = new CSSparkFlex(13);
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.idleMode(IdleMode.kCoast);
-        config.smartCurrentLimit(60);
+        // Right motor is on the right when intake is facing you
+        CSSparkFlex motorRight = new CSSparkFlex(13);
+        CSSparkFlex motorLeft = new CSSparkFlex(19);
+        SparkFlexConfig configRight = new SparkFlexConfig();
+        SparkFlexConfig configLeft = new SparkFlexConfig();
+
+        configRight.idleMode(IdleMode.kCoast);
+        configLeft.idleMode(IdleMode.kCoast);
+
+        configRight.smartCurrentLimit(40);
+        configLeft.smartCurrentLimit(40);
+
+        configLeft.follow(motorRight.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 0.8;
             case REVERSE -> -0.8;
@@ -254,9 +263,13 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
-        roller.getMotorController().configure(config, ResetMode.kResetSafeParameters,
+        motorRight.getMotorController().configure(configRight, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        return new RollerMap(roller, presets);
+        motorLeft.getMotorController().configure(configLeft, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorRight, motorLeft);
+        return new RollerMap(smcg, presets);
     }
 
     @Override
