@@ -37,7 +37,7 @@ public class CommandSequences {
 
     public Command shootAutoAlign(ShooterPresets shotSpeed, HoodPresets hoodAngle) {
         return robot.hood.moveToAngle(hoodAngle)
-                .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed),
+                .alongWith(robot.shooter.spinUp(shotSpeed).alongWith(
                         robot.drive.rotateToTarget(Drive.RotationTargets.HUB))
                         .andThen(feedShooter()
                                 .alongWith(robot.drive.rotateToTargetContinuous(Drive.RotationTargets.HUB))));
@@ -45,8 +45,7 @@ public class CommandSequences {
 
     public Command shoot(ShooterPresets shotSpeed, HoodPresets hoodangle) {
         return robot.hood.moveToAngle(hoodangle)
-                .alongWith(robot.shooterL.spinUp(shotSpeed).alongWith(robot.shooterR.spinUp(shotSpeed)
-                        .andThen(feedShooter())));
+                .alongWith(robot.shooter.spinUp(shotSpeed)).andThen(feedShooter());
     }
 
     public Command feedShooter() {
@@ -62,7 +61,7 @@ public class CommandSequences {
 
     public Command operatorSafeState() {
         return robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
-                robot.feeder.safeStateCmd(), robot.shooterL.safeStateCmd(), robot.shooterR.safeStateCmd(),
+                robot.feeder.safeStateCmd(), robot.shooter.safeStateCmd(),
                 robot.drive.rotationTargetOff());
 
     }

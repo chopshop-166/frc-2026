@@ -24,6 +24,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -139,22 +140,42 @@ public class ScorpionMap extends RobotMap {
     }
 
     @Override
-    public ShooterMap getShooterLMap() {
+    public ShooterMap getShooterMap() {
         CSSparkFlex motorA = new CSSparkFlex(11);
         CSSparkFlex motorB = new CSSparkFlex(12);
+        // Motors C & D are on the right if shooter is facing you
+        CSSparkFlex motorC = new CSSparkFlex(9);
+        CSSparkFlex motorD = new CSSparkFlex(10);
         SparkFlexConfig configA = new SparkFlexConfig();
         SparkFlexConfig configB = new SparkFlexConfig();
+        SparkFlexConfig configCD = new SparkFlexConfig();
+        SparkFlexConfig configD = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
+
         configA.smartCurrentLimit(60);
-        configA.closedLoop.pid(0.0013, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
         configB.smartCurrentLimit(60);
+        configCD.smartCurrentLimit(60);
+
+        configA.closedLoop.pid(0, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
+        motorC.setControlType(ControlType.kVelocity);
+        motorD.setControlType(ControlType.kVelocity);
+
         motorA.setPidSlot(0);
         motorB.setPidSlot(0);
+        motorC.setPidSlot(0);
+        motorD.setPidSlot(0);
+
         configA.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
+        configB.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
+        configCD.encoder.quadratureAverageDepth(2)
+                .quadratureMeasurementPeriod(10);
+
         SmartDashboard.putNumber("Shooter", 2000);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
@@ -171,53 +192,18 @@ public class ScorpionMap extends RobotMap {
                 PersistMode.kPersistParameters);
 
         configB.follow(motorA.getMotorController());
+        configCD.follow(motorA.getMotorController(), true);
 
         motorB.getMotorController().configure(configB,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
-
-        return new ShooterMap(smcg, presets);
-    }
-
-    @Override
-    public ShooterMap getShooterRMap() {
-        CSSparkFlex motorA = new CSSparkFlex(9);
-        CSSparkFlex motorB = new CSSparkFlex(10);
-        SparkFlexConfig configA = new SparkFlexConfig();
-        SparkFlexConfig configB = new SparkFlexConfig();
-        configA.idleMode(IdleMode.kCoast);
-        configA.smartCurrentLimit(60).inverted(true);
-        configA.closedLoop.pid(0.0008, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.00019));
-        configB.smartCurrentLimit(60);
-        motorA.setControlType(ControlType.kVelocity);
-        motorB.setControlType(ControlType.kVelocity);
-        motorA.setPidSlot(0);
-        motorB.setPidSlot(0);
-        configA.encoder.quadratureAverageDepth(2)
-                .quadratureMeasurementPeriod(10);
-        SmartDashboard.putNumber("Shooter", 2000);
-        ShooterMap.PresetValues presets = preset -> switch (preset) {
-            case CLOSE_SHOT -> CLOSE_SHOT_RPM;
-            case MID_SHOT -> MID_SHOT_RPM;
-            case FAR_SHOT -> FAR_SHOT_RPM;
-            case OFF -> 0;
-            case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
-            default -> Double.NaN;
-        };
-
-        motorA.getMotorController().configure(configA,
+        motorC.getMotorController().configure(configCD,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
-        configB.follow(motorA.getMotorController());
-
-        motorB.getMotorController().configure(configB,
+        motorD.getMotorController().configure(configCD,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB, motorC, motorD);
 
         return new ShooterMap(smcg, presets);
     }
@@ -233,7 +219,7 @@ public class ScorpionMap extends RobotMap {
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
-        config.encoder.positionConversionFactor(((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) * (2
+        config.encoder.positionConversionFactor(((1.0 / 9.0) * (22.0 / 52.0) * (18.0 / 48.0)) * (2
                 * Math.PI))
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
@@ -321,13 +307,13 @@ public class ScorpionMap extends RobotMap {
 
     @Override
     public HoodMap getHoodMap() {
-        CSSparkMax motor = new CSSparkMax(17);
+        CSSparkFlex motor = new CSSparkFlex(17);
         ProfiledPIDController pid = new ProfiledPIDController(.43, 0, 0,
                 new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
-        SparkMaxConfig config = new SparkMaxConfig();
+        SparkFlexConfig config = new SparkFlexConfig();
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
-        double gearRatio = (14.0 / 44.0) * (10.0 / 162.0) * (2.0 * Math.PI);
+        double gearRatio = (1.0 / 9.0) * (15.0 / 965.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)

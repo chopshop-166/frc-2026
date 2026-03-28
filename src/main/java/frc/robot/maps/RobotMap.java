@@ -29,11 +29,7 @@ public class RobotMap {
         return new MockLedMap();
     }
 
-    public ShooterMap getShooterRMap() {
-        return new ShooterMap();
-    }
-
-    public ShooterMap getShooterLMap() {
+    public ShooterMap getShooterMap() {
         return new ShooterMap();
     }
 
