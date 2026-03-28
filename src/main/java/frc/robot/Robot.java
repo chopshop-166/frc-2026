@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 import frc.robot.maps.subsystems.ShooterMap.ShooterPresets;
 import frc.robot.subsystems.Deployer;
@@ -143,10 +145,14 @@ public final class Robot extends CommandRobot {
         copilotController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
-        // HoodPresets.CLOSE))
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-                HoodPresets.NETWORK_TABLES))
-                .onFalse(sequences.operatorSafeState());
+        // HoodPresets.CLOSE));
+        // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
+        // HoodPresets.AUTO_ANGLE));
+        copilotController.b()
+                .whileTrue(
+                        hood.moveToAngle(HoodPresets.AUTO_ANGLE).alongWith(drive.rotateToTarget(RotationTargets.HUB)))
+                .onFalse(hood.safeStateCmd());
+        // .onFalse(sequences.operatorSafeState());
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
                 .onFalse(sequences.operatorSafeState());
         copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
@@ -182,7 +188,8 @@ public final class Robot extends CommandRobot {
     @Override
 
     public void setDefaultCommands() {
-        hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () -> -copilotController.getRightY())));
+        // hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () ->
+        // -copilotController.getRightY())));
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {

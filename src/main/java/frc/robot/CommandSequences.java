@@ -45,18 +45,19 @@ public class CommandSequences {
 
     public Command shoot(ShooterPresets shotSpeed, HoodPresets hoodangle) {
         return robot.hood.moveToAngle(hoodangle)
-                .alongWith(robot.shooter.spinUp(shotSpeed)).andThen(feedShooter());
+                .alongWith(robot.shooter.spinUp(shotSpeed)).andThen(feedShooterWiggle());
     }
 
     public Command feedShooter() {
-        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn()); // robot.intake.rollIn()
+        return robot.feeder.rollIn().alongWith(robot.activeFloor.rollIn(), robot.intake.rollIn());
     }
 
     public Command feedShooterWiggle() {
-        return feedShooter().withDeadline(
-                repeatingSequence(waitSeconds(.25), robot.deployer.moveTo(DeployerPresets.WIGGLE_IN), waitSeconds(.25),
-                        robot.deployer.moveTo(DeployerPresets.OUT)))
-                .finallyDo(() -> robot.deployer.moveTo(DeployerPresets.OUT));
+        return feedShooter().alongWith(
+                repeatingSequence(waitSeconds(.25), robot.deployer.moveToNonOwning(DeployerPresets.WIGGLE_IN),
+                        waitSeconds(.25),
+                        robot.deployer.moveToNonOwning(DeployerPresets.OUT)))
+                .andThen(robot.deployer.moveTo(DeployerPresets.OUT));
     }
 
     public Command operatorSafeState() {
