@@ -253,7 +253,7 @@ public class ScorpionMap extends RobotMap {
         configRight.smartCurrentLimit(40);
         configLeft.secondaryCurrentLimit(40);
 
-        configLeft.follow(13, true);
+        configLeft.follow(motorRight.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 0.8;
             case REVERSE -> -0.8;
@@ -267,7 +267,9 @@ public class ScorpionMap extends RobotMap {
                 PersistMode.kPersistParameters);
         motorLeft.getMotorController().configure(configLeft, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        return new RollerMap(motorRight, presets);
+
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorRight, motorLeft);
+        return new RollerMap(smcg, presets);
     }
 
     @Override
