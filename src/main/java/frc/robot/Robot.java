@@ -102,7 +102,7 @@ public final class Robot extends CommandRobot {
         // may be added.
         Logger.start();
 
-        sequences.operatorSafeState().schedule();
+        CommandScheduler.getInstance().schedule(sequences.operatorSafeState());
         DriverStation.silenceJoystickConnectionWarning(true);
 
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -127,7 +127,7 @@ public final class Robot extends CommandRobot {
     @Override
     public void disabledInit() {
         super.disabledInit();
-        sequences.operatorSafeState().ignoringDisable(true).schedule();
+        CommandScheduler.getInstance().schedule(sequences.operatorSafeState().ignoringDisable(true));
     }
 
     @Override
