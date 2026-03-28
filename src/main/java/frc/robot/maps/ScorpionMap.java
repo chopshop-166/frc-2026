@@ -152,7 +152,6 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configA = new SparkFlexConfig();
         SparkFlexConfig configB = new SparkFlexConfig();
         SparkFlexConfig configCD = new SparkFlexConfig();
-        SparkFlexConfig configD = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
 
         configA.smartCurrentLimit(60);
@@ -329,7 +328,7 @@ public class ScorpionMap extends RobotMap {
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkFlexConfig config = new SparkFlexConfig();
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
-        double gearRatio = (1.0 / 9.0) * (15.0 / 965.0) * (2.0 * Math.PI);
+        double gearRatio = (1.0 / 9.0) * (15.0 / 165.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
