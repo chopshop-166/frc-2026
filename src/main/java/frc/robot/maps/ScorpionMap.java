@@ -330,9 +330,10 @@ public class ScorpionMap extends RobotMap {
             case MID -> 0.2;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
-            case AUTO_ANGLE -> ((distanceToHubSub.getAsDouble() - .31525) > 0)
-                    ? Math.min(.44, (distanceToHubSub.getAsDouble() - .31525) / 8.5903)
-                    : 0;
+            case AUTO_ANGLE -> {
+                double distance = distanceToHubSub.getAsDouble() - .31525;
+                yield (distance > 0) ? Math.min(.44, (distance) / 8.5903) : 0;
+            }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
             default -> Double.NaN;
         };
