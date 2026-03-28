@@ -55,8 +55,7 @@ public final class Robot extends CommandRobot {
         return driveScaler.applyAsDouble(-driveController.getRightX());
     }, map.getVisionMap());
 
-    public Shooter shooterR = new Shooter(map.getShooterRMap(), "Shooter/Right");
-    public Shooter shooterL = new Shooter(map.getShooterLMap(), "Shooter/Left");
+    public Shooter shooter = new Shooter(map.getShooterMap(), "Shooter");
     public Roller intake = new Roller(map.getIntakeMap(), "Intake");
     public Deployer deployer = new Deployer(map.getDeployerMap(),
             RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
@@ -105,7 +104,7 @@ public final class Robot extends CommandRobot {
         // may be added.
         Logger.start();
 
-        sequences.operatorSafeState().schedule();
+        CommandScheduler.getInstance().schedule(sequences.operatorSafeState());
         DriverStation.silenceJoystickConnectionWarning(true);
 
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -130,7 +129,7 @@ public final class Robot extends CommandRobot {
     @Override
     public void disabledInit() {
         super.disabledInit();
-        sequences.operatorSafeState().ignoringDisable(true).schedule();
+        CommandScheduler.getInstance().schedule(sequences.operatorSafeState().ignoringDisable(true));
     }
 
     @Override

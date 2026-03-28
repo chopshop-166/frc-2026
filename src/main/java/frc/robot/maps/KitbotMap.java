@@ -23,6 +23,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -106,7 +107,9 @@ public class KitbotMap extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro2, config, holonomicDrive);
+                maxRotationRadianPerSecond, pigeonGyro2, config, holonomicDrive,
+                VecBuilder.fill(0.02, 0.02, 0.01),
+                VecBuilder.fill(0.1, 0.1, 0.01));
     }
 
     @Override

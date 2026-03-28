@@ -103,11 +103,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         maxDriveSpeedMetersPerSecond = map.maxDriveSpeedMetersPerSecond;
         maxRotationRadiansPerSecond = map.maxRotationRadianPerSecond;
 
-        estimator = new SwerveDrivePoseEstimator(kinematics, getMap().gyro.getRotation2d(),
-                getData().getModulePositions(),
-                new Pose2d(),
-                VecBuilder.fill(0.02, 0.02, 0.01),
-                VecBuilder.fill(0.1, 0.1, 0.01));
+        estimator = getMap().estimator;
 
         visionData.estimator = estimator;
 
