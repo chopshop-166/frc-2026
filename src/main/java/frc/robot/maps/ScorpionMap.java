@@ -350,10 +350,9 @@ public class ScorpionMap extends RobotMap {
             default -> Double.NaN;
         };
 
+        return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);
+    }
 
-    
-
-    
     @Override
     public VisionMap getVisionMap() {
 
