@@ -152,7 +152,6 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig configA = new SparkFlexConfig();
         SparkFlexConfig configB = new SparkFlexConfig();
         SparkFlexConfig configCD = new SparkFlexConfig();
-        SparkFlexConfig configD = new SparkFlexConfig();
         configA.idleMode(IdleMode.kCoast);
 
         configA.smartCurrentLimit(60);
