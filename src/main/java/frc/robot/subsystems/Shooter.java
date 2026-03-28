@@ -24,11 +24,12 @@ public class Shooter extends LoggedSubsystem<Data, ShooterMap> {
     DoubleSupplier shooterSpeed;
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    DoublePublisher shooterVelocityFPSPub = instance.getDoubleTopic(getName() + "/Linear Velocity").publish();
+    DoublePublisher shooterVelocityFPSPub;
 
     public Shooter(ShooterMap shooterMap, String name) {
         super(new Data(), shooterMap);
         this.implName = name;
+        shooterVelocityFPSPub = instance.getDoubleTopic(getName() + "/Linear Velocity").publish();
     }
 
     @Override
