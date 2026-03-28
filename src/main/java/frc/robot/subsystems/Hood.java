@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap;
 import frc.robot.maps.subsystems.HoodMap.Data;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
@@ -20,9 +19,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final ProfiledPIDController pid;
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("Drive/Distance To Hub Ft").subscribe(0.0);
-    DoubleSubscriber shooterLeftLinearVelocity = instance.getDoubleTopic("Shooter/Left/Linear Velocity").subscribe(0.0);
-    DoubleSubscriber shooterRightLinearVelocity = instance.getDoubleTopic("Shooter/Right/Linear Velocity")
-            .subscribe(0.0);
+    DoubleSubscriber shooterLinearVelocity = instance.getDoubleTopic("Shooter/Linear Velocity").subscribe(0.0);
 
     public Hood(HoodMap hoodMap) {
         super(new Data(), hoodMap);
@@ -51,8 +48,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
 
     public Double calcAngle(double velocity) {
         final Double targetDistanceInFeet = distanceToTargetSub.get();
-        final Double ShooterLinearVelocityInFPS = (shooterLeftLinearVelocity.get() + shooterRightLinearVelocity.get())
-                / 2;
+        final Double ShooterLinearVelocityInFPS = shooterLinearVelocity.get();
         final Double GRAVITY_CONSTANT_IN_FPS = 32.2;
         final Double RADIANS_DEGREE_CONVERSION_FACTOR = 57.2958;
         final Double targetVelocitySqrInFPS = (ShooterLinearVelocityInFPS * ShooterLinearVelocityInFPS);
