@@ -251,7 +251,7 @@ public class ScorpionMap extends RobotMap {
         configLeft.idleMode(IdleMode.kCoast);
 
         configRight.smartCurrentLimit(40);
-        configLeft.secondaryCurrentLimit(40);
+        configLeft.smartCurrentLimit(40);
 
         configLeft.follow(motorRight.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
