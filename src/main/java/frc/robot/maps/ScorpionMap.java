@@ -219,7 +219,7 @@ public class ScorpionMap extends RobotMap {
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
-        config.encoder.positionConversionFactor(((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) * (2
+        config.encoder.positionConversionFactor(((1.0 / 9.0) * (22.0 / 52.0) * (18.0 / 48.0)) * (2
                 * Math.PI))
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
@@ -313,7 +313,7 @@ public class ScorpionMap extends RobotMap {
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkFlexConfig config = new SparkFlexConfig();
         ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
-        double gearRatio = (14.0 / 44.0) * (10.0 / 162.0) * (2.0 * Math.PI);
+        double gearRatio = (1.0 / 9.0) * (15.0 / 965.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
