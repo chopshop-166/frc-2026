@@ -47,6 +47,7 @@ deploy {
                     directory = '/home/lvuser/deploy'
                     deleteOldFiles = true // Change to true to delete files on roboRIO that no
                                            // longer exist in deploy directory of this project
+                    dependsOn 'pathflip'
                 }
             }
         }
@@ -149,4 +150,12 @@ gversion {
 task(replayWatch, type: JavaExec) {
     mainClass = "org.littletonrobotics.junction.ReplayWatch"
     classpath = sourceSets.main.runtimeClasspath
+}
+
+task pathflip(type: Exec) {
+    commandLine 'python', 'path-flipper.py', "generate"
+}
+
+task pathflipClean(type: Exec) {
+    commandLine 'python', 'path-flipper.py', "clean"
 }
