@@ -99,7 +99,7 @@ public class ScorpionMap extends RobotMap {
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
                 SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002),
-                new PIDValues(0.05, 0.0, 0.0, 0.21));
+                new PIDValues(0.05, 0.0, 0.0, 0.21 * 12));
 
         // All Distances are in Meters
         // Front Left Module
@@ -158,7 +158,7 @@ public class ScorpionMap extends RobotMap {
         configB.smartCurrentLimit(60);
         configCD.smartCurrentLimit(60);
 
-        configA.closedLoop.pid(0.0005, 0, 0);
+        configA.closedLoop.pid(0.0008, 0, 0);
         configA.closedLoop.apply(new FeedForwardConfig().kV(0.002));
 
         motorA.setControlType(ControlType.kVelocity);
@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
+            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 4.3804) / 0.0059);
             default -> Double.NaN;
         };
 
@@ -255,7 +255,8 @@ public class ScorpionMap extends RobotMap {
         configRight.smartCurrentLimit(40);
         configLeft.smartCurrentLimit(40);
 
-        configLeft.follow(motorRight.getMotorController(), true);
+        configLeft.inverted(true);
+        configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 1.0;
             case REVERSE -> -1.0;
@@ -270,7 +271,7 @@ public class ScorpionMap extends RobotMap {
         motorLeft.getMotorController().configure(configLeft, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorRight, motorLeft);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorLeft, motorRight);
         return new RollerMap(smcg, presets);
     }
 
@@ -362,13 +363,13 @@ public class ScorpionMap extends RobotMap {
     @Override
     public VisionMap getVisionMap() {
 
-        return new VisionMap(0,
+        return new VisionMap(180,
                 new CameraSource("Hopper_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(13.3254), Units.inchesToMeters(-3.265),
+                        new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(-3.26),
                                 Units.inchesToMeters(10.147),
-                                new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(54.5)))),
+                                new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(35)))),
                 new CameraSource("Shooter_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(5.763), Units.inchesToMeters(-13.362),
+                        new Transform3d(Units.inchesToMeters(5.55), Units.inchesToMeters(-13.362),
                                 Units.inchesToMeters(-14.638),
                                 new Rotation3d(0, Units.degreesToRadians(-15), Units.degreesToRadians(180)))));
     }
