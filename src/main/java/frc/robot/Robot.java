@@ -172,7 +172,8 @@ public final class Robot extends CommandRobot {
 
     private final void registerNamedCommands() {
         NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("Shoot", sequences.shootAutoAlign(ShooterPresets.MID_SHOT, HoodPresets.CLOSE));
+        NamedCommands.registerCommand("Shoot",
+                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE));
         NamedCommands.registerCommand("Stop Shooting", sequences.operatorSafeState());
     }
 

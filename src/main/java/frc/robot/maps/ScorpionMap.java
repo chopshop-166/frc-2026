@@ -158,7 +158,7 @@ public class ScorpionMap extends RobotMap {
         configB.smartCurrentLimit(60);
         configCD.smartCurrentLimit(60);
 
-        configA.closedLoop.pid(0.0008, 0, 0);
+        configA.closedLoop.pid(0.0010, 0, 0);
         configA.closedLoop.apply(new FeedForwardConfig().kV(0.002));
 
         motorA.setControlType(ControlType.kVelocity);
@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 4.3804) / 0.0059);
+            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 4.9) / 0.0059);
             default -> Double.NaN;
         };
 
@@ -220,7 +220,7 @@ public class ScorpionMap extends RobotMap {
         ProfiledPIDController pid = new ProfiledPIDController(0.3, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
         ArmFeedforward feedForward = new ArmFeedforward(0.01, 0.05, 0.05);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 25.1);
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 30.1);
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
@@ -258,7 +258,7 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1.0;
+            case FORWARD -> .8;
             case REVERSE -> -1.0;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -304,7 +304,7 @@ public class ScorpionMap extends RobotMap {
         configR.idleMode(IdleMode.kCoast).inverted(false);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1;
+            case FORWARD -> .7;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -347,8 +347,8 @@ public class ScorpionMap extends RobotMap {
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
-                double distance = distanceToHubSub.getAsDouble() - .31525;
-                yield (distance > 0) ? Math.min(.44, (distance) / 8.5903) : 0;
+                double distance = distanceToHubSub.getAsDouble() - .2;
+                yield (distance > 0) ? Math.min(.44, (distance) / 15.8) : 0;
 
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
@@ -364,13 +364,15 @@ public class ScorpionMap extends RobotMap {
     public VisionMap getVisionMap() {
 
         return new VisionMap(180,
-                new CameraSource("Hopper_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(13.25), Units.inchesToMeters(-3.26),
-                                Units.inchesToMeters(10.147),
+                new CameraSource("Hopper_Scorpion_Cam", // left
+                        new Transform3d(Units.inchesToMeters(
+                                3.136), Units.inchesToMeters(13.068),
+                                Units.inchesToMeters(10.061),
                                 new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(35)))),
-                new CameraSource("Shooter_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(5.55), Units.inchesToMeters(-13.362),
-                                Units.inchesToMeters(-14.638),
+                new CameraSource("Shooter_Scorpion_Cam", // right
+                        new Transform3d(Units.inchesToMeters(
+                                -13.007), Units.inchesToMeters(-5.763),
+                                Units.inchesToMeters(14.513),
                                 new Rotation3d(0, Units.degreesToRadians(-15), Units.degreesToRadians(180)))));
     }
 
