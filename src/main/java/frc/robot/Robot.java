@@ -61,7 +61,7 @@ public final class Robot extends CommandRobot {
             RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
     public Roller feeder = new Roller(map.getFeederMap(), "Feeder");
     public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
-    public Hood hood = new Hood(map.getHoodMap());
+    public Hood hood = new Hood(map.getHoodMap(), RobotUtils.deadbandAxis(.1, () -> copilotController.getRightY()));
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);

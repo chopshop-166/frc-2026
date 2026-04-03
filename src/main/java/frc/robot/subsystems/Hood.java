@@ -18,16 +18,20 @@ import frc.robot.maps.subsystems.HoodMap.HoodPresets;
 
 public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final ProfiledPIDController pid;
+    final DoubleSupplier joystick;
+
+    final double MANUAL_SPEED_COEF = 0.2;
+
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("Drive/Distance To Hub Ft").subscribe(0.0);
     DoubleSubscriber shooterLeftLinearVelocity = instance.getDoubleTopic("Shooter/Left/Linear Velocity").subscribe(0.0);
     DoubleSubscriber shooterRightLinearVelocity = instance.getDoubleTopic("Shooter/Right/Linear Velocity")
             .subscribe(0.0);
 
-    public Hood(HoodMap hoodMap) {
+    public Hood(HoodMap hoodMap, DoubleSupplier manual) {
         super(new Data(), hoodMap);
         pid = hoodMap.pid;
-
+        joystick = manual;
     }
 
     public Command moveToAngle(HoodPresets preset) {
@@ -82,7 +86,13 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     @Override
     public void periodic() {
         super.periodic();
-        if (getData().preset != HoodPresets.OFF) {
+
+        double speed = joystick.getAsDouble();
+
+        if (Math.abs(speed) > 0) {
+            getData().preset = HoodPresets.OFF;
+            getData().motor.setpoint = (limits(speed * MANUAL_SPEED_COEF));
+        } else if (getData().preset != HoodPresets.OFF) {
             double targetAngle = getMap().hoodPreset.applyAsDouble(getData().preset);
             Logger.recordOutput("Hood/TargetAngle", targetAngle);
             double setpoint = pid.calculate(getHoodAngle(), new State(targetAngle, 0));

@@ -127,7 +127,7 @@ public class ScorpionMap extends RobotMap {
         final double maxRotationRadianPerSecond = 2 * Math.PI;
 
         RobotConfig config = new RobotConfig(58, 4.889, new ModuleConfig(
-                0.0508, 6000, 1.0, DCMotor.getNeoVortex(1), 50, 1),
+                0.0508, 6000, 1.0, DCMotor.getNeoVortex(1), 60, 1),
                 new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1000));
+            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1100));
             default -> Double.NaN;
         };
 
