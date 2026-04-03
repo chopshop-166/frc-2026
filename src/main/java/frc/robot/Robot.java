@@ -138,7 +138,7 @@ public final class Robot extends CommandRobot {
                 .onFalse(drive.rotationTargetOff());
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
-        copilotController.back().onTrue(hood.zero());
+        copilotController.back().onTrue(hood.zero().ignoringDisable(true));
         // feed shooter
 
         // // Intake
@@ -162,7 +162,7 @@ public final class Robot extends CommandRobot {
         // HoodPresets.CLOSE))
         // .onFalse(sequences.operatorSafeState());
         copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
-                .onFalse(sequences.operatorSafeState());
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         copilotController.rightBumper().onTrue(sequences.retractIntake());
         copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
@@ -174,7 +174,8 @@ public final class Robot extends CommandRobot {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("Shoot",
                 sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE));
-        NamedCommands.registerCommand("Stop Shooting", sequences.operatorSafeState());
+        NamedCommands.registerCommand("Stop Shooting",
+                sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
     }
 
     @Override

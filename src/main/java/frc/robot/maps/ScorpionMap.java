@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 4.9) / 0.0059);
+            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 5.2) * 160);
             default -> Double.NaN;
         };
 
@@ -282,7 +282,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast).inverted(true);
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1.0;
+            case FORWARD -> .8;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -304,7 +304,7 @@ public class ScorpionMap extends RobotMap {
         configR.idleMode(IdleMode.kCoast).inverted(false);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .7;
+            case FORWARD -> .6;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;

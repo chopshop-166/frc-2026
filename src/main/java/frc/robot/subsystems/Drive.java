@@ -233,7 +233,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
             double poseY = estimator.getEstimatedPosition().getY();
             rotationPID.reset(new State(estimator.getEstimatedPosition().getRotation().getDegrees(), 0));
             if (isBlueAlliance) {
-                if (poseX > BLUE_ALLIANCE_STARTING && poseX < BLUE_ALLIANCE_ENDING) { // blue side
+                if (poseX < BLUE_ALLIANCE_ENDING) { // blue side
                     this.target = RotationTargets.HUB;
 
                 } else if (poseX > BLUE_ALLIANCE_ENDING) { // in nutral zone
