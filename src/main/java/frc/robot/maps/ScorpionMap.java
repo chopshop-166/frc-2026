@@ -341,14 +341,16 @@ public class ScorpionMap extends RobotMap {
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         SmartDashboard.putNumber("Hood/angle", 0);
+        SmartDashboard.putNumber("Hood/angle_at_1m", 0);
+        SmartDashboard.putNumber("Hood/angle_at_4m", 0);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
-                double distance = distanceToHubSub.getAsDouble() - .2;
-                yield (distance > 0) ? Math.min(.44, (distance) / 16.4) : 0;
+                double distance = (distanceToHubSub.getAsDouble() / 14.8) - .01216;
+                yield (distance > 0) ? Math.min(.44, distance) : 0;
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
             default -> Double.NaN;
