@@ -49,6 +49,13 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         });
     }
 
+    // public Command autoZero() {
+    // return startSafe(()-> {
+    // getMap().motor.resetValidators();
+    // getData().preset = HoodPresets.ZEROING;
+    // });
+    // }
+
     public Double calcAngle(double velocity) {
         final Double targetDistanceInFeet = distanceToTargetSub.get();
         final Double ShooterLinearVelocityInFPS = (shooterLeftLinearVelocity.get() + shooterRightLinearVelocity.get())

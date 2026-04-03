@@ -27,7 +27,9 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         NETWORK_TABLES,
 
-        DOWN;
+        DOWN,
+
+        ZEROING;
     }
 
     public interface PresetValue extends ToDoubleFunction<HoodPresets> {

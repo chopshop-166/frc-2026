@@ -59,9 +59,9 @@ public class ScorpionMap extends RobotMap {
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToHubSub = ntInstance.getDoubleTopic("Drive/Distance To Hub").subscribe(0);
 
-    private final double CLOSE_SHOT_RPM = 1800;
-    private final double MID_SHOT_RPM = 2000;
-    private final double FAR_SHOT_RPM = 2500;
+    private final double CLOSE_SHOT_RPM = 1200;
+    private final double MID_SHOT_RPM = 1500;
+    private final double FAR_SHOT_RPM = 1800;
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 5.2) * 160);
+            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 5.9) * 170); // was 5.2 and 160
             default -> Double.NaN;
         };
 
@@ -327,7 +327,7 @@ public class ScorpionMap extends RobotMap {
     @Override
     public HoodMap getHoodMap() {
         CSSparkFlex motor = new CSSparkFlex(17);
-        ProfiledPIDController pid = new ProfiledPIDController(.7, 0, 0,
+        ProfiledPIDController pid = new ProfiledPIDController(.8, 0, 0,
                 new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkFlexConfig config = new SparkFlexConfig();
@@ -348,13 +348,13 @@ public class ScorpionMap extends RobotMap {
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
                 double distance = distanceToHubSub.getAsDouble() - .2;
-                yield (distance > 0) ? Math.min(.44, (distance) / 15.8) : 0;
-
+                yield (distance > 0) ? Math.min(.44, (distance) / 16.4) : 0;
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
             default -> Double.NaN;
 
             case DOWN -> 0;
+            case ZEROING -> 0;
         };
 
         return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);
@@ -368,7 +368,7 @@ public class ScorpionMap extends RobotMap {
                         new Transform3d(Units.inchesToMeters(
                                 3.136), Units.inchesToMeters(13.068),
                                 Units.inchesToMeters(10.061),
-                                new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(35)))),
+                                new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(55)))),
                 new CameraSource("Shooter_Scorpion_Cam", // right
                         new Transform3d(Units.inchesToMeters(
                                 -13.007), Units.inchesToMeters(-5.763),
