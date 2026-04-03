@@ -185,7 +185,7 @@ public class ScorpionMap extends RobotMap {
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 5.9) * 170); // was 5.2 and 160
+            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1000));
             default -> Double.NaN;
         };
 
@@ -331,7 +331,7 @@ public class ScorpionMap extends RobotMap {
                 new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkFlexConfig config = new SparkFlexConfig();
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
+        ArmFeedforward feedForward = new ArmFeedforward(.02, 0.02, 0.08);
         double gearRatio = (1.0 / 9.0) * (15.0 / 165.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
