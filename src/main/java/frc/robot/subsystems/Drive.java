@@ -18,6 +18,7 @@ import com.chopshop166.chopshoplib.maps.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.chopshop166.chopshoplib.motors.Modifier;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.VecBuilder;
@@ -178,7 +179,7 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
         Logger.recordOutput("Drive/Rotation_PID/Velocity", rotationPID.getSetpoint().velocity);
         Logger.recordOutput("Drive/Rotation_PID/At Goal", rotationPID.atGoal());
         Logger.recordOutput("Drive/ActualChassisSpeeds",
-                ChassisSpeeds.fromRobotRelativeSpeeds(kinematics.toChassisSpeeds(getData().getModuleStates()),
+                ChassisSpeeds.fromRobotRelativeSpeeds(getSpeeds(),
                         estimator.getEstimatedPosition().getRotation()));
     }
 
@@ -311,7 +312,8 @@ public class Drive extends LoggedSubsystem<SwerveDriveData, SwerveDriveMap> {
 
     private void move(final ChassisSpeeds speeds) {
         // Now use this in our kinematics
-        final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
+        ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(discreteSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxDriveSpeedMetersPerSecond);
 
         // All the states

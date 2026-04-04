@@ -72,7 +72,7 @@ public class ScorpionMap extends RobotMap {
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
-        final double MODULE_OFFSET_XY = Units.inchesToMeters(11.379);
+        final double MODULE_OFFSET_XY = Units.inchesToMeters(10.875);
         final Pigeon2 pigeon = new Pigeon2(1);
         var pigeonConfig = pigeon.getConfigurator();
         pigeonConfig.apply(new MountPoseConfigs().withMountPoseRoll(180));
@@ -126,8 +126,13 @@ public class ScorpionMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = 2 * Math.PI;
 
-        RobotConfig config = new RobotConfig(58, 4.889, new ModuleConfig(
-                0.0508, 8000, 1.0, DCMotor.getNeoVortex(1), 1.0 / 6.75, 60, 1),
+        RobotConfig config = new RobotConfig(62,
+                6.758, new ModuleConfig(
+                        Units.inchesToMeters(2),
+                        maxDriveSpeedMetersPerSecond,
+                        1.2,
+                        DCMotor.getNeoVortex(1).withReduction(6.75),
+                        60, 1),
                 new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
