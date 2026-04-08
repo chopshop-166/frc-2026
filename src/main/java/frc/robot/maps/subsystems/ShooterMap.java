@@ -21,6 +21,8 @@ public class ShooterMap implements LoggableMap<ShooterMap.Data> {
         FAR_SHOT,
         // Get the value from NT
         NETWORK_TABLES,
+        // Get multiple tunable values from NT
+        NETWORK_TABLES_AUTO,
 
         AUTO_SPEED
 

@@ -27,6 +27,8 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         NETWORK_TABLES,
 
+        NETWORK_TABLES_AUTO,
+
         DOWN,
 
         ZEROING;
