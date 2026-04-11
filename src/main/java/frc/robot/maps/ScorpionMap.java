@@ -200,8 +200,8 @@ public class ScorpionMap extends RobotMap {
         configCD.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
 
         SmartDashboard.putNumber("Shooter/rpm", 1500);
-        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1200);
-        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1600);
+        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 950);
+        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1500);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
@@ -209,8 +209,8 @@ public class ScorpionMap extends RobotMap {
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
-                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 1200);
-                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1600);
+                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 950);
+                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1500);
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
@@ -264,7 +264,7 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
             case OFF -> Double.NaN;
-            case OUT -> Units.degreesToRadians(1);
+            case OUT -> Units.degreesToRadians(3);
             case IN -> Units.degreesToRadians(102);
             case WIGGLE_IN -> Units.degreesToRadians(84);
             default -> Double.NaN;
@@ -293,7 +293,7 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1.0;
             case REVERSE -> -1.0;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -317,7 +317,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast).inverted(true);
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1.0;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -339,7 +339,7 @@ public class ScorpionMap extends RobotMap {
         configR.idleMode(IdleMode.kCoast).inverted(false);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .6;
+            case FORWARD -> 1.0;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -375,9 +375,9 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor(gearRatio / 60.0);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartDashboard.putNumber("Hood/angle", 0.15);
-        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.074);
-        SmartDashboard.putNumber("Hood/angle_at_5m", 0.42);
+        SmartDashboard.putNumber("Hood/angle", 0.18);
+        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.16);
+        SmartDashboard.putNumber("Hood/angle_at_5m", 0.47);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
@@ -389,8 +389,8 @@ public class ScorpionMap extends RobotMap {
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
             case NETWORK_TABLES_AUTO -> {
-                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.074);
-                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.42);
+                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.16);
+                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.47);
                 double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
                 double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
                 Logger.recordOutput("Hood/Slope", hood_slope);

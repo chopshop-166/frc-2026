@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
@@ -176,9 +177,11 @@ public final class Robot extends CommandRobot {
     }
 
     private final void registerNamedCommands() {
-        NamedCommands.registerCommand("Intake", sequences.intake().withName("Intake!!!"));
+        NamedCommands.registerCommand("Intake", sequences.intake());
+        NamedCommands.registerCommand("PathEnd", new PrintCommand("path ended"));
         NamedCommands.registerCommand("Shoot",
-                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE).withName("Shoot"));
+                sequences.shootAutoAlign(ShooterPresets.NETWORK_TABLES_AUTO, HoodPresets.NETWORK_TABLES_AUTO)
+                        .withName("Shoot"));
         NamedCommands.registerCommand("Stop Shooting",
                 sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
     }
