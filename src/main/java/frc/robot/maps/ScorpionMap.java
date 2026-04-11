@@ -60,7 +60,7 @@ public class ScorpionMap extends RobotMap {
     final public double DISTANCE_B_METERS = 5;
 
     public double solveSlope(double input_a, double input_b) {
-        return (input_b - input_a / (DISTANCE_B_METERS - DISTANCE_A_METERS));
+        return (input_b - input_a) / (DISTANCE_B_METERS - DISTANCE_A_METERS);
     }
 
     public double solveIntercept(double input_a, double slope) {
@@ -195,8 +195,8 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
 
         SmartDashboard.putNumber("Shooter/rpm", 1500);
-        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1355);
-        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1950);
+        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1200);
+        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1600);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
@@ -204,13 +204,16 @@ public class ScorpionMap extends RobotMap {
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
-                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 1355);
-                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1950);
+                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 1200);
+                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1600);
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
-                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) - shooter_intercept;
-                yield distance;
+                Logger.recordOutput("Shooter/Slope", shooter_slope);
+                Logger.recordOutput("Shooter/Intercept", shooter_intercept);
+
+                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
+                yield Math.min(2500, distance);
             }
             case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1100));
             default -> Double.NaN;
@@ -368,8 +371,8 @@ public class ScorpionMap extends RobotMap {
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         SmartDashboard.putNumber("Hood/angle", 0.15);
-        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.0892);
-        SmartDashboard.putNumber("Hood/angle_at_5m", 0.327);
+        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.074);
+        SmartDashboard.putNumber("Hood/angle_at_5m", 0.42);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
@@ -381,12 +384,14 @@ public class ScorpionMap extends RobotMap {
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
             case NETWORK_TABLES_AUTO -> {
-                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.0892);
-                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.327);
+                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.074);
+                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.42);
                 double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
                 double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
+                Logger.recordOutput("Hood/Slope", hood_slope);
+                Logger.recordOutput("Hood/Intercept", hood_intercept);
 
-                double distance = (distanceToHubSub.getAsDouble() * hood_slope) - hood_intercept;
+                double distance = (distanceToHubSub.getAsDouble() * hood_slope) + hood_intercept;
                 yield (distance > 0) ? Math.min(.44, distance) : 0;
             }
             default -> Double.NaN;
