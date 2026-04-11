@@ -174,8 +174,9 @@ public class ScorpionMap extends RobotMap {
         configB.smartCurrentLimit(60);
         configCD.smartCurrentLimit(60);
 
-        configA.closedLoop.pid(0.0010, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.002));
+        configA.closedLoop.pid(0.0005, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.004));
+        configA.signals.appliedOutputPeriodMs(5);
 
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
@@ -193,6 +194,10 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
         configCD.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
+
+        configA.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
+        configB.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
+        configCD.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
 
         SmartDashboard.putNumber("Shooter/rpm", 1500);
         SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1200);
