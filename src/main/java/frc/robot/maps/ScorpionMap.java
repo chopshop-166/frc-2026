@@ -363,10 +363,12 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
-                .quadratureMeasurementPeriod(10)
-                .velocityConversionFactor(gearRatio / 60.0);
+                .quadratureMeasurementPeriod(10);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+        motor.validateEncoderRate(.2, 10);
+        return new ElevatorMap(elevatorMotors, leftMotor.getEncoder(), presets,
+                new ValueRange(0, 59), new ValueRange(5, 55), pid, feedForward);
         SmartDashboard.putNumber("Hood/angle", 0.15);
         SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.0892);
         SmartDashboard.putNumber("Hood/angle_at_5m", 0.327);

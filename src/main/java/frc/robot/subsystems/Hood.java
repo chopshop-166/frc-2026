@@ -21,6 +21,8 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     final DoubleSupplier joystick;
 
     final double MANUAL_SPEED_COEF = 0.2;
+    final double ZEROINGSPEED = -.2;
+    final double ZERO_CURRENT_THRESHOLD = 30;
 
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToTargetSub = instance.getDoubleTopic("Drive/Distance To Hub Ft").subscribe(0.0);
@@ -53,12 +55,19 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         });
     }
 
-    // public Command autoZero() {
-    // return startSafe(()-> {
-    // getMap().motor.resetValidators();
-    // getData().preset = HoodPresets.ZEROING;
-    // });
-    // }
+    public Command autoZero() {
+
+        double currentAmps = getData().motor.currentAmps[0];
+
+        return startSafe(() -> {
+            getMap().motor.resetValidators();
+            getData().preset = HoodPresets.ZEROING;
+            getData().motor.setpoint = ZEROINGSPEED;
+        }).until(() -> getMap().motor.validate()).andThen(resetCmd());
+
+    }
+
+    }
 
     public Double calcAngle(double velocity) {
         final Double targetDistanceInFeet = distanceToTargetSub.get();
