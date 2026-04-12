@@ -366,9 +366,7 @@ public class ScorpionMap extends RobotMap {
                 .quadratureMeasurementPeriod(10);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        motor.validateEncoderRate(.2, 10);
-        return new ElevatorMap(elevatorMotors, leftMotor.getEncoder(), presets,
-                new ValueRange(0, 59), new ValueRange(5, 55), pid, feedForward);
+        motor.validateEncoderRate(.01, 10);
         SmartDashboard.putNumber("Hood/angle", 0.15);
         SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.0892);
         SmartDashboard.putNumber("Hood/angle_at_5m", 0.327);

@@ -56,32 +56,13 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     }
 
     public Command autoZero() {
-
-        double currentAmps = getData().motor.currentAmps[0];
-
         return startSafe(() -> {
             getMap().motor.resetValidators();
             getData().preset = HoodPresets.ZEROING;
             getData().motor.setpoint = ZEROINGSPEED;
         }).until(() -> getMap().motor.validate()).andThen(resetCmd());
-
     }
-
-    }
-
-    public Double calcAngle(double velocity) {
-        final Double targetDistanceInFeet = distanceToTargetSub.get();
-        final Double ShooterLinearVelocityInFPS = (shooterLeftLinearVelocity.get() + shooterRightLinearVelocity.get())
-                / 2;
-        final Double GRAVITY_CONSTANT_IN_FPS = 32.2;
-        final Double RADIANS_DEGREE_CONVERSION_FACTOR = 57.2958;
-        final Double targetVelocitySqrInFPS = (ShooterLinearVelocityInFPS * ShooterLinearVelocityInFPS);
-
-        Double ang = ((Math.asin((targetDistanceInFeet * GRAVITY_CONSTANT_IN_FPS) / (targetVelocitySqrInFPS)) / 2)
-                * RADIANS_DEGREE_CONVERSION_FACTOR);
-        return ang; // in degrees
-    }
-
+    
     private double limits(double speed) {
         double angle = getHoodAngle();
         speed = getMap().hardLimits.filterSpeed(angle, speed);
