@@ -49,6 +49,12 @@
             "args": [
                 "shuffleboard"
             ]
+        },
+        {
+            "label": "Path Flipper",
+            "args": [
+                "pathflip"
+            ]
         }
     ]
 }
