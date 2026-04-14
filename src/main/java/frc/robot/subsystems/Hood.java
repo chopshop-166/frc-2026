@@ -62,6 +62,8 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
         Double ang = ((Math.asin((targetDistanceInFeet * GRAVITY_CONSTANT_IN_FPS) / (targetVelocitySqrInFPS)) / 2)
                 * RADIANS_DEGREE_CONVERSION_FACTOR);
         return ang; // in degrees
+    }
+
     public Command autoZero() {
         return startSafe(() -> {
             getMap().motor.resetValidators();
@@ -69,7 +71,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             getData().motor.setpoint = ZEROINGSPEED;
         }).until(() -> getMap().motor.validate()).andThen(resetCmd());
     }
-    
+
     private double limits(double speed) {
         double angle = getHoodAngle();
         speed = getMap().hardLimits.filterSpeed(angle, speed);
