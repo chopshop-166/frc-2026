@@ -61,7 +61,7 @@ public final class Robot extends CommandRobot {
             RobotUtils.deadbandAxis(.1, () -> copilotController.getLeftY()));
     public Roller feeder = new Roller(map.getFeederMap(), "Feeder");
     public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
-    public Hood hood = new Hood(map.getHoodMap());
+    public Hood hood = new Hood(map.getHoodMap(), RobotUtils.deadbandAxis(.1, () -> copilotController.getRightY()));
 
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
@@ -138,7 +138,7 @@ public final class Robot extends CommandRobot {
                 .onFalse(drive.rotationTargetOff());
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
-        copilotController.back().onTrue(hood.zero());
+        copilotController.back().onTrue(hood.zero().ignoringDisable(true));
         // feed shooter
 
         // // Intake
@@ -147,23 +147,24 @@ public final class Robot extends CommandRobot {
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE));
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-        // HoodPresets.NETWORK_TABLES))
-        // .onFalse(sequences.operatorSafeState());
-
-        // copilotController.a().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-        // HoodPresets.AUTO_ANGLE))
-        // .onFalse(sequences.operatorSafeState());
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
-                HoodPresets.AUTO_ANGLE)).onFalse(sequences.operatorSafeState());
+        // HoodPresets.AUTO_ANGLE));
         // copilotController.b()
         // .whileTrue(
         // hood.moveToAngle(HoodPresets.AUTO_ANGLE).alongWith(drive.rotateToTarget(RotationTargets.HUB)))
         // .onFalse(hood.safeStateCmd());
         // .onFalse(sequences.operatorSafeState());
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.CLOSE))
-                .onFalse(sequences.operatorSafeState());
+
+        copilotController.b()
+                .whileTrue(
+                        sequences.shootAutoAlign(ShooterPresets.NETWORK_TABLES_AUTO, HoodPresets.NETWORK_TABLES_AUTO))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
+        // HoodPresets.CLOSE))
+        // .onFalse(sequences.operatorSafeState());
         copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
-                .onFalse(sequences.operatorSafeState());
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         copilotController.rightBumper().onTrue(sequences.retractIntake());
         copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
@@ -172,9 +173,11 @@ public final class Robot extends CommandRobot {
     }
 
     private final void registerNamedCommands() {
-        NamedCommands.registerCommand("Intake", sequences.intake());
-        NamedCommands.registerCommand("Shoot", sequences.shootAutoAlign(ShooterPresets.MID_SHOT, HoodPresets.CLOSE));
-        NamedCommands.registerCommand("Stop Shooting", sequences.operatorSafeState());
+        NamedCommands.registerCommand("Intake", sequences.intake().withName("Intake!!!"));
+        NamedCommands.registerCommand("Shoot",
+                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE).withName("Shoot"));
+        NamedCommands.registerCommand("Stop Shooting",
+                sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
     }
 
     @Override

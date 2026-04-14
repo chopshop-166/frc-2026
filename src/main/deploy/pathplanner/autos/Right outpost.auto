@@ -5,25 +5,32 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "preloads"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Shoot"
+                  "pathName": "Outpost"
                 }
               },
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 4.0
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -32,7 +39,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop Shooting"
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
           }
         },
         {
@@ -42,13 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Depot pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
+                  "pathName": "Outpost 2"
                 }
               }
             ]
@@ -67,7 +74,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 6.0
+                  "waitTime": 5.0
                 }
               }
             ]

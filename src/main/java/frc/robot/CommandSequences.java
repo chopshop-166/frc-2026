@@ -62,7 +62,7 @@ public class CommandSequences {
     public Command operatorSafeState() {
         return robot.intake.safeStateCmd().alongWith(robot.deployer.safeStateCmd(), robot.activeFloor.safeStateCmd(),
                 robot.feeder.safeStateCmd(), robot.shooter.safeStateCmd(),
-                robot.drive.rotationTargetOff());
+                robot.drive.rotationTargetOff(), robot.hood.safeStateCmd());
 
     }
 

@@ -56,12 +56,23 @@ import frc.robot.maps.subsystems.ShooterMap;
 @RobotMapFor("00:80:2F:40:A6:13")
 public class ScorpionMap extends RobotMap {
 
+    final public double DISTANCE_A_METERS = 1.5;
+    final public double DISTANCE_B_METERS = 5;
+
+    public double solveSlope(double input_a, double input_b) {
+        return (input_b - input_a / (DISTANCE_B_METERS - DISTANCE_A_METERS));
+    }
+
+    public double solveIntercept(double input_a, double slope) {
+        return input_a - (slope * DISTANCE_A_METERS);
+    }
+
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToHubSub = ntInstance.getDoubleTopic("Drive/Distance To Hub").subscribe(0);
 
-    private final double CLOSE_SHOT_RPM = 1800;
-    private final double MID_SHOT_RPM = 2000;
-    private final double FAR_SHOT_RPM = 2500;
+    private final double CLOSE_SHOT_RPM = 1200;
+    private final double MID_SHOT_RPM = 1500;
+    private final double FAR_SHOT_RPM = 1800;
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -72,7 +83,7 @@ public class ScorpionMap extends RobotMap {
 
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
-        final double MODULE_OFFSET_XY = Units.inchesToMeters(11.379);
+        final double MODULE_OFFSET_XY = Units.inchesToMeters(10.875);
         final Pigeon2 pigeon = new Pigeon2(1);
         var pigeonConfig = pigeon.getConfigurator();
         pigeonConfig.apply(new MountPoseConfigs().withMountPoseRoll(180));
@@ -99,7 +110,7 @@ public class ScorpionMap extends RobotMap {
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
                 SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002),
-                new PIDValues(0.05, 0.0, 0.0, 0.21));
+                new PIDValues(0.05, 0.0, 0.0, 0.21 * 12));
 
         // All Distances are in Meters
         // Front Left Module
@@ -126,8 +137,13 @@ public class ScorpionMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = 2 * Math.PI;
 
-        RobotConfig config = new RobotConfig(58, 4.889, new ModuleConfig(
-                0.0508, 6000, 1.0, DCMotor.getNeoVortex(1), 50, 1),
+        RobotConfig config = new RobotConfig(62,
+                6.758, new ModuleConfig(
+                        Units.inchesToMeters(2),
+                        maxDriveSpeedMetersPerSecond,
+                        1.2,
+                        DCMotor.getNeoVortex(1).withReduction(6.75),
+                        60, 1),
                 new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
@@ -158,8 +174,8 @@ public class ScorpionMap extends RobotMap {
         configB.smartCurrentLimit(60);
         configCD.smartCurrentLimit(60);
 
-        configA.closedLoop.pid(0, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0));
+        configA.closedLoop.pid(0.0010, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.002));
 
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
@@ -178,22 +194,35 @@ public class ScorpionMap extends RobotMap {
         configCD.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
 
-        SmartDashboard.putNumber("Shooter", 2000);
+        SmartDashboard.putNumber("Shooter/rpm", 1500);
+        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1355);
+        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1950);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
             case FAR_SHOT -> FAR_SHOT_RPM;
             case OFF -> 0;
-            case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter", 2000);
-            case AUTO_SPEED -> Math.min(2500, (distanceToHubSub.getAsDouble() + 8.3804) / 0.0059);
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
+            case NETWORK_TABLES_AUTO -> {
+                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 1355);
+                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1950);
+                double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
+                double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
+
+                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) - shooter_intercept;
+                yield distance;
+            }
+            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1100));
             default -> Double.NaN;
         };
+
+        configA.inverted(true);
 
         motorA.getMotorController().configure(configA,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        configB.follow(motorA.getMotorController());
+        configB.follow(motorA.getMotorController(), false);
         configCD.follow(motorA.getMotorController(), true);
 
         motorB.getMotorController().configure(configB,
@@ -205,7 +234,8 @@ public class ScorpionMap extends RobotMap {
         motorD.getMotorController().configure(configCD,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA, motorB, motorC, motorD);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorA,
+                motorB, motorC, motorD);//
 
         return new ShooterMap(smcg, presets);
     }
@@ -214,10 +244,10 @@ public class ScorpionMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0.26, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(0.3, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.05, 0.05);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35);
+        ArmFeedforward feedForward = new ArmFeedforward(0.01, 0.05, 0.05);
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 30.1);
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
@@ -226,8 +256,8 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
             case OFF -> Double.NaN;
-            case OUT -> Units.degreesToRadians(3);
-            case IN -> Units.degreesToRadians(118);
+            case OUT -> Units.degreesToRadians(1);
+            case IN -> Units.degreesToRadians(102);
             case WIGGLE_IN -> Units.degreesToRadians(84);
             default -> Double.NaN;
         };
@@ -252,10 +282,11 @@ public class ScorpionMap extends RobotMap {
         configRight.smartCurrentLimit(40);
         configLeft.smartCurrentLimit(40);
 
-        configLeft.follow(motorRight.getMotorController(), true);
+        configLeft.inverted(true);
+        configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 0.8;
-            case REVERSE -> -0.8;
+            case FORWARD -> .8;
+            case REVERSE -> -1.0;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
@@ -267,7 +298,7 @@ public class ScorpionMap extends RobotMap {
         motorLeft.getMotorController().configure(configLeft, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorRight, motorLeft);
+        SmartMotorControllerGroup smcg = new SmartMotorControllerGroup(motorLeft, motorRight);
         return new RollerMap(smcg, presets);
     }
 
@@ -278,7 +309,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast).inverted(true);
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1.0;
+            case FORWARD -> .8;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -297,10 +328,10 @@ public class ScorpionMap extends RobotMap {
         CSSparkMax rollerL = new CSSparkMax(18);
         SparkMaxConfig configR = new SparkMaxConfig();
         SparkMaxConfig configL = new SparkMaxConfig();
-        configR.idleMode(IdleMode.kCoast).inverted(true);
+        configR.idleMode(IdleMode.kCoast).inverted(false);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1;
+            case FORWARD -> .6;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -323,31 +354,45 @@ public class ScorpionMap extends RobotMap {
     @Override
     public HoodMap getHoodMap() {
         CSSparkFlex motor = new CSSparkFlex(17);
-        ProfiledPIDController pid = new ProfiledPIDController(.7, 0, 0,
+        ProfiledPIDController pid = new ProfiledPIDController(.8, 0, 0,
                 new Constraints(Math.PI, Math.PI));
         pid.setTolerance(Units.degreesToRadians(.5));
         SparkFlexConfig config = new SparkFlexConfig();
-        ArmFeedforward feedForward = new ArmFeedforward(0, 0.02, 0.07);
+        ArmFeedforward feedForward = new ArmFeedforward(.02, 0.02, 0.08);
         double gearRatio = (1.0 / 9.0) * (15.0 / 165.0) * (2.0 * Math.PI);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
-                .quadratureMeasurementPeriod(10)
-                .velocityConversionFactor(gearRatio / 60.0);
+                .quadratureMeasurementPeriod(10);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartDashboard.putNumber("Hood/angle", 0);
+        motor.validateEncoderRate(.01, 10);
+        SmartDashboard.putNumber("Hood/angle", 0.15);
+        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.0892);
+        SmartDashboard.putNumber("Hood/angle_at_5m", 0.327);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
-                double distance = distanceToHubSub.getAsDouble() - .31525;
-                yield (distance > 0) ? Math.min(.44, (distance) / 8.5903) : 0;
+                double distance = (distanceToHubSub.getAsDouble() / 14.8) - .01216;
+                yield (distance > 0) ? Math.min(.44, distance) : 0;
             }
-            case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0);
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
+            case NETWORK_TABLES_AUTO -> {
+                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.0892);
+                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.327);
+                double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
+                double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
+
+                double distance = (distanceToHubSub.getAsDouble() * hood_slope) - hood_intercept;
+                yield (distance > 0) ? Math.min(.44, distance) : 0;
+            }
             default -> Double.NaN;
+
+            case DOWN -> 0;
+            case ZEROING -> 0;
         };
 
         return new HoodMap(motor, pid, new ValueRange(0, .48), feedForward, presets);
@@ -356,15 +401,17 @@ public class ScorpionMap extends RobotMap {
     @Override
     public VisionMap getVisionMap() {
 
-        return new VisionMap(0,
-                new CameraSource("L_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(10.971),
-                                Units.inchesToMeters(21.149),
-                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))),
-                new CameraSource("R_Scorpion_Cam",
-                        new Transform3d(Units.inchesToMeters(4.227), Units.inchesToMeters(-10.954),
-                                Units.inchesToMeters(21.223),
-                                new Rotation3d(0, Units.degreesToRadians(-27), Units.degreesToRadians(0)))));
+        return new VisionMap(180,
+                new CameraSource("Hopper_Scorpion_Cam", // left
+                        new Transform3d(Units.inchesToMeters(
+                                3.136), Units.inchesToMeters(13.068),
+                                Units.inchesToMeters(10.061),
+                                new Rotation3d(0, Units.degreesToRadians(-10), Units.degreesToRadians(55)))),
+                new CameraSource("Shooter_Scorpion_Cam", // right
+                        new Transform3d(Units.inchesToMeters(
+                                -13.007), Units.inchesToMeters(-5.763),
+                                Units.inchesToMeters(14.513),
+                                new Rotation3d(0, Units.degreesToRadians(-15), Units.degreesToRadians(180)))));
     }
 
     @Override

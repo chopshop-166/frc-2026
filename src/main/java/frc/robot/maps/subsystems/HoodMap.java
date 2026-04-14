@@ -25,7 +25,13 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         AUTO_ANGLE,
 
-        NETWORK_TABLES;
+        NETWORK_TABLES,
+
+        NETWORK_TABLES_AUTO,
+
+        DOWN,
+
+        ZEROING;
     }
 
     public interface PresetValue extends ToDoubleFunction<HoodPresets> {
