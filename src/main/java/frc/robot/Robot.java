@@ -154,7 +154,9 @@ public final class Robot extends CommandRobot {
         // .onFalse(hood.safeStateCmd());
         // .onFalse(sequences.operatorSafeState());
 
-        copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+        copilotController.b()
+                .whileTrue(
+                        sequences.shootAutoAlign(ShooterPresets.NETWORK_TABLES_AUTO, HoodPresets.NETWORK_TABLES_AUTO))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
