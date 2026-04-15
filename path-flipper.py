@@ -16,8 +16,8 @@ AUTOS_DIR = ROOT_PATH / "autos"
 PATHS_DIR = ROOT_PATH / "paths"
 
 REPLACEMENTS = {
-    # "Left": "Right",
-    # "left": "right",
+    "Right": "Left",
+    "right": "left",
 }
 
 
