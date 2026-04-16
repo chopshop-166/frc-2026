@@ -69,7 +69,7 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
             getMap().motor.resetValidators();
             getData().preset = HoodPresets.ZEROING;
             getData().motor.setpoint = ZEROINGSPEED;
-        }).until(() -> getMap().motor.validate()).andThen(resetCmd());
+        }).until(() -> getMap().motor.validate()).andThen(safeStateCmd(), resetCmd());
     }
 
     private double limits(double speed) {
@@ -114,5 +114,10 @@ public class Hood extends LoggedSubsystem<Data, HoodMap> {
     @Override
     public void safeState() {
         getData().preset = HoodPresets.OFF;
+    }
+
+    @Override
+    public void reset() {
+        getMap().motor.getEncoder().reset();
     }
 }

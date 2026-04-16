@@ -220,7 +220,15 @@ public class ScorpionMap extends RobotMap {
                 double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
                 yield Math.min(2500, distance);
             }
-            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1100));
+            case AUTO_SPEED -> {
+                double speed_at_1m = 950;
+                double speed_at_5m = 1500;
+                double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
+                double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
+
+                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
+                yield Math.min(2500, distance);
+            }
             default -> Double.NaN;
         };
 
@@ -383,7 +391,12 @@ public class ScorpionMap extends RobotMap {
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
-                double distance = (distanceToHubSub.getAsDouble() / 14.8) - .01216;
+                double angle_at_1m = 0.16;
+                double angle_at_5m = 0.47;
+                double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
+                double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
+
+                double distance = (distanceToHubSub.getAsDouble() * hood_slope) - hood_intercept;
                 yield (distance > 0) ? Math.min(.44, distance) : 0;
             }
             case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
