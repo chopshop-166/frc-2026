@@ -222,7 +222,7 @@ public class ScorpionMap extends RobotMap {
             }
             case AUTO_SPEED -> {
                 double speed_at_1m = 950;
-                double speed_at_5m = 1500;
+                double speed_at_5m = 1560;
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
@@ -376,7 +376,7 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig config = new SparkFlexConfig();
         ArmFeedforward feedForward = new ArmFeedforward(.02, 0.02, 0.08);
         double gearRatio = (1.0 / 9.0) * (15.0 / 165.0) * (2.0 * Math.PI);
-        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+        config.idleMode(IdleMode.kCoast).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);

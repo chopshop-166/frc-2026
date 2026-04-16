@@ -134,6 +134,12 @@ public final class Robot extends CommandRobot {
     }
 
     @Override
+    public void teleopInit() {
+        super.teleopInit();
+        CommandScheduler.getInstance().schedule(hood.moveToAngle(HoodPresets.DOWN));
+    }
+
+    @Override
     public void configureButtonBindings() {
         driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.HUB))
                 .onFalse(drive.rotationTargetOff());
@@ -183,7 +189,7 @@ public final class Robot extends CommandRobot {
         NamedCommands.registerCommand("Intake", sequences.intake());
         NamedCommands.registerCommand("PathEnd", new PrintCommand("path ended"));
         NamedCommands.registerCommand("Shoot",
-                sequences.shootAutoAlign(ShooterPresets.NETWORK_TABLES_AUTO, HoodPresets.NETWORK_TABLES_AUTO)
+                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE)
                         .withName("Shoot"));
         NamedCommands.registerCommand("Stop Shooting",
                 sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
