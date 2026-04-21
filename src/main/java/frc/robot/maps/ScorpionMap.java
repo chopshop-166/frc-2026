@@ -60,7 +60,7 @@ public class ScorpionMap extends RobotMap {
     final public double DISTANCE_B_METERS = 5;
 
     public double solveSlope(double input_a, double input_b) {
-        return (input_b - input_a / (DISTANCE_B_METERS - DISTANCE_A_METERS));
+        return (input_b - input_a) / (DISTANCE_B_METERS - DISTANCE_A_METERS);
     }
 
     public double solveIntercept(double input_a, double slope) {
@@ -174,8 +174,9 @@ public class ScorpionMap extends RobotMap {
         configB.smartCurrentLimit(60);
         configCD.smartCurrentLimit(60);
 
-        configA.closedLoop.pid(0.0010, 0, 0);
-        configA.closedLoop.apply(new FeedForwardConfig().kV(0.002));
+        configA.closedLoop.pid(0.0005, 0, 0);
+        configA.closedLoop.apply(new FeedForwardConfig().kV(0.004));
+        configA.signals.appliedOutputPeriodMs(5);
 
         motorA.setControlType(ControlType.kVelocity);
         motorB.setControlType(ControlType.kVelocity);
@@ -194,9 +195,13 @@ public class ScorpionMap extends RobotMap {
         configCD.encoder.quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
 
+        configA.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
+        configB.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
+        configCD.encoder.positionConversionFactor(18.0 / 38.0).velocityConversionFactor((18.0 / 38.0));
+
         SmartDashboard.putNumber("Shooter/rpm", 1500);
-        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 1355);
-        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1950);
+        SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 950);
+        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1500);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
@@ -204,15 +209,26 @@ public class ScorpionMap extends RobotMap {
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
-                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 1355);
-                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1950);
+                double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 950);
+                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1500);
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
-                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) - shooter_intercept;
-                yield distance;
+                Logger.recordOutput("Shooter/Slope", shooter_slope);
+                Logger.recordOutput("Shooter/Intercept", shooter_intercept);
+
+                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
+                yield Math.min(2500, distance);
             }
-            case AUTO_SPEED -> Math.min(2500, ((170 * distanceToHubSub.getAsDouble()) + 1100));
+            case AUTO_SPEED -> {
+                double speed_at_1m = 950;
+                double speed_at_5m = 1560;
+                double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
+                double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
+
+                double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
+                yield Math.min(2500, distance);
+            }
             default -> Double.NaN;
         };
 
@@ -256,7 +272,7 @@ public class ScorpionMap extends RobotMap {
                 .velocityConversionFactor((((1.0 / 5.0) * (22.0 / 52.0) * (16.0 / 48.0)) / 60.0) * (2 * Math.PI));
         DeployerMap.PresetValue presets = preset -> switch (preset) {
             case OFF -> Double.NaN;
-            case OUT -> Units.degreesToRadians(1);
+            case OUT -> Units.degreesToRadians(3);
             case IN -> Units.degreesToRadians(102);
             case WIGGLE_IN -> Units.degreesToRadians(84);
             default -> Double.NaN;
@@ -285,7 +301,7 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1.0;
             case REVERSE -> -1.0;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -309,7 +325,7 @@ public class ScorpionMap extends RobotMap {
         config.idleMode(IdleMode.kCoast).inverted(true);
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .8;
+            case FORWARD -> 1.0;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -331,7 +347,7 @@ public class ScorpionMap extends RobotMap {
         configR.idleMode(IdleMode.kCoast).inverted(false);
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> .6;
+            case FORWARD -> 1.0;
             case REVERSE -> -0.5;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
@@ -360,33 +376,39 @@ public class ScorpionMap extends RobotMap {
         SparkFlexConfig config = new SparkFlexConfig();
         ArmFeedforward feedForward = new ArmFeedforward(.02, 0.02, 0.08);
         double gearRatio = (1.0 / 9.0) * (15.0 / 165.0) * (2.0 * Math.PI);
-        config.idleMode(IdleMode.kBrake).smartCurrentLimit(30);
+        config.idleMode(IdleMode.kCoast).smartCurrentLimit(30);
         config.encoder.positionConversionFactor(gearRatio)
                 .quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10);
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        motor.validateEncoderRate(.01, 10);
-        SmartDashboard.putNumber("Hood/angle", 0.15);
-        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.0892);
-        SmartDashboard.putNumber("Hood/angle_at_5m", 0.327);
+        SmartDashboard.putNumber("Hood/angle", 0.18);
+        SmartDashboard.putNumber("Hood/angle_at_1.5m", 0.16);
+        SmartDashboard.putNumber("Hood/angle_at_5m", 0.47);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
             case MID -> 0.2;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
-                double distance = (distanceToHubSub.getAsDouble() / 14.8) - .01216;
-                yield (distance > 0) ? Math.min(.44, distance) : 0;
-            }
-            case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
-            case NETWORK_TABLES_AUTO -> {
-                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.0892);
-                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.327);
+                double angle_at_1m = 0.16;
+                double angle_at_5m = 0.47;
                 double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
                 double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
 
                 double distance = (distanceToHubSub.getAsDouble() * hood_slope) - hood_intercept;
+                yield (distance > 0) ? Math.min(.44, distance) : 0;
+            }
+            case NETWORK_TABLES -> SmartDashboard.getNumber("Hood/angle", 0.15);
+            case NETWORK_TABLES_AUTO -> {
+                double angle_at_1m = SmartDashboard.getNumber("Hood/angle_at_1.5m", 0.16);
+                double angle_at_5m = SmartDashboard.getNumber("Hood/angle_at_5m", 0.47);
+                double hood_slope = solveSlope(angle_at_1m, angle_at_5m);
+                double hood_intercept = solveIntercept(angle_at_1m, hood_slope);
+                Logger.recordOutput("Hood/Slope", hood_slope);
+                Logger.recordOutput("Hood/Intercept", hood_intercept);
+
+                double distance = (distanceToHubSub.getAsDouble() * hood_slope) + hood_intercept;
                 yield (distance > 0) ? Math.min(.44, distance) : 0;
             }
             default -> Double.NaN;

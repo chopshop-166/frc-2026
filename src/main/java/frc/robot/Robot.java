@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.subsystems.DeployerMap.DeployerPresets;
 import frc.robot.maps.subsystems.HoodMap.HoodPresets;
@@ -133,9 +134,20 @@ public final class Robot extends CommandRobot {
     }
 
     @Override
+    public void teleopInit() {
+        super.teleopInit();
+        CommandScheduler.getInstance().schedule(hood.moveToAngle(HoodPresets.DOWN));
+    }
+
+    @Override
     public void configureButtonBindings() {
         driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.HUB))
                 .onFalse(drive.rotationTargetOff());
+
+        driveController.b()
+                .whileTrue(
+                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilot stop
         copilotController.start().onTrue(sequences.operatorSafeState());
         copilotController.back().onTrue(hood.zero().ignoringDisable(true));
@@ -156,7 +168,7 @@ public final class Robot extends CommandRobot {
 
         copilotController.b()
                 .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.NETWORK_TABLES_AUTO, HoodPresets.NETWORK_TABLES_AUTO))
+                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
@@ -169,13 +181,16 @@ public final class Robot extends CommandRobot {
         copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
         // HoodPresets.NETWORK_TABLES));
+        copilotController.povDown().onTrue(hood.autoZero());
 
     }
 
     private final void registerNamedCommands() {
-        NamedCommands.registerCommand("Intake", sequences.intake().withName("Intake!!!"));
+        NamedCommands.registerCommand("Intake", sequences.intake());
+        NamedCommands.registerCommand("PathEnd", new PrintCommand("path ended"));
         NamedCommands.registerCommand("Shoot",
-                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE).withName("Shoot"));
+                sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE)
+                        .withName("Shoot"));
         NamedCommands.registerCommand("Stop Shooting",
                 sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
     }
