@@ -23,7 +23,9 @@ public class DeployerMap implements LoggableMap<DeployerMap.Data> {
 
         IN,
 
-        WIGGLE_IN
+        WIGGLE_IN,
+
+        VERTICAL
     }
 
     public interface PresetValue extends ToDoubleFunction<DeployerPresets> {

@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 public class CameraSource {
     /** The default field, loaded for convenience. */
     public static final AprilTagFieldLayout DEFAULT_FIELD = AprilTagFieldLayout
-            .loadField(AprilTagFields.k2026RebuiltAndymark);
+            .loadField(AprilTagFields.k2026RebuiltWelded);
     /** The camera object. */
     public final PhotonCamera camera;
     /** The pose estimator. */
@@ -20,7 +20,7 @@ public class CameraSource {
     public final Transform3d robotToCam;
 
     /**
-     * Constructor.
+     * Constructor.\
      * 
      * @param cameraName The camera's name in Photon Vision.
      * @param robotToCam The offset of the camera from the center of the robot.
