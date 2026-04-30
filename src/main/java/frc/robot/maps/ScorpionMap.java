@@ -70,7 +70,7 @@ public class ScorpionMap extends RobotMap {
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     DoubleSubscriber distanceToHubSub = ntInstance.getDoubleTopic("Drive/Distance To Hub").subscribe(0);
 
-    private final double CLOSE_SHOT_RPM = 1200;
+    private final double CLOSE_SHOT_RPM = 1100;
     private final double MID_SHOT_RPM = 1500;
     private final double FAR_SHOT_RPM = 1800;
 
@@ -260,10 +260,10 @@ public class ScorpionMap extends RobotMap {
     public DeployerMap getDeployerMap() {
         CSSparkMax motor = new CSSparkMax(14);
         SparkMaxConfig config = new SparkMaxConfig();
-        ProfiledPIDController pid = new ProfiledPIDController(0.3, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
+        ProfiledPIDController pid = new ProfiledPIDController(0.35, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
-        ArmFeedforward feedForward = new ArmFeedforward(0.01, 0.05, 0.05);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 30.1);
+        ArmFeedforward feedForward = new ArmFeedforward(0.045, 0.03, 0.055);
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35.0); // was 30.1
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
@@ -388,7 +388,7 @@ public class ScorpionMap extends RobotMap {
         SmartDashboard.putNumber("Hood/angle_at_5m", 0.47);
         PresetValue presets = preset -> switch (preset) {
             case CLOSE -> 0.15;
-            case MID -> 0.2;
+            case MID -> 0.25;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
             case AUTO_ANGLE -> {
