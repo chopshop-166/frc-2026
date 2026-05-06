@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+
 import java.util.function.DoubleUnaryOperator;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,6 +15,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.ctre.phoenix.schedulers.SequentialScheduler;
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -170,11 +173,12 @@ public final class Robot extends CommandRobot {
                 .whileTrue(
                         sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+
         copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE))
-        // .onFalse(sequences.operatorSafeState());
+        // .onFalse(sequences.operatorSafeState());deployer.moveTo(DeployerPresets.OUT
         copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         copilotController.rightBumper().onTrue(sequences.retractIntake());
@@ -193,6 +197,8 @@ public final class Robot extends CommandRobot {
                         .withName("Shoot"));
         NamedCommands.registerCommand("Stop Shooting",
                 sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)).withName("Stop shooting"));
+
+        NamedCommands.registerCommand("Reverse Intake", intake.rollOut());
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +33,20 @@ public class Deployer extends LoggedSubsystem<Data, DeployerMap> {
         pid = deployerMap.pid;
         this.deployerSpeed = deployerSpeed;
 
+    }
+
+    public Command feedShooter() {
+        Debouncer debouncer = new Debouncer(.2, DebounceType.kBoth);
+
+        return runOnce(() -> {
+            getData().preset = DeployerPresets.VERTICAL;
+            pid.setConstraints(new Constraints(.12 * Math.PI, 5 * Math.PI));
+            pid.reset(getDeployerAngle(), 0.0);
+        }).andThen(Commands.waitUntil(() -> debouncer.calculate(pid.atGoal())))
+                .andThen(runOnce(() -> getData().preset = DeployerPresets.OFF))
+                .finallyDo(() -> {
+                    pid.setConstraints(new Constraints(2 * Math.PI, 5 * Math.PI));
+                }).withName("Move To Set Angle");
     }
 
     public Command moveTo(DeployerPresets level) {

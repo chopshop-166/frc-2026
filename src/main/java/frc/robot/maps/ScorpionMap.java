@@ -72,7 +72,7 @@ public class ScorpionMap extends RobotMap {
 
     private final double CLOSE_SHOT_RPM = 1100;
     private final double MID_SHOT_RPM = 1500;
-    private final double FAR_SHOT_RPM = 1800;
+    private final double FAR_SHOT_RPM = 3000;
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -201,7 +201,7 @@ public class ScorpionMap extends RobotMap {
 
         SmartDashboard.putNumber("Shooter/rpm", 1500);
         SmartDashboard.putNumber("Shooter/rpm_at_1.5m", 950);
-        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1500);
+        SmartDashboard.putNumber("Shooter/rpm_at_5m", 1560);
         ShooterMap.PresetValues presets = preset -> switch (preset) {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
@@ -210,7 +210,7 @@ public class ScorpionMap extends RobotMap {
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
                 double speed_at_1m = SmartDashboard.getNumber("Shooter/rpm_at_1.5m", 950);
-                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1500);
+                double speed_at_5m = SmartDashboard.getNumber("Shooter/rpm_at_5m", 1560);
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
@@ -221,13 +221,13 @@ public class ScorpionMap extends RobotMap {
                 yield Math.min(2500, distance);
             }
             case AUTO_SPEED -> {
-                double speed_at_1m = 950;
-                double speed_at_5m = 1560;
+                double speed_at_1m = 1000;
+                double speed_at_5m = 1650;
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
                 double distance = (distanceToHubSub.getAsDouble() * shooter_slope) + shooter_intercept;
-                yield Math.min(2500, distance);
+                yield Math.min(3000, distance);
             }
             default -> Double.NaN;
         };
@@ -275,7 +275,7 @@ public class ScorpionMap extends RobotMap {
             case OUT -> Units.degreesToRadians(3);
             case IN -> Units.degreesToRadians(102);
             case WIGGLE_IN -> Units.degreesToRadians(84);
-            case VERTICAL -> Units.degreesToRadians(62);
+            case VERTICAL -> Units.degreesToRadians(72);
             default -> Double.NaN;
         };
         motor.getMotorController().configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
