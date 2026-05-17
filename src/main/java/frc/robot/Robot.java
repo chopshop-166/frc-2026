@@ -44,6 +44,7 @@ public final class Robot extends CommandRobot {
     private RobotMap map = getRobotMap(RobotMap.class, new RobotMap());
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
+    private ButtonXboxController KidController = new ButtonXboxController(2);
 
     // Helpers
     final DoubleUnaryOperator driveScaler = getScaler(0.45, 0.25);
@@ -152,12 +153,16 @@ public final class Robot extends CommandRobot {
                         sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilot stop
+
         copilotController.start().onTrue(sequences.operatorSafeState());
         copilotController.back().onTrue(hood.zero().ignoringDisable(true));
         // feed shooter
 
         // // Intake
         copilotController.a().whileTrue(sequences.intake())
+                .onFalse(intake.safeStateCmd());
+
+        KidController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE));
@@ -174,7 +179,12 @@ public final class Robot extends CommandRobot {
                         sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
+        KidController.b()
+                .whileTrue(
+                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE))
@@ -185,7 +195,9 @@ public final class Robot extends CommandRobot {
         copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
         // HoodPresets.NETWORK_TABLES));
-        copilotController.povDown().onTrue(hood.autoZero());
+        // copilotController.povDown().onTrue(hood.autoZero());
+        copilotController.povDown().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
     }
 

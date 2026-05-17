@@ -31,6 +31,10 @@ public class HoodMap implements LoggableMap<HoodMap.Data> {
 
         DOWN,
 
+        DEMO_WEAK,
+
+        DEMO_HIGH,
+
         ZEROING;
     }
 

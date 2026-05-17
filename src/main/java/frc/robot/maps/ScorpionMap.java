@@ -206,6 +206,8 @@ public class ScorpionMap extends RobotMap {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
             case FAR_SHOT -> FAR_SHOT_RPM;
+            case DEMO_WEAK -> 900;
+            case DEMO_HIGH -> 2000;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
@@ -391,6 +393,8 @@ public class ScorpionMap extends RobotMap {
             case MID -> 0.25;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
+            case DEMO_WEAK -> 0.3;
+            case DEMO_HIGH -> .25;
             case AUTO_ANGLE -> {
                 double angle_at_1m = 0.16;
                 double angle_at_5m = 0.47;
