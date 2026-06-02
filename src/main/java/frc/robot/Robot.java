@@ -14,6 +14,8 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.maps.CameraSource;
+import com.chopshop166.chopshoplib.maps.VisionMap;
 import com.ctre.phoenix.schedulers.SequentialScheduler;
 import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -174,7 +176,7 @@ public final class Robot extends CommandRobot {
                         sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT, HoodPresets.MID))
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.MID_SHOT, HoodPresets.MID))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE))
@@ -204,6 +206,9 @@ public final class Robot extends CommandRobot {
     @Override
     public void populateDashboard() {
         SmartDashboard.putData("AutoChooser", autoChooser);
+        // SmartDashboard.putBoolean("CameraPublisher/Hopper_Scorpion_Cam/connected", );
+        // SmartDashboard.putBoolean("CameraPublisher/Shooter_Scorpion_Cam/connected",
+        // true);
     }
 
     /**

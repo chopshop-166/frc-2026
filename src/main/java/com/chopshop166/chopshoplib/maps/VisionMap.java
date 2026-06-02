@@ -73,6 +73,7 @@ public class VisionMap {
             seesTagsIdx++;
         }
         Logger.recordOutput("Vision/Sees Tags", seesTags);
+        // Logger.recordOutput("Vision/ShooterCamConnected", visionSources.get());
     }
 
     public static class Data {

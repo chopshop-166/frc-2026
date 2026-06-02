@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 public class CameraSource {
     /** The default field, loaded for convenience. */
     public static final AprilTagFieldLayout DEFAULT_FIELD = AprilTagFieldLayout
-            .loadField(AprilTagFields.k2026RebuiltWelded);
+            .loadField(AprilTagFields.k2026RebuiltAndymark);
     /** The camera object. */
     public final PhotonCamera camera;
     /** The pose estimator. */

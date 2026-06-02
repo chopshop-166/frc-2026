@@ -263,7 +263,8 @@ public class ScorpionMap extends RobotMap {
         ProfiledPIDController pid = new ProfiledPIDController(0.35, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
         ArmFeedforward feedForward = new ArmFeedforward(0.045, 0.03, 0.055);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 35.0); // was 30.1
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 39.5); // was 35.0, Increase when deployer is fliping
+                                                                       // over 0
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
         config.encoder.quadratureAverageDepth(2).quadratureMeasurementPeriod(10);
