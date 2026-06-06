@@ -150,7 +150,7 @@ public final class Robot extends CommandRobot {
 
         driveController.b()
                 .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+                        sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilot stop
 
@@ -159,8 +159,8 @@ public final class Robot extends CommandRobot {
         // feed shooter
 
         // // Intake
-        copilotController.a().whileTrue(sequences.intake())
-                .onFalse(intake.safeStateCmd());
+        // copilotController.a().whileTrue(sequences.intake())
+        // .onFalse(intake.safeStateCmd());
 
         KidController.a().whileTrue(sequences.intake())
                 .onFalse(intake.safeStateCmd());
@@ -174,30 +174,35 @@ public final class Robot extends CommandRobot {
         // .onFalse(hood.safeStateCmd());
         // .onFalse(sequences.operatorSafeState());
 
-        copilotController.b()
-                .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilotController.b()
+        // .whileTrue(
+        // sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+        // .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
         KidController.b()
                 .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED, HoodPresets.AUTO_ANGLE))
+                        sequences.shootAutoAlign(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
+        KidController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+
+        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE))
         // .onFalse(sequences.operatorSafeState());deployer.moveTo(DeployerPresets.OUT
-        copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT, HoodPresets.FAR))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        copilotController.rightBumper().onTrue(sequences.retractIntake());
-        copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
+        // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT,
+        // HoodPresets.FAR))
+        // .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilotController.rightBumper().onTrue(sequences.retractIntake());
+        // copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
         // HoodPresets.NETWORK_TABLES));
         // copilotController.povDown().onTrue(hood.autoZero());
-        copilotController.povDown().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilotController.povDown().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH,
+        // HoodPresets.DEMO_HIGH))
+        // .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
     }
 

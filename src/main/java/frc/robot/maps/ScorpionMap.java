@@ -207,7 +207,7 @@ public class ScorpionMap extends RobotMap {
             case MID_SHOT -> MID_SHOT_RPM;
             case FAR_SHOT -> FAR_SHOT_RPM;
             case DEMO_WEAK -> 900;
-            case DEMO_HIGH -> 2000;
+            case DEMO_HIGH -> 1400;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
             case NETWORK_TABLES_AUTO -> {
