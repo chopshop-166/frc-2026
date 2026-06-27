@@ -206,7 +206,7 @@ public class ScorpionMap extends RobotMap {
             case CLOSE_SHOT -> CLOSE_SHOT_RPM;
             case MID_SHOT -> MID_SHOT_RPM;
             case FAR_SHOT -> FAR_SHOT_RPM;
-            case DEMO_WEAK -> 900;
+            case DEMO_WEAK -> 1000;
             case DEMO_HIGH -> 1400;
             case OFF -> 0;
             case NETWORK_TABLES -> SmartDashboard.getNumber("Shooter/rpm", 1500);
@@ -304,10 +304,10 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1.0;
-            case REVERSE -> -1.0;
-            case FORWARD_WIGGLE -> .3;
-            case BACKWARDS_WIGGLE -> -.3;
+            case FORWARD -> -.65;
+            case REVERSE -> .65;
+            case FORWARD_WIGGLE -> -.3;
+            case BACKWARDS_WIGGLE -> .3;
             case OFF -> 0;
             default -> Double.NaN;
         };
@@ -393,8 +393,8 @@ public class ScorpionMap extends RobotMap {
             case MID -> 0.25;
             case FAR -> 0.44;
             case OFF -> Double.NaN;
-            case DEMO_WEAK -> 0.3;
-            case DEMO_HIGH -> .25;
+            case DEMO_WEAK -> 0.44;
+            case DEMO_HIGH -> .35;
             case AUTO_ANGLE -> {
                 double angle_at_1m = 0.16;
                 double angle_at_5m = 0.47;

@@ -150,8 +150,14 @@ public final class Robot extends CommandRobot {
 
         driveController.b()
                 .whileTrue(
+                        sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+
+        driveController.x()
+                .whileTrue(
                         sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilot stop
         // copilot stop
 
         copilotController.start().onTrue(sequences.operatorSafeState());
@@ -159,11 +165,18 @@ public final class Robot extends CommandRobot {
         // feed shooter
 
         // // Intake
-        // copilotController.a().whileTrue(sequences.intake())
+        copilotController.a().whileTrue(sequences.intake()).onFalse(intake.safeStateCmd());
+        copilotController.b()
+                .whileTrue(
+                        sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        copilotController.x()
+                .whileTrue(
+                        sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
+                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilot stop
+        // KidController.a().whileTrue(sequences.intake())
         // .onFalse(intake.safeStateCmd());
-
-        KidController.a().whileTrue(sequences.intake())
-                .onFalse(intake.safeStateCmd());
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE));
         // copilotController.b().whileTrue(sequences.shootAutoAlign(ShooterPresets.AUTO_SPEED,
@@ -181,22 +194,23 @@ public final class Robot extends CommandRobot {
 
         KidController.b()
                 .whileTrue(
-                        sequences.shootAutoAlign(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
+                        sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
         KidController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
                 .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
 
-        copilotController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH, HoodPresets.DEMO_HIGH))
-                .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
+        // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.DEMO_HIGH,
+        // HoodPresets.DEMO_HIGH))
+        // .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
         // copilotController.x().whileTrue(sequences.shoot(ShooterPresets.CLOSE_SHOT,
         // HoodPresets.CLOSE))
         // .onFalse(sequences.operatorSafeState());deployer.moveTo(DeployerPresets.OUT
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.FAR_SHOT,
         // HoodPresets.FAR))
         // .onFalse(sequences.operatorSafeState().andThen(hood.moveToAngle(HoodPresets.DOWN)));
-        // copilotController.rightBumper().onTrue(sequences.retractIntake());
-        // copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
+        copilotController.rightBumper().onTrue(sequences.retractIntake());
+        copilotController.leftBumper().onTrue(sequences.rollOut()).onFalse(sequences.operatorSafeState());
         // copilotController.y().whileTrue(sequences.shoot(ShooterPresets.NETWORK_TABLES,
         // HoodPresets.NETWORK_TABLES));
         // copilotController.povDown().onTrue(hood.autoZero());
