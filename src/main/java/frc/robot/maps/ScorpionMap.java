@@ -303,10 +303,10 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> 1.0;
-            case REVERSE -> -1.0;
-            case FORWARD_WIGGLE -> .3;
-            case BACKWARDS_WIGGLE -> -.3;
+            case FORWARD -> -0.8;
+            case REVERSE -> 0.8;
+            case FORWARD_WIGGLE -> -.3;
+            case BACKWARDS_WIGGLE -> .3;
             case OFF -> 0;
             default -> Double.NaN;
         };
