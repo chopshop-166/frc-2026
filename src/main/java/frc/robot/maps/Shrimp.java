@@ -19,7 +19,8 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
+import com.chopshop166.chopshoplib.leds.ColorFormat;
+import com.chopshop166.chopshoplib.leds.SegmentConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -113,7 +114,7 @@ public class Shrimp extends RobotMap {
         var result = new WPILedMap(11, 0);
         var leds = result.ledBuffer;
 
-        SegmentConfig spoiler = leds.segment(11, ColorFormat.GRB).tags("Intake", "Elevator", "Vision", "Fun");
+        SegmentConfig top = leds.segment(11, ColorFormat.GRB).tags("underglow", "Shooter", "Alliance");
         return result;
     }
 

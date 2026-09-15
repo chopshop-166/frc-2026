@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import frc.robot.subsystems.Led;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,6 +69,8 @@ public final class Robot extends CommandRobot {
     public Roller activeFloor = new Roller(map.getActiveFloorMap(), "ActiveFloor");
     public Hood hood = new Hood(map.getHoodMap(), RobotUtils.deadbandAxis(.1, () -> copilotController.getRightY()));
 
+    public Led led = new Led(map.getLedMap());
+
     // Things that use all the subsystems
     private CommandSequences sequences = new CommandSequences(this);
 
@@ -110,6 +113,7 @@ public final class Robot extends CommandRobot {
         Logger.start();
 
         CommandScheduler.getInstance().schedule(sequences.operatorSafeState());
+        led.rainbow().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
 
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
@@ -252,6 +256,7 @@ public final class Robot extends CommandRobot {
     public void setDefaultCommands() {
         // hood.setDefaultCommand(hood.manualControl(RobotUtils.deadbandAxis(.1, () ->
         // -copilotController.getRightY())));
+
     }
 
     public DoubleUnaryOperator getScaler(double leftRange, double rightRange) {
