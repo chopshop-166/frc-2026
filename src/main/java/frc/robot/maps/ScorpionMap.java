@@ -221,8 +221,8 @@ public class ScorpionMap extends RobotMap {
                 yield Math.min(2500, distance);
             }
             case AUTO_SPEED -> {
-                double speed_at_1m = 1000;
-                double speed_at_5m = 1650;
+                double speed_at_1m = 1050;
+                double speed_at_5m = 1700;
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
