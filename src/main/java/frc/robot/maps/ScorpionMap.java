@@ -222,7 +222,7 @@ public class ScorpionMap extends RobotMap {
             }
             case AUTO_SPEED -> {
                 double speed_at_1m = 1050;
-                double speed_at_5m = 1700;
+                double speed_at_5m = 1640;
                 double shooter_slope = solveSlope(speed_at_1m, speed_at_5m);
                 double shooter_intercept = solveIntercept(speed_at_1m, shooter_slope);
 
@@ -303,8 +303,8 @@ public class ScorpionMap extends RobotMap {
         configLeft.inverted(true);
         configRight.follow(motorLeft.getMotorController(), true);
         RollerMap.PresetValues presets = preset -> switch (preset) {
-            case FORWARD -> -0.8;
-            case REVERSE -> 0.8;
+            case FORWARD -> -1;
+            case REVERSE -> 1;
             case FORWARD_WIGGLE -> -.3;
             case BACKWARDS_WIGGLE -> .3;
             case OFF -> 0;
