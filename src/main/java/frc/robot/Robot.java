@@ -152,6 +152,16 @@ public final class Robot extends CommandRobot {
         driveController.leftBumper().whileTrue(drive.rotateToTargetContinuous(RotationTargets.HUB))
                 .onFalse(drive.rotationTargetOff());
 
+        driveController.back().onTrue(drive.resetCmd());
+
+        driveController.y().whileTrue(led.spinRed()).onFalse(led.rainbow());
+
+        driveController.x().whileTrue(led.spinGreen()).onFalse(led.rainbow());
+
+        driveController.b().whileTrue(led.flashRed()).onFalse(led.rainbow());
+
+        driveController.a().whileTrue(led.flashGreen()).onFalse(led.rainbow());
+
         driveController.b()
                 .whileTrue(
                         sequences.shoot(ShooterPresets.DEMO_WEAK, HoodPresets.DEMO_WEAK))
