@@ -31,12 +31,20 @@ public class Led extends LEDSubsystem {
         return setGlobalPattern(new Color(201, 198, 204));
     }
 
-    public Command shooterSpinning() {
-        return setPattern("Shooter", new SpinPattern(new Color(57, 32, 144)), "Spinning");
+    public Command spinRed() {
+        return setPattern("Shooter", new SpinPattern(new Color(144, 0, 0)), "Spinning");
     }
 
-    public Command awesome() {
-        return setPattern("underglow", new FlashPattern(new Color(255, 32, 82), 1), "AWESOME");
+    public Command spinGreen() {
+        return setPattern("Shooter", new SpinPattern(new Color(0, 144, 0)), "Spinning");
+    }
+
+    public Command flashRed() {
+        return setPattern("underglow", new FlashPattern(new Color(255, 0, 0), .2), "AWESOME");
+    }
+
+    public Command flashGreen() {
+        return setPattern("underglow", new FlashPattern(new Color(0, 144, 0), .2), "AWESOME");
     }
 
     public Command flash() {
