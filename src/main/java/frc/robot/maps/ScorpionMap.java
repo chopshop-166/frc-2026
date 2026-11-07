@@ -263,7 +263,7 @@ public class ScorpionMap extends RobotMap {
         ProfiledPIDController pid = new ProfiledPIDController(0.35, 0, 0, new Constraints(2 * Math.PI, 5 * Math.PI));
         pid.setTolerance(.1);
         ArmFeedforward feedForward = new ArmFeedforward(0.045, 0.03, 0.055);
-        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 42); // was 39.2, Increase when deployer is fliping
+        DutyCycleEncoder encoder = new DutyCycleEncoder(2, 120, 50); // was 39.2, Increase when deployer is fliping
                                                                      // over 0
         encoder.setInverted(true);
         config.idleMode(IdleMode.kBrake).smartCurrentLimit(40).inverted(true);
@@ -328,7 +328,7 @@ public class ScorpionMap extends RobotMap {
         config.smartCurrentLimit(50);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 1.0;
-            case REVERSE -> -0.5;
+            case REVERSE -> -1;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
@@ -350,7 +350,7 @@ public class ScorpionMap extends RobotMap {
         configR.smartCurrentLimit(30);
         RollerMap.PresetValues presets = preset -> switch (preset) {
             case FORWARD -> 1.0;
-            case REVERSE -> -0.5;
+            case REVERSE -> -1.0;
             case FORWARD_WIGGLE -> .3;
             case BACKWARDS_WIGGLE -> -.3;
             case OFF -> 0;
